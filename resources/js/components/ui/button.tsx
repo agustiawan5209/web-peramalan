@@ -1,7 +1,6 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
@@ -39,19 +38,34 @@ function Button({
   variant,
   size,
   asChild = false,
+  tooltip,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
+    tooltip?: string
   }) {
   const Comp = asChild ? Slot : "button"
 
-  return (
+  const button = (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
+  )
+
+  if (!tooltip) {
+    return button
+  }
+
+  return (
+    <div className="relative group">
+      {button}
+      <div className="absolute left-1/2 transform -translate-y-16 -translate-x-1/2 mt-2 hidden group-hover:block bg-white text-black dark:bg-black dark:text-white text-xs rounded py-1 px-2 transition-all decoration-1">
+        {tooltip}
+      </div>
+    </div>
   )
 }
 

@@ -59,14 +59,6 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
     *,
     ::after,
@@ -78,75 +70,76 @@
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
+    --background: #F9FAFB; /* Light gray */
+    --foreground: #1F2937; /* Dark gray */
+    --card: #FFFFFF; /* White */
+    --card-foreground: #1F2937; /* Dark gray */
+    --popover: #FFFFFF; /* White */
+    --popover-foreground: #1F2937; /* Dark gray */
+    --primary: #3B82F6; /* Blue */
+    --primary-foreground: #FFFFFF; /* White */
+    --secondary: #6B7280; /* Gray */
+    --secondary-foreground: #FFFFFF; /* White */
+    --muted: #D1D5DB; /* Light gray */
+    --muted-foreground: #1F2937; /* Dark gray */
+    --accent: #FBBF24; /* Amber */
+    --accent-foreground: #1F2937; /* Dark gray */
+    --destructive: #EF4444; /* Red */
+    --destructive-foreground: #FFFFFF; /* White */
+    --border: #E5E7EB; /* Light gray */
+    --input: #F3F4F6; /* Light gray */
+    --ring: #60A5FA; /* Light blue */
+    --chart-1: #4F46E5; /* Indigo */
+    --chart-2: #F43F5E; /* Pink */
+    --chart-3: #FBBF24; /* Amber */
+    --chart-4: #34D399; /* Green */
+    --chart-5: #3B82F6; /* Blue */
     --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+    --sidebar: #FFFFFF; /* White */
+    --sidebar-foreground: #1F2937; /* Dark gray */
+    --sidebar-primary: #3B82F6; /* Blue */
+    --sidebar-primary-foreground: #FFFFFF; /* White */
+    --sidebar-accent: #FBBF24; /* Amber */
+    --sidebar-accent-foreground: #1F2937; /* Dark gray */
+    --sidebar-border: #E5E7EB; /* Light gray */
+    --sidebar-ring: #60A5FA; /* Light blue */
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.396 0.141 25.723);
-    --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    --background: #1F2937; /* Dark gray */
+    --foreground: #F9FAFB; /* Light gray */
+    --card: #1F2937; /* Dark gray */
+    --card-foreground: #F9FAFB; /* Light gray */
+    --popover: #1F2937; /* Dark gray */
+    --popover-foreground: #F9FAFB; /* Light gray */
+    --primary: #3B82F6; /* Blue */
+    --primary-foreground: #FFFFFF; /* White */
+    --secondary: #9CA3AF; /* Gray */
+    --secondary-foreground: #F9FAFB; /* Light gray */
+    --muted: #9CA3AF; /* Gray */
+    --muted-foreground: #F3F4F6; /* Light gray */
+    --accent: #FBBF24; /* Amber */
+    --accent-foreground: #1F2937; /* Dark gray */
+    --destructive: #EF4444; /* Red */
+    --destructive-foreground: #FFFFFF; /* White */
+    --border: #4B5563; /* Dark gray */
+    --input: #4B5563; /* Dark gray */
+    --ring: #3B82F6; /* Blue */
+    --chart-1: #4F46E5; /* Indigo */
+    --chart-2: #F43F5E; /* Pink */
+    --chart-3: #FBBF24; /* Amber */
+    --chart-4: #34D399; /* Green */
+    --chart-5: #3B82F6; /* Blue */
+    --sidebar: #1F2937; /* Dark gray */
+    --sidebar-foreground: #F9FAFB; /* Light gray */
+    --sidebar-primary: #3B82F6; /* Blue */
+    --sidebar-primary-foreground: #F9FAFB; /* Light gray */
+    --sidebar-accent: #FBBF24; /* Amber */
+    --sidebar-accent-foreground: #F9FAFB; /* Light gray */
+    --sidebar-border: #4B5563; /* Dark gray */
+    --sidebar-ring: #3B82F6; /* Blue */
 }
+
 
 @layer base {
     * {

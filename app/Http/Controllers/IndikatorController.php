@@ -126,7 +126,8 @@ class IndikatorController extends Controller
         $databaseHelper = App::make('databaseHelper');
         return $databaseHelper(
             operation: fn() => $indikator->update([
-                'name'=> $request->value,
+                'nama'=> $request->nama,
+                'keterangan'=> $request->keterangan,
             ]),
             successMessage: 'Kategori Berhasil Di Update!',
             redirectRoute: 'admin.indikator.index'

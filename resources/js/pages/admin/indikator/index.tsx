@@ -1,3 +1,4 @@
+import { DeleteConfirmationForm } from '@/components/delete-confirmation-form';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -8,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, IndikatorTypes } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
+import { LoaderCircle, PenBox } from 'lucide-react';
 import { useMemo, useState } from 'react';
 interface IndikatorIndexProps {
     indikator: IndikatorTypes[];
@@ -15,6 +17,7 @@ interface IndikatorIndexProps {
     titlePage?: string;
 }
 type indikatorFormData = {
+    id: number | null;
     nama: string;
     keterangan: string;
 };
@@ -26,6 +29,7 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
     );
 
     const { data, setData, get, post, put, processing, errors } = useForm<indikatorFormData>({
+        id: null,
         nama: '',
         keterangan: '',
     });
@@ -40,9 +44,26 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                 preserveState: true,
                 onSuccess: () => {
                     setData({
+                        id: null,
                         nama: '',
                         keterangan: '',
                     });
+                    setIsOpenDialog(false);
+                },
+                onError: (errors) => {
+                    console.error(errors);
+                },
+            });
+        } else {
+            put(route('admin.indikator.update', editId), {
+                preserveState: true,
+                onSuccess: () => {
+                    setData({
+                        id: null,
+                        nama: '',
+                        keterangan: '',
+                    });
+                    setEditId(null);
                     setIsOpenDialog(false);
                 },
                 onError: (errors) => {
@@ -53,6 +74,23 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
     };
 
     const [isOpenDialog, setIsOpenDialog] = useState(false);
+
+    const handleEdit = (id: number) => {
+        if (id) {
+            const indikatorTemp: IndikatorTypes[] = indikator.filter((item) => item.id === id, []);
+            setEditId(indikatorTemp[0].id);
+            if (indikatorTemp) {
+                setData({
+                    id: indikatorTemp[0].id,
+                    nama: indikatorTemp[0].nama,
+                    keterangan: indikatorTemp[0].keterangan,
+                });
+            }
+            setIsOpenDialog(true);
+        }
+    };
+
+    const [isDeleteDialog, setisDeleteDialog] = useState(false);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -86,7 +124,27 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                                             <TableCell>{index + 1}</TableCell>
                                             <TableCell>{item.nama}</TableCell>
                                             <TableCell>{item.keterangan}</TableCell>
-                                            <TableCell>Aksi</TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-row items-center gap-2">
+                                                    <Button
+                                                        type="button"
+                                                        variant={'default'}
+                                                        tooltip="edit"
+                                                        onClick={() => handleEdit(item.id)}
+                                                        className="border border-chart-4 bg-chart-4"
+                                                    >
+                                                        {' '}
+                                                        <PenBox />{' '}
+                                                    </Button>
+
+                                                    <DeleteConfirmationForm
+                                                        title={`Hapus indikator ${item.id}`}
+                                                        id={item.id}
+                                                        url={'admin.indikator.destroy'}
+                                                        setOpenDialog={setisDeleteDialog}
+                                                    />
+                                                </div>
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 ) : (
@@ -105,7 +163,7 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
             <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Tambah Indikator</DialogTitle>
+                        <DialogTitle>{editId ? `Edit` : `Tambah`} Indikator</DialogTitle>
                     </DialogHeader>
                     <form className="space-y-4" onSubmit={submit}>
                         <div className="grid gap-4">
@@ -120,6 +178,7 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                                     id="nama"
                                     name="nama"
                                     className="input"
+                                    disabled={processing}
                                     placeholder="Masukkan nama indikator"
                                 />
                                 <InputError message={errors.nama} className="mt-2" />
@@ -135,17 +194,17 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                                     id="keterangan"
                                     name="keterangan"
                                     className="input"
+                                    disabled={processing}
                                     placeholder="Masukkan keterangan indikator"
                                 />
                                 <InputError message={errors.keterangan} className="mt-2" />
-
                             </div>
                         </div>
                         <DialogFooter>
                             <Button type="button" variant="secondary" onClick={() => setIsOpenDialog(false)}>
                                 Batal
                             </Button>
-                            <Button type="submit">Simpan</Button>
+                            <Button type="submit">{processing && <LoaderCircle className="h-4 w-4 animate-spin" />}Simpan</Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
