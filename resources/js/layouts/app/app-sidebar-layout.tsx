@@ -19,6 +19,7 @@ export default function AppSidebarLayout({ children, breadcrumbs = [] }: PropsWi
     const navigationItems = [
         { title: 'Dashboard', href: '/dashboard', icon: BarChart3 },
         { title: 'Indikator', href: '/admin/indikator', icon: Database },
+        { title: 'Data-Panen', href: '/admin/hasil-panen', icon: Database },
     ];
 
     const page = usePage<SharedData>();

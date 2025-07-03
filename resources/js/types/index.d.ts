@@ -52,3 +52,15 @@ export interface IndikatorTypes {
     keterangan: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export interface HasilPanenTypes {
+    id: number | null;
+    bulan: string;
+    tahun: number;
+    total_panen: string;
+    eucheuma_conttoni: string;
+    gracilaria_sp: string;
+    hasil_panen: string;
+    keterangan: string | null;
+    [key: string]: unknown; // This allows for additional properties...
+}

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HasilPanenController;
 use App\Http\Controllers\IndikatorController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,6 +24,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/{indikator}/edit', 'edit')->name('edit');
                 Route::put('/{indikator}', 'update')->name('update');
                 Route::delete('/{indikator}', 'destroy')->name('destroy');
+            });
+        });
+
+
+        Route::group(['prefix' => 'hasil-panen', 'as' => 'hasilPanen.'], function () {
+            Route::controller(HasilPanenController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{hasilPanen}/edit', 'edit')->name('edit');
+                Route::put('/{hasilPanen}', 'update')->name('update');
+                Route::delete('/{hasilPanen}', 'destroy')->name('destroy');
             });
         });
     });
