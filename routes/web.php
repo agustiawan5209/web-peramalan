@@ -33,6 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/create', 'create')->name('create');
                 Route::post('/', 'store')->name('store');
+                Route::get('/{hasilPanen}/show', 'show')->name('show');
                 Route::get('/{hasilPanen}/edit', 'edit')->name('edit');
                 Route::put('/{hasilPanen}', 'update')->name('update');
                 Route::delete('/{hasilPanen}', 'destroy')->name('destroy');

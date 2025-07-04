@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, IndikatorTypes } from '@/types';
+import { BreadcrumbItem, HasilPanenTypes, IndikatorTypes, ParameterHasilPanenTypes } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 
 type JenisRumputLaut = {
@@ -42,37 +42,23 @@ const opsiArus = ['Sangat Kuat', 'Kuat', 'Sedang', 'Lemah', 'Sangat Lemah'];
 const opsiNutrisi = ['Melimpah', 'Cukup', 'Terbatas', 'Sangat Sedikit'];
 
 interface PropsPanenRumputLaut {
+    hasilPanen: HasilPanenTypes;
     breadcrumb: BreadcrumbItem[];
     indikator: IndikatorTypes[];
     titlePage?: string;
 }
 
-export default function FormPanenRumputLaut({ breadcrumb, indikator, titlePage }: PropsPanenRumputLaut) {
+export default function EditPanenRumputLaut({ hasilPanen, breadcrumb, indikator, titlePage }: PropsPanenRumputLaut) {
     const breadcrumbs: BreadcrumbItem[] = breadcrumb ? breadcrumb.map((item) => ({ title: item.title, href: item.href })) : [];
-    const { data, setData, post, processing, errors } = useForm<DataPanen>({
-        bulan: '',
-        tahun: new Date().getFullYear().toString(),
-        total_panen: 0,
-        jenisRumputLaut: [
-            { nama: 'eucheuma_conttoni', jumlah: 0 },
-            { nama: 'gracilaria_sp', jumlah: 0 },
-        ],
-        parameter: {
-            panjangGarisPantai: 0,
-            jumlahPetani: 0,
-            luasPotensi: 0,
-            luasTanam: 0,
-            jumlahTali: 0,
-            jumlahBibit: 0,
-            suhuAir: 0,
-            salinitas: 0,
-            kejernihanAir: '',
-            cahayaMatahari: '',
-            arusAir: '',
-            kedalamanAir: 0,
-            phAir: 0,
-            ketersediaanNutrisi: '',
-        },
+
+    const jenisRumputLaut: Array<{ nama: string; jumlah: number }> = JSON.parse(hasilPanen.jenisRumputLaut);
+    const parameter: ParameterHasilPanenTypes = JSON.parse(hasilPanen.parameter);
+    const { data, setData, put, processing, errors } = useForm<DataPanen>({
+        bulan: hasilPanen.bulan,
+        tahun: hasilPanen.tahun,
+        total_panen: hasilPanen.total_panen,
+        jenisRumputLaut: jenisRumputLaut,
+        parameter: parameter,
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -109,7 +95,7 @@ export default function FormPanenRumputLaut({ breadcrumb, indikator, titlePage }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Tambahkan logika submit di sini
-        post(route('admin.hasilPanen.store'), {
+        put(route('admin.hasilPanen.update', {hasilPanen: hasilPanen.id}), {
             onError: (err) => {
                 console.log(err);
             },
@@ -139,9 +125,9 @@ export default function FormPanenRumputLaut({ breadcrumb, indikator, titlePage }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={titlePage ?? 'Input Data Panen Rumput Laut'} />
+            <Head title={titlePage ?? 'Edit Data Panen Rumput Laut'} />
             <div className="mx-auto max-w-7xl rounded-xl border border-gray-100 bg-white p-6 shadow">
-                <h1 className="mb-6 text-center text-xl font-semibold text-primary">Input Data Panen Rumput Laut</h1>
+                <h1 className="mb-6 text-center text-xl font-semibold text-primary">Edit Data Panen Rumput Laut</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Informasi Dasar */}
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -192,7 +178,7 @@ export default function FormPanenRumputLaut({ breadcrumb, indikator, titlePage }
                                         name={`jenisRumputLaut.${index}.nama`}
                                         value={jenis.nama}
                                         onChange={handleChange}
-                                        className="input-minimal w-32 "
+                                        className="input-minimal w-32"
                                         readOnly
                                         placeholder={`Jenis ${index + 1}`}
                                     />

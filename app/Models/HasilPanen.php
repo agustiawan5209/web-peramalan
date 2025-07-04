@@ -14,17 +14,14 @@ class HasilPanen extends Model
         "bulan",
         "tahun",
         "total_panen",
-        "eucheuma_conttoni",
-        "gracilaria_sp",
-        "hasil_panen",
+        "jenisRumputLaut",
+        "parameter",
         "keterangan",
     ];
 
     protected $casts = [
         // "tanggal_panen" => "date",
-        // "jumlah_panen" => "integer",
-        "eucheuma_conttoni" => "float",
-        "gracilaria_sp" => "float",
-        "hasil_panen" => "json",
+        "jenisRumputLaut" => "array",
+        "parameter" => "json",
     ];
 }

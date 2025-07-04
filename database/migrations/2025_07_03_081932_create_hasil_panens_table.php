@@ -17,9 +17,8 @@ return new class extends Migration
             $table->integer('tahun');
             $table->string('total_panen', 30)
                 ->comment('Total panen dalam satuan kg');
-            $table->string('eucheuma_conttoni', 30);
-            $table->string('gracilaria_sp', 30);
-            $table->json('hasil_panen')
+            $table->json('jenisRumputLaut');
+            $table->json('parameter')
                 ->comment('Hasil panen dalam format JSON');
             $table->text('keterangan')
                 ->nullable();

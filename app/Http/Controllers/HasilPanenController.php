@@ -40,7 +40,7 @@ class HasilPanenController extends Controller
     public function create()
     {
         return Inertia::render('admin/hasilPanen/create', [
-            'indikator'=> Indikator::all(),
+            'indikator' => Indikator::all(),
             'breadcrumb' => array_merge(self::BASE_BREADCRUMB, [
                 ['title' => 'tambah', 'href' => '/admin/hasil-panen/create'],
             ]),
@@ -53,11 +53,19 @@ class HasilPanenController extends Controller
      */
     public function store(StoreHasilPanenRequest $request)
     {
+        $data =  [
+            "bulan"=> $request->bulan,
+            "tahun"=>$request->tahun,
+            "total_panen"=> $request->total_panen,
+            "jenisRumputLaut"=>  json_encode($request->jenisRumputLaut),
+            "parameter"=> json_encode($request->parameter),
+            "keterangan"=> "TEST",
+        ];
         $databaseHelper = App::make('databaseHelper');
         return $databaseHelper(
-            operation: fn() => HasilPanen::create($request->validated()),
+            operation: fn() => HasilPanen::create($data),
             successMessage: 'Hasil Panen Berhasil Ditambahkan!',
-            redirectRoute: 'admin.hasilpanen.index'
+            redirectRoute: 'admin.hasilPanen.index'
         );
     }
 
@@ -69,6 +77,13 @@ class HasilPanenController extends Controller
         return Inertia::render('admin/hasilPanen/show', [
             'hasilPanen' => $hasilPanen,
             'indikator' => Indikator::all(),
+            'breadcrumb'=> array_merge(self::BASE_BREADCRUMB, [
+                [
+                    'title'=> 'detail',
+                    'href'=> `/admin/hasil-panen/$hasilPanen->id/show`,
+                ]
+                ]),
+            'titlePage'=> 'Detail',
         ]);
     }
 
@@ -77,9 +92,13 @@ class HasilPanenController extends Controller
      */
     public function edit(HasilPanen $hasilPanen)
     {
-         return Inertia::render('admin/hasilPanen/edit', [
+        return Inertia::render('admin/hasilPanen/edit', [
             'hasilPanen' => $hasilPanen,
             'indikator' => Indikator::all(),
+            'breadcrumb' => array_merge(self::BASE_BREADCRUMB, [
+                ['title' => 'edit', 'href' => '/admin/hasil-panen/edit/' . $hasilPanen->id],
+            ]),
+            'titlePage' => 'Edit Hasil Panen',
         ]);
     }
 
@@ -88,11 +107,19 @@ class HasilPanenController extends Controller
      */
     public function update(UpdateHasilPanenRequest $request, HasilPanen $hasilPanen)
     {
+         $data =  [
+            "bulan"=> $request->bulan,
+            "tahun"=>$request->tahun,
+            "total_panen"=> $request->total_panen,
+            "jenisRumputLaut"=>  json_encode($request->jenisRumputLaut),
+            "parameter"=> json_encode($request->parameter),
+            "keterangan"=> "TEST",
+        ];
         $databaseHelper = App::make('databaseHelper');
         return $databaseHelper(
-            operation: fn() =>$hasilPanen->update($request->validated()),
+            operation: fn() => $hasilPanen->update($data),
             successMessage: 'Hasil Panen Berhasil Diperbarui!',
-            redirectRoute: 'admin.hasilpanen.index'
+            redirectRoute: 'admin.hasilPanen.index'
         );
     }
 
@@ -105,7 +132,7 @@ class HasilPanenController extends Controller
         return $databaseHelper(
             operation: fn() => $hasilPanen->delete(),
             successMessage: 'Hasil Panen Berhasil Dihapus!',
-            redirectRoute: 'admin.hasilpanen.index'
+            redirectRoute: 'admin.hasilPanen.index'
         );
     }
 }

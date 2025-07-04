@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, HasilPanenTypes } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { EyeIcon, PenBoxIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 interface IndikatorIndexProps {
     hasilPanen: {
@@ -45,6 +46,7 @@ export default function IndikatorIndex({ hasilPanen, breadcrumb, titlePage }: In
                                     <TableHead className="cursor-pointer">no</TableHead>
                                     <TableHead className="cursor-pointer">bulan</TableHead>
                                     <TableHead className="cursor-pointer">tahun</TableHead>
+                                    <TableHead className="cursor-pointer">total_panen</TableHead>
                                     <TableHead className="cursor-pointer">Aksi</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -55,6 +57,7 @@ export default function IndikatorIndex({ hasilPanen, breadcrumb, titlePage }: In
                                             <TableCell>{index + 1}</TableCell>
                                             <TableCell>{item.bulan}</TableCell>
                                             <TableCell>{item.tahun}</TableCell>
+                                            <TableCell>{item.total_panen}</TableCell>
                                             <TableCell>
                                                 <div className="flex flex-row items-center gap-2">
                                                     <DeleteConfirmationForm
@@ -63,6 +66,16 @@ export default function IndikatorIndex({ hasilPanen, breadcrumb, titlePage }: In
                                                         url={'admin.hasilPanen.destroy'}
                                                         setOpenDialog={setisDeleteDialog}
                                                     />
+                                                    <Link href={route('admin.hasilPanen.show', {hasilPanen: item.id})}>
+                                                    <Button variant={'default'} type='button' className='bg-chart-1'>
+                                                        <EyeIcon size={4} />
+                                                    </Button>
+                                                    </Link>
+                                                    <Link href={route('admin.hasilPanen.edit', {hasilPanen: item.id})}>
+                                                    <Button variant={'default'} type='button' className='bg-chart-4'>
+                                                        <PenBoxIcon size={4} />
+                                                    </Button>
+                                                    </Link>
                                                 </div>
                                             </TableCell>
                                         </TableRow>

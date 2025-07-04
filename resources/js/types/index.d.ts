@@ -56,11 +56,31 @@ export interface IndikatorTypes {
 export interface HasilPanenTypes {
     id: number | null;
     bulan: string;
-    tahun: number;
-    total_panen: string;
-    eucheuma_conttoni: string;
-    gracilaria_sp: string;
-    hasil_panen: string;
-    keterangan: string | null;
+    tahun: string;
+    total_panen: number;
+    jenisRumputLaut: string;
+    parameter: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+export interface ParameterHasilPanenTypes {
+    panjangGarisPantai: number;
+    jumlahPetani: number;
+    luasPotensi: number;
+    luasTanam: number;
+    jumlahTali: number;
+    jumlahBibit: number;
+    suhuAir: number;
+    salinitas: number;
+    kejernihanAir: string;
+    cahayaMatahari: string;
+    arusAir: string;
+    kedalamanAir: number;
+    phAir: number;
+    ketersediaanNutrisi: string;
+}
+
+export interface SeaweedType {
+    nama: string;
+    jumlah: number;
+};
+
