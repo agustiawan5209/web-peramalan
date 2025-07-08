@@ -1,4 +1,5 @@
 import { DeleteConfirmationForm } from '@/components/delete-confirmation-form';
+import PaginationTable from '@/components/pagination-table';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -9,7 +10,23 @@ import { EyeIcon, PenBoxIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 interface IndikatorIndexProps {
     hasilPanen: {
+        current_page: number;
         data: HasilPanenTypes[];
+        first_page_url: string;
+        from: number;
+        last_page: number;
+        last_page_url: string;
+        next_page_url?: string;
+        path: string;
+        per_page: number;
+        prev_page_url: string;
+        to: number;
+        total: number;
+        links: {
+            url: string | null;
+            label: string;
+            active: boolean;
+        }[];
     };
     breadcrumb?: BreadcrumbItem[];
     titlePage?: string;
@@ -89,6 +106,9 @@ export default function IndikatorIndex({ hasilPanen, breadcrumb, titlePage }: In
                                 )}
                             </TableBody>
                         </Table>
+                    </div>
+                    <div className="flex items-center justify-between mt-4">
+                    <PaginationTable links={hasilPanen.links} data={hasilPanen} />
                     </div>
                 </div>
             </Card>
