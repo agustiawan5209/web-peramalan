@@ -13,6 +13,7 @@ class HasilPanenSeeder extends Seeder
      */
     public function run(): void
     {
+        $tahun = ['2023', '2024', '2025'];
         $bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         $hasil_panens = array(
             array(
@@ -43,33 +44,35 @@ class HasilPanenSeeder extends Seeder
             ),
         );
 
-        foreach($bulan as $key=> $value){
-            HasilPanen::create([
-                "bulan" => $value,
-                "tahun" => 2024,
-                "total_panen" => fake()->numberBetween(1000, 5000),
-                "jenisRumputLaut" => json_encode([
-                    ["nama" => "eucheuma_conttoni", "jumlah" => fake()->numberBetween(500, 2000)],
-                    ["nama" => "gracilaria_sp", "jumlah" => fake()->numberBetween(500, 2000)]
-                ]),
-                "parameter" => json_encode([
-                    "panjangGarisPantai" => fake()->numberBetween(1, 10),
-                    "jumlahPetani" => fake()->numberBetween(50, 500),
-                    "luasPotensi" => fake()->numberBetween(1, 10),
-                    "luas_tanam"=> fake()->numberBetween(3,8),
-                    "jumlahTali"=>   fake()->numberBetween(500, 2000),
-                    "jumlahBibit"=>   fake()->numberBetween(500, 2000),
-                    "suhuAir"=>   fake()->numberBetween(30, 35),
-                    "salinitas"=> fake()->numberBetween(10, 50),
-                    "kejernihanAir"=> fake()->randomElement(['Sangat Jernih', 'Jernih', 'Agak Keruh', 'Keruh', 'Sangat Keruh']),
-                    "cahayaMatahari"=> fake()->randomElement(['Sangat Cerah', 'Cerah', 'Berawan', 'Mendung', 'Gelap']),
-                    "arusAir"=> fake()->randomElement(['Sangat Cerah', 'Cerah', 'Berawan', 'Mendung', 'Gelap']),
-                    "kedalamanAir"=> fake()->numberBetween(2,7),
-                    "pHAir"=> fake()->numberBetween(3,8),
-                    "ketersediaanNutrisi"=> fake()->randomElement( ['Melimpah', 'Cukup', 'Terbatas', 'Sangat Sedikit']),
-                ]),
+        foreach ($tahun as $val_tahun) {
+            foreach ($bulan as $key => $value) {
+                HasilPanen::create([
+                    "bulan" => $value,
+                    "tahun" => $val_tahun,
+                    "total_panen" => fake()->numberBetween(1000, 5000),
+                    "jenisRumputLaut" => json_encode([
+                        ["nama" => "eucheuma_conttoni", "jumlah" => fake()->numberBetween(500, 2000)],
+                        ["nama" => "gracilaria_sp", "jumlah" => fake()->numberBetween(500, 2000)]
+                    ]),
+                    "parameter" => json_encode([
+                        "panjangGarisPantai" => fake()->numberBetween(1, 10),
+                        "jumlahPetani" => fake()->numberBetween(50, 500),
+                        "luasPotensi" => fake()->numberBetween(1, 10),
+                        "luasTanam" => fake()->numberBetween(3, 8),
+                        "jumlahTali" =>   fake()->numberBetween(500, 2000),
+                        "jumlahBibit" =>   fake()->numberBetween(500, 2000),
+                        "suhuAir" =>   fake()->numberBetween(30, 35),
+                        "salinitas" => fake()->numberBetween(10, 50),
+                        "kejernihanAir" => fake()->randomElement(['Sangat Jernih', 'Jernih', 'Agak Keruh', 'Keruh', 'Sangat Keruh']),
+                        "cahayaMatahari" => fake()->randomElement(['Sangat Cerah', 'Cerah', 'Berawan', 'Mendung', 'Gelap']),
+                        "arusAir" => fake()->randomElement(['Sangat Cerah', 'Cerah', 'Berawan', 'Mendung', 'Gelap']),
+                        "kedalamanAir" => fake()->numberBetween(2, 7),
+                        "pHAir" => fake()->numberBetween(3, 8),
+                        "ketersediaanNutrisi" => fake()->randomElement(['Melimpah', 'Cukup', 'Terbatas', 'Sangat Sedikit']),
+                    ]),
 
-            ]);
+                ]);
+            }
         }
     }
 }

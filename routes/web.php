@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\FPGrowthController;
 use App\Http\Controllers\HasilPanenController;
 use App\Http\Controllers\IndikatorController;
+use App\Http\Controllers\PredictionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -38,6 +40,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::put('/{hasilPanen}', 'update')->name('update');
                 Route::delete('/{hasilPanen}', 'destroy')->name('destroy');
             });
+        });
+    });
+
+    Route::group(['prefix'=> 'fpgrowth', 'as'=> 'fpgrowth.'], function(){
+        Route::controller(FPGrowthController::class)->group(function(){
+            Route::get('/', 'index')->name('index');
+        });
+    });
+    Route::group(['prefix'=> 'prediction', 'as'=> 'prediction.'], function(){
+        Route::controller(PredictionController::class)->group(function(){
+            Route::get('/', 'index')->name('index');
         });
     });
 });

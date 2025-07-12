@@ -14,12 +14,14 @@ import { NavigationButtons } from '@/components/ui/navigation-menu-button';
 
 export default function AppSidebarLayout({ children, breadcrumbs = [] }: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[] }>) {
     const activeSection = usePage().url.split('/').pop() || 'Dashboard';
-    console.log('Active Section:', activeSection);
+    // console.log('Active Section:', activeSection);
 
     const navigationItems = [
         { title: 'Dashboard', href: '/dashboard', icon: BarChart3 },
         { title: 'Indikator', href: '/admin/indikator', icon: IndentIcon },
         { title: 'Data-Panen', href: '/admin/hasil-panen', icon: Database },
+        { title: 'Pola-Asosiasi', href: '/fpgrowth', icon: Database },
+        { title: 'Regresi Linear Berganda', href: '/prediction', icon: Database },
     ];
 
     const page = usePage<SharedData>();
