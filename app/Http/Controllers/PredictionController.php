@@ -49,7 +49,7 @@ class PredictionController extends Controller
                 'gracilaria_sp' => $gracilaria_sp['jumlah'],
             ];
 
-            return array_values($data);
+            return $data;
         });
         return Inertia::render('prediction/index', [
             'breadcrumb' => self::BASE_BREADCRUMS,
