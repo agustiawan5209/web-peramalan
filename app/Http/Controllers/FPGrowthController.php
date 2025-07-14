@@ -23,7 +23,8 @@ class FPGrowthController extends Controller
         $panen = HasilPanen::all();
         $transaction = $panen->map(function ($item) {
             $tr = json_decode($item->parameter, true);
-            // dd($tr);
+            $jenis = json_decode($item->jenisRumputLaut, true);
+            // dd($jenis);
             $data = [
                 'panjangGarisPantai' => $this->bin_panjang_garis_pantai($tr['panjangGarisPantai']),
                 'jumlahPetani' => $this->bin_petani_rumput_laut($tr['jumlahPetani']),
@@ -39,11 +40,12 @@ class FPGrowthController extends Controller
                 'kedalamanAir' => $this->bin_kedalaman_air($tr['kedalamanAir']),
                 'ketersediaanNutrisi' => $this->bin_ketersediaan_nutrigen($tr['ketersediaanNutrisi']),
                 'arusAir' => $this->bin_arus_air($tr['arusAir']),
-                // 'panen' => $this->bin_panen($tr['panen']),
+                'panen' => $this->bin_panen($jenis[0]['jumlah']),
             ];
 
             return array_values($data);
         });
+        // dd($transaction);
         return Inertia::render('fpgrowth/index', [
             'breadcrumb' => self::BASE_BREADCRUMS,
             'titlePage' => 'Prediksi Panen',

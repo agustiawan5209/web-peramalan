@@ -76,7 +76,7 @@
     --card-foreground: #1F2937; /* Dark gray */
     --popover: #FFFFFF; /* White */
     --popover-foreground: #1F2937; /* Dark gray */
-    --primary: #3B82F6; /* Blue */
+    --primary: oklch(0.6 0.118 184.704); /* Blue */
     --primary-foreground: #FFFFFF; /* White */
     --secondary: #6B7280; /* Gray */
     --secondary-foreground: #FFFFFF; /* White */
@@ -112,7 +112,7 @@
     --card-foreground: #F9FAFB; /* Light gray */
     --popover: #1F2937; /* Dark gray */
     --popover-foreground: #F9FAFB; /* Light gray */
-    --primary: #3B82F6; /* Blue */
+    --primary: oklch(0.6 0.118 184.704); /* Blue */
     --primary-foreground: #FFFFFF; /* White */
     --secondary: #9CA3AF; /* Gray */
     --secondary-foreground: #F9FAFB; /* Light gray */
