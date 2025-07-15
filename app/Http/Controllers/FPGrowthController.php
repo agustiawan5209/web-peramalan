@@ -40,7 +40,7 @@ class FPGrowthController extends Controller
                 'kedalamanAir' => $this->bin_kedalaman_air($tr['kedalamanAir']),
                 'ketersediaanNutrisi' => $this->bin_ketersediaan_nutrigen($tr['ketersediaanNutrisi']),
                 'arusAir' => $this->bin_arus_air($tr['arusAir']),
-                'panen' => $this->bin_panen($jenis[0]['jumlah']),
+                'panen' => $this->bin_panen($jenis[0]['jumlah'] + $jenis[1]['jumlah']),
             ];
 
             return array_values($data);
@@ -48,7 +48,7 @@ class FPGrowthController extends Controller
         // dd($transaction);
         return Inertia::render('fpgrowth/index', [
             'breadcrumb' => self::BASE_BREADCRUMS,
-            'titlePage' => 'Prediksi Panen',
+            'titlePage' => 'Fp-growth Panen',
             'transaksiPanen' => $transaction,
         ]);
     }
@@ -153,9 +153,9 @@ class FPGrowthController extends Controller
 
     private function bin_panen($panen): string
     {
-        if ($panen < 4500) {
+        if ($panen < 2000) {
             return "Panen_Rendah";
-        } elseif ($panen <= 4800) {
+        } elseif ($panen <= 2600) {
             return "Panen_Sedang";
         } else {
             return "Panen_Tinggi";
