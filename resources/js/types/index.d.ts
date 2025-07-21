@@ -67,23 +67,10 @@ export interface HasilPanenTypes {
     parameter: {indikator_id: number; nilai: string | null}[];
     [key: string]: unknown; // This allows for additional properties...
 }
-export interface ParameterHasilPanenTypes {
-    panjangGarisPantai: number;
-    jumlahPetani: number;
-    luasPotensi: number;
-    luasTanam: number;
-    jumlahTali: number;
-    jumlahBibit: number;
-    suhuAir: number;
-    salinitas: number;
-    kejernihanAir: string;
-    cahayaMatahari: string;
-    arusAir: string;
-    kedalamanAir: number;
-    phAir: number;
-    ketersediaanNutrisi: string;
+export interface ParameterTransaction {
+    indikator_id: number;
+    nilai: string | null;
 }
-
 export interface SeaweedType {
     nama: string;
     jumlah: number;

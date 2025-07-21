@@ -45,10 +45,9 @@ interface PropsPanenRumputLaut {
     parameter: ParameterTransaction[];
     indikator: IndikatorTypes[];
     handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    handleSelectChange: (name: string, value: string) => void;
 }
 
-export default function FormPanen({ parameter, indikator, handleChange, handleSelectChange }: PropsPanenRumputLaut) {
+export default function FormPanen({ parameter, indikator, handleChange }: PropsPanenRumputLaut) {
     return (
         <>
             <div className="block">
