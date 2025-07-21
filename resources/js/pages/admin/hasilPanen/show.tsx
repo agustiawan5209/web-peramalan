@@ -35,10 +35,14 @@ export default function HarvestDetailPage({ hasilPanen, breadcrumb, indikator, t
         [breadcrumb],
     );
     const [data] = useState<HasilPanenTypes>(hasilPanen);
-    const jenisRumputLaut: Array<{ nama: string; jumlah: number }> = JSON.parse(data.jenisRumputLaut);
-    const parameter: ParameterTypes[] = JSON.parse(hasilPanen.parameter);
-
-    const findNameParameter = (value: (number | string)) => {
+    const jenisRumputLaut: Array<{ nama: string; jumlah: number }> = data.jenisRumputLaut as Array<{ nama: string; jumlah: number }>;
+    const parameter: ParameterTypes[] = hasilPanen.parameter
+        ? hasilPanen.parameter.map((item) => ({
+              indikator_id: item.indikator_id,
+              nilai: item.nilai ?? '', // add a default value if nilai is null
+          }))
+        : [];
+    const findNameParameter = (value: number | string) => {
         return indikator.filter((item) => item.id == Number(value))[0].nama;
     };
     return (

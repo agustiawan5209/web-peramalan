@@ -22,7 +22,7 @@ export const DeleteConfirmationForm = ({ url, title, id }: DeleteConfirmationFor
     const deleteSubmit = () => {
         console.log('delete', id)
         if (id) {
-            destroy(route(url, {indikator: id}), {
+            destroy(url, {
                 preserveState: true,
                 onSuccess: () => {},
                 onError: (errors) => {

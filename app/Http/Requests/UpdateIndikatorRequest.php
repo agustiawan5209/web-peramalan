@@ -24,6 +24,7 @@ class UpdateIndikatorRequest extends FormRequest
         return [
             "nama"=> "required|string|max:50|unique:indikators,nama," . $this->route('indikator')->id,
             "keterangan"=> "required|string|max:255",
+            "attribut"=> 'required',
         ];
     }
 }

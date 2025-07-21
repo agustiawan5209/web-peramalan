@@ -50,6 +50,11 @@ export interface IndikatorTypes {
     id: number;
     nama: string;
     keterangan: string;
+    attribut: {
+        batas: number;
+        operator: string;
+        nilai: string;
+    }[];
     [key: string]: unknown; // This allows for additional properties...
 }
 
@@ -58,8 +63,8 @@ export interface HasilPanenTypes {
     bulan: string;
     tahun: string;
     total_panen: number;
-    jenisRumputLaut: string;
-    parameter: string;
+    jenisRumputLaut: {nama: string; jumlah: number}[];
+    parameter: {indikator_id: number; nilai: string | null}[];
     [key: string]: unknown; // This allows for additional properties...
 }
 export interface ParameterHasilPanenTypes {

@@ -13,23 +13,109 @@ class IndikatorSeeder extends Seeder
      */
     public function run(): void
     {
+
         $indikators = array(
-            array('nama' => 'Panjang garis pantai', 'keterangan' => 'tes', 'created_at' => '2025-07-03 08:26:48', 'updated_at' => '2025-07-03 08:26:48'),
-            array('nama' => 'Petani rumput laut', 'keterangan' => 'jumlah Petani rumput laut', 'created_at' => '2025-07-03 08:26:59', 'updated_at' => '2025-07-03 08:26:59'),
-            array('nama' => 'Potensi luas lahan (Ha)', 'keterangan' => 'Potensi luas lahan (Ha)', 'created_at' => '2025-07-03 08:27:07', 'updated_at' => '2025-07-03 08:27:07'),
-            array('nama' => 'Luas tanam (Ha)', 'keterangan' => 'Luas tanam (Ha)', 'created_at' => '2025-07-03 08:28:57', 'updated_at' => '2025-07-03 08:28:57'),
-            array('nama' => 'Jumlah bentangan', 'keterangan' => 'Jumlah bentangan', 'created_at' => '2025-07-03 08:27:24', 'updated_at' => '2025-07-03 08:27:24'),
-            array('nama' => 'Jumlah bibit', 'keterangan' => 'Jumlah bibit', 'created_at' => '2025-07-03 08:27:32', 'updated_at' => '2025-07-03 08:27:32'),
-            array('nama' => 'Suhu air', 'keterangan' => 'Suhu air', 'created_at' => '2025-07-03 08:27:40', 'updated_at' => '2025-07-03 08:27:40'),
-            array('nama' => 'Salinitas (kadar garam)', 'keterangan' => 'Salinitas (kadar garam)', 'created_at' => '2025-07-03 08:27:49', 'updated_at' => '2025-07-03 08:27:49'),
-            array('nama' => 'Kejernian / kekeruhan ai', 'keterangan' => 'Kejernian / kekeruhan ai', 'created_at' => '2025-07-03 08:27:57', 'updated_at' => '2025-07-03 08:27:57'),
-            array('nama' => 'Cahaya matahari', 'keterangan' => 'Cahaya matahari', 'created_at' => '2025-07-03 08:28:04', 'updated_at' => '2025-07-03 08:28:04'),
-            array('nama' => 'Arus air', 'keterangan' => 'Arus air', 'created_at' => '2025-07-03 08:28:11', 'updated_at' => '2025-07-03 08:28:11'),
-            array('nama' => 'Kedalam air', 'keterangan' => 'Kedalam air', 'created_at' => '2025-07-03 08:28:18', 'updated_at' => '2025-07-03 08:28:18'),
-            array('nama' => 'Ph air', 'keterangan' => 'Ph air', 'created_at' => '2025-07-03 08:28:25', 'updated_at' => '2025-07-03 08:28:25'),
-            array('nama' => 'Ketersediaan nutrien', 'keterangan' => 'Ketersediaan nutrien', 'created_at' => '2025-07-03 08:28:32', 'updated_at' => '2025-07-03 08:28:32'),
+            array(
+
+                "nama" => "Potensi Luas Lahan (Ha)",
+                "keterangan" => "Potensi Luas Lahan (Ha)",
+                "attribut" => [
+                    [
+                        "batas" => "150",
+                        "operator" => "<",
+                        "nilai" => "potensi_kecil",
+                    ],
+                    ["batas" => "288", "operator" => "<=", "nilai" => "potensi_sedang",],
+                    ["batas" => "288", "operator" => ">", "nilai" => "potensi_tinggi"]
+                ],
+
+            ),
+            array(
+
+                "nama" => "Luas Tanam (Ha)",
+                "keterangan" => "Luas Tanam (Ha)",
+                "attribut" => [
+                    ["batas" => "150", "operator" => "<", "nilai" => "luas_rendah",],
+                    ["batas" => "250", "operator" => "<=", "nilai" => "luas_sedang",],
+                    ["batas" => "250", "operator" => ">", "nilai" => "luas_tinggi"]
+                ],
+
+            ),
+            array(
+
+                "nama" => "Jumlah Bibit Eucheuma Conttoni (Kg)",
+                "keterangan" => "Jumlah Bibit Eucheuma Conttoni",
+                "attribut" => [
+                    ["batas" => "200", "operator" => "<", "nilai" => "conttoni_rendah",],
+                    ["batas" => "478", "operator" => "<=", "nilai" => "conttoni_sedang",],
+                    ["batas" => "478", "operator" => ">", "nilai" => "conttoni_tinggi"]
+                ],
+
+            ),
+            array(
+
+                "nama" => "Jumlah Bibit Eucheuma Spinosom (Kg)",
+                "keterangan" => "Jumlah Bibit Eucheuma Spinosom (KG)",
+                "attribut" => [
+                    ["batas" => "100", "operator" => "<", "nilai" => "spinosom_rendah",],
+                    ["batas" => "227", "operator" => "<=", "nilai" => "spinosom_sedang",],
+                    ["batas" => "227", "operator" => ">", "nilai" => "spinosom_tinggi"]
+                ],
+
+            ),
+            array(
+
+                "nama" => "Jumlah Bentangan",
+                "keterangan" => "jumlah Bentangan",
+                "attribut" => [
+                    ["batas" => "50", "operator" => "<", "nilai" => "bentangan_rendah"],
+                    ["batas" => "150", "operator" => "<=", "nilai" => "bentangan_sedang"],
+                    ["batas" => "150", "operator" => ">", "nilai" => "bentangan_tinggi"]
+                ],
+
+            ),
+            array(
+
+                "nama" => "Petani (RPT)",
+                "keterangan" => "Petani (RPT)",
+                "attribut" => [
+                    ["batas" => "130", "operator" => "<", "nilai" => "petani_rendah"],
+                    ["batas" => "237", "operator" => "<=", "nilai" => "petani_sedang"],
+                    ["batas" => "237", "operator" => ">", "nilai" => "petani_tinggi"]
+                ],
+
+            ),
+            array(
+
+                "nama" => "Suhu Air (*C)",
+                "keterangan" => "Suhu air",
+                "attribut" => [
+                    ["batas" => "25", "operator" => "<", "nilai" => "suhu_rendah"],
+                    ["batas" => "29", "operator" => "<=", "nilai" => "suhu_sedang"],
+                    ["batas" => "29", "operator" => ">", "nilai" => "suhu_tinggi"]
+                ],
+
+            ),
+            array(
+
+                "nama" => "Salinitasi Kadar Garam (Ppt)",
+                "keterangan" => "Salinitasi Kadar Garam (Ppt)",
+                "attribut" => [
+                    ["batas" => "26", "operator" => "<", "nilai" => "salinitas_rendah"],
+                    ["batas" => "33", "operator" => "<=", "nilai" => "salinitas_sedang"],
+                    ["batas" => "33", "operator" => ">", "nilai" => "salinitas_tinggi"]
+                ],
+            ),
         );
 
-        Indikator::insert($indikators);
+
+
+        foreach($indikators as $value){
+            Indikator::create([
+                'nama' => $value['nama'],
+                'keterangan' => $value['keterangan'],
+                'attribut' => $value['attribut'],
+            ]);
+        }
     }
 }

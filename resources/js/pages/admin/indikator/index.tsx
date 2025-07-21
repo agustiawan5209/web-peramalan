@@ -5,21 +5,28 @@ import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, IndikatorTypes } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle, PenBox } from 'lucide-react';
+import { LoaderCircle, PenBox, XIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 interface IndikatorIndexProps {
     indikator: IndikatorTypes[];
     breadcrumb?: BreadcrumbItem[];
     titlePage?: string;
 }
+interface AttributTypes {
+    batas: number;
+    operator: string;
+    nilai: string;
+}
 type indikatorFormData = {
     id: number | null;
     nama: string;
     keterangan: string;
+    attribut: AttributTypes[];
 };
 
 export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: IndikatorIndexProps) {
@@ -32,6 +39,13 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
         id: null,
         nama: '',
         keterangan: '',
+        attribut: [
+            {
+                batas: 0,
+                operator: '',
+                nilai: '',
+            },
+        ],
     });
 
     const [editId, setEditId] = useState<number | null>(null);
@@ -47,6 +61,13 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                         id: null,
                         nama: '',
                         keterangan: '',
+                        attribut: [
+                            {
+                                batas: 0,
+                                operator: '',
+                                nilai: '',
+                            },
+                        ],
                     });
                     setIsOpenDialog(false);
                 },
@@ -55,6 +76,7 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                 },
             });
         } else {
+            console.log(data.attribut);
             put(route('admin.indikator.update', editId), {
                 preserveState: true,
                 onSuccess: () => {
@@ -62,6 +84,13 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                         id: null,
                         nama: '',
                         keterangan: '',
+                        attribut: [
+                            {
+                                batas: 0,
+                                operator: '',
+                                nilai: '',
+                            },
+                        ],
                     });
                     setEditId(null);
                     setIsOpenDialog(false);
@@ -77,13 +106,25 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
 
     const handleEdit = (id: number) => {
         if (id) {
-            const indikatorTemp: IndikatorTypes[] = indikator.filter((item) => item.id === id, []);
-            setEditId(indikatorTemp[0].id);
+            const indikatorTemp: IndikatorTypes = indikator.filter((item) => item.id === id, [])[0];
+            setEditId(indikatorTemp.id);
             if (indikatorTemp) {
+                const parameter: AttributTypes[] =
+                    indikatorTemp.attribut != null
+                        ? indikatorTemp.attribut
+                        : [
+                              {
+                                  batas: 0,
+                                  operator: '',
+                                  nilai: '',
+                              },
+                          ];
+
                 setData({
-                    id: indikatorTemp[0].id,
-                    nama: indikatorTemp[0].nama,
-                    keterangan: indikatorTemp[0].keterangan,
+                    id: indikatorTemp.id,
+                    nama: indikatorTemp.nama,
+                    keterangan: indikatorTemp.keterangan,
+                    attribut: parameter,
                 });
             }
             setIsOpenDialog(true);
@@ -92,6 +133,63 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
 
     const [isDeleteDialog, setisDeleteDialog] = useState(false);
 
+    const [itemsBatas, setItemBatas] = useState(1);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+
+        const key = name.split('.')[1];
+        const nama = name.split('.')[0];
+        console.log(key, nama);
+        setData((prevData) => ({
+            ...prevData,
+            attribut: prevData.attribut.map((item, index) => {
+                if (index === Number(key)) {
+                    return {
+                        ...item,
+                        [nama]: value,
+                    };
+                }
+                return item;
+            }),
+        }));
+    };
+    const addAttribut = () => {
+        if (data.attribut.length < 3) {
+            setData((prevData) => ({
+                ...prevData,
+                attribut: [
+                    ...prevData.attribut,
+                    {
+                        batas: 0,
+                        operator: '',
+                        nilai: '',
+                    },
+                ],
+            }));
+        }
+    };
+    const removeAttribut = (index: number) => {
+        setData((prevData) => ({
+            ...prevData,
+            attribut: prevData.attribut.filter((_, i) => i !== index),
+        }));
+    };
+
+    const handleSelectChange = (key: string, value: string) => {
+        setData((prevData) => ({
+            ...prevData,
+            attribut: prevData.attribut.map((item, index) => {
+                if (index === Number(key)) {
+                    return {
+                        ...item,
+                        operator: value,
+                    };
+                } else {
+                    return item;
+                }
+            }),
+        }));
+    };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={titlePage ?? 'Indikator'} />
@@ -140,7 +238,7 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                                                     <DeleteConfirmationForm
                                                         title={`Hapus indikator ${item.id}`}
                                                         id={item.id}
-                                                        url={'admin.indikator.destroy'}
+                                                        url={route('admin.indikator.destroy', {indikator: item.id})}
                                                         setOpenDialog={setisDeleteDialog}
                                                     />
                                                 </div>
@@ -198,6 +296,75 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                                     placeholder="Masukkan keterangan indikator"
                                 />
                                 <InputError message={errors.keterangan} className="mt-2" />
+                            </div>
+                            <div className="block space-y-2">
+                                {data.attribut.map((item, index) => {
+                                    return (
+                                        <div className="flex items-center" key={index}>
+                                            <div className="">
+                                                <Label htmlFor={'batas.' + index} className="text-sm font-medium">
+                                                    Batas
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name={'batas.' + index}
+                                                    value={data.attribut[index].batas}
+                                                    onChange={handleChange}
+                                                    id={'batas.' + index}
+                                                    className="input"
+                                                    disabled={processing}
+                                                    placeholder="Masukkan batas indikator"
+                                                />
+                                            </div>
+                                            <div className="">
+                                                <Label htmlFor={'operator.' + index} className="text-sm font-medium">
+                                                    Operator
+                                                </Label>
+                                                <Select
+                                                    value={data.attribut[index].operator || ''}
+                                                    required
+                                                    onValueChange={(value) => handleSelectChange(index.toLocaleString(), value)}
+                                                >
+                                                    <SelectTrigger className="input-minimal">
+                                                        <SelectValue placeholder="Pilih" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {['<', '<=', '>'].map((oper: any, index) => (
+                                                            <SelectItem key={index} value={oper}>
+                                                                {oper}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="">
+                                                <Label htmlFor={'nilai.' + index} className="text-sm font-medium">
+                                                    Nilai
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name={'nilai.' + index}
+                                                    value={data.attribut[index].nilai}
+                                                    onChange={handleChange}
+                                                    id={'nilai.' + index}
+                                                    className="input"
+                                                    disabled={processing}
+                                                    placeholder="Masukkan nilai indikator"
+                                                />
+                                            </div>
+                                            <div>
+                                                <Button type="button" variant={'destructive'} size={'sm'} onClick={() => removeAttribut(index)}>
+                                                    {' '}
+                                                    <XIcon />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+
+                                <Button type="button" variant={'outline'} size={'sm'} onClick={addAttribut}>
+                                    + Tambah Operator
+                                </Button>
                             </div>
                         </div>
                         <DialogFooter>

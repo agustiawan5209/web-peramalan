@@ -80,7 +80,7 @@ export default function IndikatorIndex({ hasilPanen, breadcrumb, titlePage }: In
                                                     <DeleteConfirmationForm
                                                         title={`Hapus hasilPanen ${item.id}`}
                                                         id={item.id}
-                                                        url={'admin.hasilPanen.destroy'}
+                                                        url={route('admin.hasilPanen.destroy', {hasilPanen: item.id})}
                                                         setOpenDialog={setisDeleteDialog}
                                                     />
                                                     <Link href={route('admin.hasilPanen.show', {hasilPanen: item.id})}>

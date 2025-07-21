@@ -50,7 +50,7 @@ class HasilPanenController extends Controller
             'breadcrumb' => array_merge(self::BASE_BREADCRUMB, [
                 ['title' => 'tambah', 'href' => '/admin/hasil-panen/create'],
             ]),
-            'jenisRumputLaut'=> self::BASE_JENISRUMPUT_LAUT,
+            'jenisRumputLaut' => self::BASE_JENISRUMPUT_LAUT,
             'titlePage' => 'Tambah Hasil Panen',
         ]);
     }
@@ -64,8 +64,8 @@ class HasilPanenController extends Controller
             "bulan" => $request->bulan,
             "tahun" => $request->tahun,
             "total_panen" => $request->total_panen,
-            "jenisRumputLaut" =>  json_encode($request->jenisRumputLaut),
-            "parameter" => json_encode($request->parameter),
+           "jenisRumputLaut" =>  $request->jenisRumputLaut,
+            "parameter" => $request->parameter,
             "keterangan" => "TEST",
         ];
         $databaseHelper = App::make('databaseHelper');
@@ -118,8 +118,8 @@ class HasilPanenController extends Controller
             "bulan" => $request->bulan,
             "tahun" => $request->tahun,
             "total_panen" => $request->total_panen,
-            "jenisRumputLaut" =>  json_encode($request->jenisRumputLaut),
-            "parameter" => json_encode($request->parameter),
+            "jenisRumputLaut" =>  $request->jenisRumputLaut,
+            "parameter" => $request->parameter,
             "keterangan" => "TEST",
         ];
         $databaseHelper = App::make('databaseHelper');

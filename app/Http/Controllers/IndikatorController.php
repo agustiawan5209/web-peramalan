@@ -79,6 +79,7 @@ class IndikatorController extends Controller
             operation: fn() => Indikator::create([
                 'nama' => $request->nama,
                 'keterangan' => $request->keterangan,
+                'attribut'=> $request->attribut,
             ]),
             successMessage: 'Kategori Berhasil Ditambahkan!',
             redirectRoute: 'admin.indikator.index'
@@ -128,6 +129,7 @@ class IndikatorController extends Controller
             operation: fn() => $indikator->update([
                 'nama'=> $request->nama,
                 'keterangan'=> $request->keterangan,
+                'attribut'=> $request->attribut,
             ]),
             successMessage: 'Kategori Berhasil Di Update!',
             redirectRoute: 'admin.indikator.index'

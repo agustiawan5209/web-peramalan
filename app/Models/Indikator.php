@@ -13,5 +13,10 @@ class Indikator extends Model
     protected $fillable = [
         'nama',
         'keterangan',
+        'attribut',
+    ];
+
+    protected $casts = [
+        'attribut'=> 'json'
     ];
 }
