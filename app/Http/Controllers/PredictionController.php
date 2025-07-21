@@ -27,8 +27,8 @@ class PredictionController extends Controller
             $eucheuma_conttoni = array_values(array_filter($rumputlaut, function ($value) {
                 return $value['nama'] === 'eucheuma_conttoni';
             }, 0))[0] ?? ['jumlah' => 0];
-            $gracilaria_sp = array_values(array_filter($rumputlaut, function ($value) {
-                return $value['nama'] === 'gracilaria_sp';
+            $eucheuma_spinosum = array_values(array_filter($rumputlaut, function ($value) {
+                return $value['nama'] === 'eucheuma_spinosum';
             }, 1))[0] ?? ['jumlah' => 0];
             $data = [
                 'panjangGarisPantai' => $tr['panjangGarisPantai'],
@@ -46,7 +46,7 @@ class PredictionController extends Controller
                 'ketersediaanNutrisi' => $tr['ketersediaanNutrisi'],
                 'arusAir' => $tr['arusAir'],
                 'eucheuma_conttoni' => $eucheuma_conttoni['jumlah'],
-                'gracilaria_sp' => $gracilaria_sp['jumlah'],
+                'eucheuma_spinosum' => $eucheuma_spinosum['jumlah'],
             ];
 
             return $data;

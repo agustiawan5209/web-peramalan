@@ -26,7 +26,7 @@ class UpdateHasilPanenRequest extends FormRequest
             'tahun' => ['required', 'integer', 'digits:4'],
             'total_panen' => ['required', 'string', 'max:30'],
             'jenisRumputLaut' => ['required', 'array'],
-            'jenisRumputLaut.*.nama' => ['required', 'string', 'in:eucheuma_conttoni,gracilaria_sp'],
+            'jenisRumputLaut.*.nama' => ['required', 'string', 'in:eucheuma_conttoni,eucheuma_spinosum'],
             'jenisRumputLaut.*.jumlah' => ['required', 'numeric', 'min:0'],
             'parameter' => ['required'],
             'keterangan' => ['nullable', 'string'],

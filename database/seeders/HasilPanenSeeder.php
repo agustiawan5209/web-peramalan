@@ -21,7 +21,7 @@ class HasilPanenSeeder extends Seeder
                 "bulan" => "Januari",
                 "tahun" => 2024,
                 "total_panen" => "2000",
-                "jenisRumputLaut" => json_encode([["nama" => "eucheuma_conttoni", "jumlah" => 1000], ["nama" => "gracilaria_sp", "jumlah" => 1000]]),
+                "jenisRumputLaut" => json_encode([["nama" => "eucheuma_conttoni", "jumlah" => 1000], ["nama" => "eucheuma_spinosum", "jumlah" => 1000]]),
                 "parameter" =>  json_encode([
                     "panjangGarisPantai" => 4,
                     "jumlahPetani" => 200,
@@ -52,7 +52,7 @@ class HasilPanenSeeder extends Seeder
                     "total_panen" => fake()->numberBetween(1000, 5000),
                     "jenisRumputLaut" => json_encode([
                         ["nama" => "eucheuma_conttoni", "jumlah" => fake()->numberBetween(500, 2000)],
-                        ["nama" => "gracilaria_sp", "jumlah" => fake()->numberBetween(500, 2000)]
+                        ["nama" => "eucheuma_spinosum", "jumlah" => fake()->numberBetween(500, 2000)]
                     ]),
                     "parameter" => json_encode([
                         "panjangGarisPantai" => fake()->numberBetween(1, 10),

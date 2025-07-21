@@ -19,7 +19,7 @@ interface Transaction {
     pHAir: number;
     ketersediaanNutrisi: string;
     eucheuma_conttoni: number;
-    gracilaria_sp: number;
+    eucheuma_spinosum: number;
 }
 interface MultipleLinearRegressionProps {
     transaction: Transaction[];
@@ -76,7 +76,7 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
         'pHAir',
         'ketersediaanNutrisi',
         'eucheuma_conttoni',
-        'gracilaria_sp',
+        'eucheuma_spinosum',
     ];
     useEffect(() => {
         // Inisialisasi modelEucheuma saat komponen mount
@@ -187,9 +187,9 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
     const outputMax = Math.max(...outputValues);
     const Ydataeucheuma_conttoni = data.map((point) => point.eucheuma_conttoni);
 
-    const Ydatagracilaria_sp = data.map((point) => point.gracilaria_sp);
+    const Ydataeucheuma_spinosum = data.map((point) => point.eucheuma_spinosum);
     const ysEuchuma = tf.tensor2d(data.map((point) => [normalize(point.eucheuma_conttoni, outputMin, outputMax)]));
-    const ysGlacilaria = tf.tensor2d(data.map((point) => [normalize(point.gracilaria_sp, outputMin, outputMax)]));
+    const ysGlacilaria = tf.tensor2d(data.map((point) => [normalize(point.eucheuma_spinosum, outputMin, outputMax)]));
 
     const trainModel = async () => {
         if (!modelEucheuma || !modelGraacilaria) return;
@@ -264,7 +264,7 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
         pHAir: 8,
         ketersediaanNutrisi: 'Terbatas',
         eucheuma_conttoni: 687,
-        gracilaria_sp: 1.303,
+        eucheuma_spinosum: 1.303,
     });
 
     const [mse, setMSE] = useState<number | null>(null);
@@ -361,8 +361,8 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
 
     return (
         <>
-            <section className="mb-10 rounded-2xl bg-gradient-to-br from-white via-gray-50 to-gray-100 p-8 shadow-xl border border-gray-200">
-                <h2 className="mb-8 text-2xl font-bold text-gray-900 tracking-tight">Input Parameter</h2>
+            <section className="mb-10 rounded-2xl border border-gray-200 bg-gradient-to-br from-white via-gray-50 to-gray-100 p-8 shadow-xl">
+                <h2 className="mb-8 text-2xl font-bold tracking-tight text-gray-900">Input Parameter</h2>
                 <form
                     className="grid grid-cols-1 gap-8 md:grid-cols-2"
                     onSubmit={(e) => {
@@ -377,11 +377,11 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
                             variant="default"
                             onClick={trainModel}
                             disabled={training}
-                            className="rounded-lg bg-blue-600 text-white font-semibold px-6 py-2 shadow hover:bg-blue-700 transition"
+                            className="rounded-lg bg-blue-600 px-6 py-2 font-semibold text-white shadow transition hover:bg-blue-700"
                         >
                             {training ? (
                                 <span className="flex items-center gap-2">
-                                    <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-white border-opacity-50"></span>
+                                    <span className="border-opacity-50 h-4 w-4 animate-spin rounded-full border-t-2 border-white"></span>
                                     Training...
                                 </span>
                             ) : (
@@ -391,7 +391,7 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
                         <Button
                             type="submit"
                             variant="secondary"
-                            className="rounded-lg bg-gray-700 text-white font-semibold px-6 py-2 shadow hover:bg-gray-800 transition"
+                            className="rounded-lg bg-gray-700 px-6 py-2 font-semibold text-white shadow transition hover:bg-gray-800"
                         >
                             Prediksi
                         </Button>
@@ -399,7 +399,7 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
                 </form>
                 {predictionEucheuma !== null && (
                     <>
-                        <ul className="mt-10 rounded-xl bg-green-100/60 p-6 font-medium text-green-900 shadow-inner space-y-2">
+                        <ul className="mt-10 space-y-2 rounded-xl bg-green-100/60 p-6 font-medium text-green-900 shadow-inner">
                             <li>
                                 <span className="font-semibold">Hasil Prediksi Eucheuma Conttoni:</span>
                                 <span className="ml-2 text-lg">{predictionEucheuma.toFixed(2)} kg</span>
@@ -409,22 +409,20 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
                                 <span className="ml-2 text-lg">{predictionGracilaria?.toFixed(2)} kg</span>
                             </li>
                         </ul>
-                        <ul className="mx-auto mt-6 bg-blue-50 p-6 rounded-xl shadow-inner flex flex-col gap-2">
-                            <li className="text-blue-900 font-medium">
-                                Mean Squared Error (MSE):{' '}
-                                <span className="font-mono">{mse !== null ? mse.toFixed(4) : 'Belum dihitung'}</span>
+                        <ul className="mx-auto mt-6 flex flex-col gap-2 rounded-xl bg-blue-50 p-6 shadow-inner">
+                            <li className="font-medium text-blue-900">
+                                Mean Squared Error (MSE): <span className="font-mono">{mse !== null ? mse.toFixed(4) : 'Belum dihitung'}</span>
                             </li>
-                            <li className="text-blue-900 font-medium">
-                                R-Squared:{' '}
-                                <span className="font-mono">{rSquared !== null ? rSquared.toFixed(4) : 'Belum dihitung'}</span>
+                            <li className="font-medium text-blue-900">
+                                R-Squared: <span className="font-mono">{rSquared !== null ? rSquared.toFixed(4) : 'Belum dihitung'}</span>
                             </li>
                         </ul>
                     </>
                 )}
-                <div className="bg-white/80 p-6 mt-8 rounded-2xl shadow border border-gray-100">
+                <div className="mt-8 rounded-2xl border border-gray-100 bg-white/80 p-6 shadow">
                     <PredictionChart
                         dataRumputlautX1={Ydataeucheuma_conttoni}
-                        dataRumputlautX2={Ydatagracilaria_sp}
+                        dataRumputlautX2={Ydataeucheuma_spinosum}
                         predictionX1={predictionEucheuma}
                         predictionX2={predictionGracilaria}
                         mse={mse}

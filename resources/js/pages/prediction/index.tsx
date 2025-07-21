@@ -1,5 +1,6 @@
 import FormPrediction from '@/components/form-prediction';
 import { Button } from '@/components/ui/button';
+import { Card, CardDescription } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
@@ -23,7 +24,7 @@ interface Transaction {
     pHAir: number;
     ketersediaanNutrisi: string;
     eucheuma_conttoni: number;
-    gracilaria_sp: number;
+    eucheuma_spinosum: number;
 }
 interface MultipleLinearRegressionProps {
     breadcrumb?: BreadcrumbItem[];
@@ -58,16 +59,6 @@ const opsiNutrisi = [
     { value: 2, label: 'Terbatas' },
     { value: 1, label: 'Sangat Sedikit' },
 ];
-interface HarvestData {
-    id: number;
-    date: string;
-    location: string;
-    waterTemperature: number;
-    salinity: number;
-    predictedYield: number;
-    actualYield: number;
-    harvestCondition: 'optimal' | 'suboptimal' | 'poor';
-}
 
 const MultipleLinearRegression: React.FC<MultipleLinearRegressionProps> = ({ breadcrumb, titlePage, transaction }: MultipleLinearRegressionProps) => {
     const breadcrumbs: BreadcrumbItem[] = useMemo(
@@ -91,7 +82,7 @@ const MultipleLinearRegression: React.FC<MultipleLinearRegressionProps> = ({ bre
         'pHAir',
         'ketersediaanNutrisi',
         'eucheuma_conttoni',
-        'gracilaria_sp',
+        'eucheuma_spinosum',
     ];
     const [showTable, setShowTable] = useState<boolean>(false);
     const [data, setData] = useState<Transaction[]>(transaction || []);
@@ -115,7 +106,7 @@ const MultipleLinearRegression: React.FC<MultipleLinearRegressionProps> = ({ bre
                         Tampilkan Data Panen
                     </Button>
                     <h2 className="mb-6 text-xl font-semibold text-gray-800">Data Input</h2>
-                    {showTable && (
+                    {(showTable || data.length > 0) && (
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
@@ -195,7 +186,15 @@ const MultipleLinearRegression: React.FC<MultipleLinearRegressionProps> = ({ bre
                     )}
                 </section>
 
-                <FormPrediction transaction={transaction} />
+                {data.length > 5 ? (
+                    <FormPrediction transaction={transaction} />
+                ) : (
+                    <Card>
+                        <CardDescription className='text-center'>
+                            <p className="text-sm text-gray-600">Data panen harus lebih dari lima agar model dapat diuji. Silakan tambahkan data panen terlebih dahulu.</p>
+                        </CardDescription>
+                    </Card>
+                )}
             </div>
         </AppLayout>
     );

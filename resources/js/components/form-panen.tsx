@@ -23,7 +23,7 @@ interface Transaction {
     pHAir: number;
     ketersediaanNutrisi: string;
     eucheuma_conttoni: number;
-    gracilaria_sp: number;
+    eucheuma_spinosum: number;
 }
 
 const daftarBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];

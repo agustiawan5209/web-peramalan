@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\HasilPanen;
+use App\Models\Indikator;
 use Illuminate\Http\Request;
 
 class FPGrowthController extends Controller
 {
-     private const BASE_BREADCRUMS = [
+    private const BASE_BREADCRUMS = [
         [
             'title' => 'dashboard',
             'href' => '/dashboard',
@@ -21,31 +22,22 @@ class FPGrowthController extends Controller
     public function index(Request $request)
     {
         $panen = HasilPanen::all();
-        $transaction = $panen->map(function ($item) {
-            $tr = json_decode($item->parameter, true);
+        $kriteria = Indikator::select('id')->orderBy('id', 'asc')->pluck('id')->toArray();
+
+        $transaction = $panen->map(function ($item) use ($kriteria) {
+            $parameter = json_decode($item->parameter, true);
             $jenis = json_decode($item->jenisRumputLaut, true);
-            // dd($jenis);
-            $data = [
-                'panjangGarisPantai' => $this->bin_panjang_garis_pantai($tr['panjangGarisPantai']),
-                'jumlahPetani' => $this->bin_petani_rumput_laut($tr['jumlahPetani']),
-                'luasPotensi' => $this->bin_potensi_luas_lahan($tr['luasPotensi']),
-                'luasTanam' => $this->luas_tanam($tr['luasTanam']),
-                'jumlahTali' => $this->bin_jumlah_bentangan($tr['jumlahTali']),
-                'jumlahBibit' => $this->bin_jumlah_bibit($tr['jumlahBibit']),
-                'suhuAir' => $this->bin_suhu($tr['suhuAir']),
-                'pHAir' => $this->bin_ph($tr['pHAir']),
-                'salinitas' => $this->bin_salinitas($tr['salinitas']),
-                'kejernihanAir' => $this->bin_kejernian($tr['kejernihanAir']),
-                'cahayaMatahari' => $this->bin_cahaya($tr['cahayaMatahari']),
-                'kedalamanAir' => $this->bin_kedalaman_air($tr['kedalamanAir']),
-                'ketersediaanNutrisi' => $this->bin_ketersediaan_nutrigen($tr['ketersediaanNutrisi']),
-                'arusAir' => $this->bin_arus_air($tr['arusAir']),
-                'panen' => $this->bin_panen($jenis[0]['jumlah'] + $jenis[1]['jumlah']),
-            ];
+            // dd($parameter);
+            $data = [];
+            foreach ($kriteria as $key => $value) {
+                $pm = array_values(array_filter($parameter, function ($pm) use ($value) {
+                    return $pm['indikator_id'] == $value;
+                }))[0]['nilai'];
+                $data[$value] = $pm;
+            }
 
             return array_values($data);
         });
-        // dd($transaction);
         return Inertia::render('fpgrowth/index', [
             'breadcrumb' => self::BASE_BREADCRUMS,
             'titlePage' => 'Fp-growth Panen',

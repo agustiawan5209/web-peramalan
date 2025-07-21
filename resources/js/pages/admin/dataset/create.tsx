@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, IndikatorTypes, SeaweedType } from '@/types';
+import { BreadcrumbItem, IndikatorTypes } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 
@@ -16,10 +16,10 @@ type JenisRumputLaut = {
 type Dataset = {
     bulan: string;
     tahun: string;
-    total_panen: string;
+    total_panen: number;
     jenisRumputLaut: JenisRumputLaut[];
-    parameter: {
-        indikator_id: number;
+    attribut: {
+        kriteria_id: number;
         nilai: string | null;
     }[];
 };
@@ -36,7 +36,9 @@ const opsiGejala = [
 interface PropsDatasetView {
     breadcrumb: BreadcrumbItem[];
     indikator: IndikatorTypes[];
-    jenisRumputLaut: SeaweedType[];
+    jenisTanaman: {
+        nama: string;
+    }[];
     titlePage?: string;
 }
 const daftarBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -46,39 +48,31 @@ const opsiCahaya = ['Sangat Cerah', 'Cerah', 'Berawan', 'Mendung', 'Gelap'];
 const opsiArus = ['Sangat Kuat', 'Kuat', 'Sedang', 'Lemah', 'Sangat Lemah'];
 const opsiNutrisi = ['Melimpah', 'Cukup', 'Terbatas', 'Sangat Sedikit'];
 
-export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut, titlePage }: PropsDatasetView) {
+export default function FormDatasetView({ breadcrumb, indikator, jenisTanaman, titlePage }: PropsDatasetView) {
     const breadcrumbs: BreadcrumbItem[] = breadcrumb ? breadcrumb.map((item) => ({ title: item.title, href: item.href })) : [];
     const { data, setData, post, processing, errors } = useForm<Dataset>({
         bulan: '',
         tahun: new Date().getFullYear().toString(),
-        total_panen: '',
-        jenisRumputLaut: jenisRumputLaut,
-        parameter: indikator.map((_, index) => ({
-            indikator_id: indikator[index].id,
+        total_panen: 0,
+        jenisRumputLaut: [
+            { nama: 'eucheuma_conttoni', jumlah: 0 },
+            { nama: 'eucheuma_spinosum', jumlah: 0 },
+        ],
+        attribut: indikator.map((_, index) => ({
+            kriteria_id: indikator[index].id,
             nilai: null,
         })),
     });
+
+    console.log(data.attribut);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
         const key = name.split('.')[1];
-        if(name.includes('total')){
-            setData('total_panen', value);
-        }
-        if(name.includes('jenisRumputLaut')) {
-            const [_, index, field] = name.split('.');
-            const updatedTypes = [...data.jenisRumputLaut];
-            updatedTypes[parseInt(index)] = {
-                ...updatedTypes[parseInt(index)],
-                [field === 'jumlah' ? 'jumlah' : 'nama']: field === 'jumlah' ? parseFloat(value) : value,
-            };
-            setData({ ...data, jenisRumputLaut: updatedTypes });
-        }
-        else{
-            setData((prevData) => ({
+        setData((prevData) => ({
             ...prevData,
-            parameter: prevData.parameter.map((item, index) => {
+            attribut: prevData.attribut.map((item, index) => {
                 if (index === Number(key)) {
                     return {
                         ...item,
@@ -88,12 +82,10 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                 return item;
             }),
         }));
-        }
     };
     const handleSelectChange = (name: string, value: string) => {
-
-        if (name && value !== undefined && data && data.parameter) {
-            if (name === 'label' || name === 'jenis_tanaman' || name == "bulan") {
+        if (name && value !== undefined && data && data.attribut) {
+            if (name === 'label' || name === 'jenis_tanaman') {
                 setData((prevData) => ({
                     ...prevData,
                     [name]: value,
@@ -101,7 +93,7 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
             } else {
                 setData((prevData) => ({
                     ...prevData,
-                    parameter: prevData.parameter.map((item, index) => {
+                    attribut: prevData.attribut.map((item, index) => {
                         if (index === Number(name)) {
                             return {
                                 ...item,
@@ -114,13 +106,13 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                 }));
             }
         } else {
-            console.error('Invalid data: name, value, or parameter may be undefined');
+            console.error('Invalid data: name, value, or attribut may be undefined');
         }
     };
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Tambahkan logika submit di sini
-        post(route('admin.hasilPanen.store'), {
+        post(route('admin.dataset.store'), {
             onError: (err) => {
                 console.log(err);
             },
@@ -139,7 +131,7 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                         <div>
                             <Label className="text-xs text-gray-600">Bulan</Label>
                             <Select value={data.bulan} required onValueChange={(value) => handleSelectChange('bulan', value)}>
-                                <SelectTrigger className="placeholder:text-gray-400">
+                                <SelectTrigger className="input-minimal">
                                     <SelectValue placeholder="Pilih" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -154,7 +146,7 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                         </div>
                         <div>
                             <Label className="text-xs text-gray-600">Tahun</Label>
-                            <Input type="number" name="tahun" value={data.tahun} onChange={handleChange} className="placeholder:text-gray-400" required />
+                            <Input type="number" name="tahun" value={data.tahun} onChange={handleChange} className="input-minimal" required />
                             {errors.tahun && <InputError message={errors.tahun} className="mt-2" />}
                         </div>
                         <div>
@@ -164,7 +156,7 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                                 name="total_panen"
                                 value={data.total_panen}
                                 onChange={handleChange}
-                                className="placeholder:text-gray-400"
+                                className="input-minimal"
                                 step="0.01"
                                 required
                             />
@@ -183,7 +175,7 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                                         name={`jenisRumputLaut.${index}.nama`}
                                         value={jenis.nama}
                                         onChange={handleChange}
-                                        className="placeholder:text-gray-400 w-max"
+                                        className="input-minimal w-32"
                                         readOnly
                                         placeholder={`Jenis ${index + 1}`}
                                     />
@@ -192,7 +184,7 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                                         name={`jenisRumputLaut.${index}.jumlah`}
                                         value={jenis.jumlah}
                                         onChange={handleChange}
-                                        className="placeholder:text-gray-400 flex-1"
+                                        className="input-minimal flex-1"
                                         placeholder="kg"
                                         step="0.01"
                                     />
@@ -203,19 +195,18 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                     </div>
 
                     {/* Parameter Lingkungan */}
-                   {indikator.length > 0 && (
-                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         {indikator.map((item: { nama: string; id: number }, index: number) => {
                             if (item.nama.toLowerCase() === 'gejala') {
                                 return (
                                     <div key={index}>
                                         <Label className="text-xs text-gray-600">{item.nama}</Label>
                                         <Select
-                                            value={data.parameter[index].nilai || ''}
+                                            value={data.attribut[index].nilai || ''}
                                             required
                                             onValueChange={(value) => handleSelectChange(index.toLocaleString(), value)}
                                         >
-                                            <SelectTrigger className="placeholder:text-gray-400">
+                                            <SelectTrigger className="input-minimal">
                                                 <SelectValue placeholder="Pilih" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -233,19 +224,17 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                                 <div key={index}>
                                     <Label className="text-xs text-gray-600">{item.nama}</Label>
                                     <Input
-                                        type="number"
-                                        step={0.1}
-                                        name={`parameter.${index}`}
-                                        value={data.parameter[index].nilai || ''}
+                                        type="text"
+                                        name={`attribut.${index}`}
+                                        value={data.attribut[index].nilai || ''}
                                         onChange={handleChange}
-                                        className="placeholder:text-gray-400"
+                                        className="input-minimal"
                                         placeholder={`masukkan ${item.nama}`}
                                     />
                                 </div>
                             );
                         })}
                     </div>
-                   )}
                     <div className="flex justify-end">
                         <Button type="submit" variant={'default'}>
                             {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}

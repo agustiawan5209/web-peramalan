@@ -22,8 +22,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-            IndikatorSeeder::class,
-            HasilPanenSeeder::class,
+            // IndikatorSeeder::class,
+            // HasilPanenSeeder::class,
         ]);
     }
 }

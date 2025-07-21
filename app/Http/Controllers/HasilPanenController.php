@@ -21,6 +21,12 @@ class HasilPanenController extends Controller
             'href' => '/admin/hasil-panen/',
         ],
     ];
+    public const BASE_JENISRUMPUT_LAUT = [
+        ['nama' => 'eucheuma_conttoni_basah', 'jumlah' => 500],
+        ['nama' => 'eucheuma_conttoni_kering', 'jumlah' => 500],
+        ['nama' => 'eucheuma_spinosum_basah', 'jumlah' => 500],
+        ['nama' => 'eucheuma_spinosum_kering', 'jumlah' => 500],
+    ];
     /**
      * Display a listing of the resource.
      */
@@ -44,6 +50,7 @@ class HasilPanenController extends Controller
             'breadcrumb' => array_merge(self::BASE_BREADCRUMB, [
                 ['title' => 'tambah', 'href' => '/admin/hasil-panen/create'],
             ]),
+            'jenisRumputLaut'=> self::BASE_JENISRUMPUT_LAUT,
             'titlePage' => 'Tambah Hasil Panen',
         ]);
     }
@@ -54,12 +61,12 @@ class HasilPanenController extends Controller
     public function store(StoreHasilPanenRequest $request)
     {
         $data =  [
-            "bulan"=> $request->bulan,
-            "tahun"=>$request->tahun,
-            "total_panen"=> $request->total_panen,
-            "jenisRumputLaut"=>  json_encode($request->jenisRumputLaut),
-            "parameter"=> json_encode($request->parameter),
-            "keterangan"=> "TEST",
+            "bulan" => $request->bulan,
+            "tahun" => $request->tahun,
+            "total_panen" => $request->total_panen,
+            "jenisRumputLaut" =>  json_encode($request->jenisRumputLaut),
+            "parameter" => json_encode($request->parameter),
+            "keterangan" => "TEST",
         ];
         $databaseHelper = App::make('databaseHelper');
         return $databaseHelper(
@@ -77,13 +84,13 @@ class HasilPanenController extends Controller
         return Inertia::render('admin/hasilPanen/show', [
             'hasilPanen' => $hasilPanen,
             'indikator' => Indikator::all(),
-            'breadcrumb'=> array_merge(self::BASE_BREADCRUMB, [
+            'breadcrumb' => array_merge(self::BASE_BREADCRUMB, [
                 [
-                    'title'=> 'detail',
-                    'href'=> `/admin/hasil-panen/$hasilPanen->id/show`,
+                    'title' => 'detail',
+                    'href' => `/admin/hasil-panen/$hasilPanen->id/show`,
                 ]
-                ]),
-            'titlePage'=> 'Detail',
+            ]),
+            'titlePage' => 'Detail',
         ]);
     }
 
@@ -107,13 +114,13 @@ class HasilPanenController extends Controller
      */
     public function update(UpdateHasilPanenRequest $request, HasilPanen $hasilPanen)
     {
-         $data =  [
-            "bulan"=> $request->bulan,
-            "tahun"=>$request->tahun,
-            "total_panen"=> $request->total_panen,
-            "jenisRumputLaut"=>  json_encode($request->jenisRumputLaut),
-            "parameter"=> json_encode($request->parameter),
-            "keterangan"=> "TEST",
+        $data =  [
+            "bulan" => $request->bulan,
+            "tahun" => $request->tahun,
+            "total_panen" => $request->total_panen,
+            "jenisRumputLaut" =>  json_encode($request->jenisRumputLaut),
+            "parameter" => json_encode($request->parameter),
+            "keterangan" => "TEST",
         ];
         $databaseHelper = App::make('databaseHelper');
         return $databaseHelper(

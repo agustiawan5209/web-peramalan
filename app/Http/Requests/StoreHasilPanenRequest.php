@@ -24,26 +24,13 @@ class StoreHasilPanenRequest extends FormRequest
         return [
             'bulan' => ['required', 'string', 'max:20'],
             'tahun' => ['required', 'integer', 'digits:4'],
-            'total_panen' => ['required', 'string', 'max:30'],
+            'total_panen' => ['required', 'numeric', 'min:30'],
             'jenisRumputLaut' => ['required', 'array'],
-            'jenisRumputLaut.*.nama' => ['required', 'string', 'in:eucheuma_conttoni,gracilaria_sp'],
-            'jenisRumputLaut.*.jumlah' => ['required', 'numeric', 'min:0'],
+            'jenisRumputLaut.*.nama' => ['required', 'string',],
+            'jenisRumputLaut.*.jumlah' => ['required', 'numeric', 'min:30'],
             'parameter' => ['required'],
             'keterangan' => ['nullable', 'string'],
-            'parameter.panjangGarisPantai' => ['required', 'integer', 'min:0'],
-            'parameter.jumlahPetani' => ['required', 'integer', 'min:0'],
-            'parameter.luasPotensi' => ['required', 'integer', 'min:0'],
-            'parameter.luasTanam' => ['required', 'integer', 'min:0'],
-            'parameter.jumlahTali' => ['required', 'integer', 'min:0'],
-            'parameter.jumlahBibit' => ['required', 'integer', 'min:0'],
-            'parameter.suhuAir' => ['required', 'integer', 'min:0'],
-            'parameter.salinitas' => ['required', 'integer', 'min:0'],
-            'parameter.kejernihanAir' => ['required', 'string', ],
-            'parameter.cahayaMatahari' => ['required', 'string', ],
-            'parameter.arusAir' => ['required', 'string', ],
-            'parameter.kedalamanAir' => ['required', 'integer', 'min:0'],
-            'parameter.phAir' => ['required', 'integer', 'min:0'],
-            'parameter.ketersediaanNutrisi' => ['required', 'string', ],
+            'parameter.*.indikator_id'=> ['required', 'exists:indikators,id']
         ];
     }
 }

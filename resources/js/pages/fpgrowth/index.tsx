@@ -1,8 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
+import { Head } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import FPGrowthComponent from './fpgrwoth';
-import { Head } from '@inertiajs/react';
 
 interface Transaction {
     items: string[];
@@ -33,26 +33,27 @@ export default function FpGrowthView({ breadcrumb, titlePage, transaksiPanen }: 
     const [supportThreshold, setSupportThreshold] = useState(0.3);
     const [confidenceThreshold, setConfidenceThreshold] = useState(0.4);
 
-    // Jika transaksiPanen tidak diberikan, gunakan data default
-    if (transactions.length === 0) {
-        transactions.push(
-            ['Kedalaman_Air_Rendah', 'Ketersediaan_Nutrisi_Rendah', 'Arus_Air_Rendah', 'Panen_Rendah'],
-            ['Kedalaman_Air_Tinggi', 'Ketersediaan_Nutrisi_Tinggi', 'Arus_Air_Tinggi', 'Panen_Tinggi'],
-            ['Kedalaman_Air_Sedang', 'Ketersediaan_Nutrisi_Sedang', 'Arus_Air_Sedang', 'Panen_Sedang'],
-            ['Kedalaman_Air_Rendah', 'Ketersediaan_Nutrisi_Sedang', 'Arus_Air_Tinggi', 'Panen_Rendah'],
-            ['Kedalaman_Air_Tinggi', 'Ketersediaan_Nutrisi_Rendah', 'Arus_Air_Sedang', 'Panen_Tinggi'],
-            ['Kedalaman_Air_Sedang', 'Ketersediaan_Nutrisi_Tinggi', 'Arus_Air_Rendah', 'Panen_Sedang'],
-        );
-    }
-
     return (
         <>
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Head title={titlePage} />
                 <div className="fp-growth-container rounded-lg bg-white p-4 shadow-lg">
-                    <h2 className="mb-4 text-2xl font-bold">FP-Growth Algorithm in React TypeScript</h2>
+                    {transactions.length > 0 ? (
+                        <>
+                            <h2 className="mb-4 text-2xl font-bold">FP-Growth Algorithm in React TypeScript</h2>
 
-                    <FPGrowthComponent transactions={transactions} support_threshold={supportThreshold} confidence_threshold={confidenceThreshold} setConfidenceThreshold={setConfidenceThreshold} setSupportThreshold={setSupportThreshold} />
+                            <FPGrowthComponent
+                                transactions={transactions}
+                                support_threshold={supportThreshold}
+                                confidence_threshold={confidenceThreshold}
+                                setConfidenceThreshold={setConfidenceThreshold}
+                                setSupportThreshold={setSupportThreshold}
+                            />
+                        </>
+                    ) : (
+                         <h2 className="mb-4 text-2xl text-destructive font-bold">Peringatan : Data Hasil Panen Harus lebih dari 5</h2>
+
+                    )}
                 </div>
             </AppLayout>
         </>
