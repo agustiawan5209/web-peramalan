@@ -2,10 +2,10 @@ import Chart from 'chart.js/auto';
 import { useEffect, useRef } from 'react';
 
 interface PredictionChartProps {
-    predictionX1: number | null; // Assuming prediction is an array of numbers
-    predictionX2: number | null; // Assuming prediction is an array of numbers
+    predictionX1?: number | null; // Assuming prediction is an array of numbers
+    predictionX2?: number | null; // Assuming prediction is an array of numbers
     dataRumputlautX1?: number[] | null; // Optional prop for additional data
-    dataRumputlautX2?: number[]; // Optional prop for additional data
+    dataRumputlautX2?: number[] | null; // Optional prop for additional data
     mse: number | null;
     rSquared: number | null;
 }
@@ -13,7 +13,7 @@ const PredictionChart = ({ predictionX1, predictionX2, dataRumputlautX1, dataRum
     const chartRef = useRef<HTMLCanvasElement>(null);
     const metricChartRef = useRef<HTMLCanvasElement>(null);
     useEffect(() => {
-        if (predictionX1 !== null && predictionX2 !== null && chartRef.current && metricChartRef.current) {
+        if (chartRef.current && metricChartRef.current) {
             // Chart untuk hasil prediksi
             const ctx = chartRef.current.getContext('2d');
 
@@ -72,26 +72,6 @@ const PredictionChart = ({ predictionX1, predictionX2, dataRumputlautX1, dataRum
                                 tension: 0.3,
                                 pointRadius: 3,
                             },
-                            {
-                                label: 'Produktivitas Rumput Laut Glacilaria',
-                                data: [...(dataRumputlautX2 || []), null],
-                                fill: false,
-                                backgroundColor: 'rgb(254, 119, 67, 0.5)',
-                                borderColor: 'rgba(254, 119, 67, 1)',
-                                borderWidth: 2,
-                                tension: 0.3,
-                                pointRadius: 3,
-                            },
-                            {
-                                label: 'Prediksi Rumput Laut Glacilaria',
-                                data: [...(dataRumputlautX2 || []), predictionX2],
-                                fill: false,
-                                backgroundColor: 'rgba(237, 53, 0,0.5)',
-                                borderColor: 'rgba(237, 53, 0,1)',
-                                borderWidth: 2,
-                                tension: 0.3,
-                                pointRadius: 3,
-                            },
                         ],
                     },
                     options: {
@@ -131,7 +111,7 @@ const PredictionChart = ({ predictionX1, predictionX2, dataRumputlautX1, dataRum
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div>
-                <h3>Hasil Prediksi Produktivitas</h3>
+                <h3>Hasil Prediksi Produktivitas Rumput Laut 10 bulan terakhir</h3>
                 <canvas ref={chartRef} width="400" height="200"></canvas>
             </div>
             <div>

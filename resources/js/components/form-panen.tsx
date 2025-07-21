@@ -1,29 +1,15 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { IndikatorTypes } from '@/types';
 
 type JenisRumputLaut = {
     nama: string;
     jumlah: number;
 };
 
-interface Transaction {
-    panjangGarisPantai: number;
-    jumlahPetani: number;
-    luasPotensi: number;
-    luasTanam: number;
-    jumlahTali: number;
-    jumlahBibit: number;
-    suhuAir: number;
-    salinitas: number;
-    kejernihanAir: string;
-    cahayaMatahari: string;
-    arusAir: string;
-    kedalamanAir: number;
-    pHAir: number;
-    ketersediaanNutrisi: string;
-    eucheuma_conttoni: number;
-    eucheuma_spinosum: number;
+interface ParameterTransaction {
+    indikator_id: number;
+    nilai: string | null;
 }
 
 const daftarBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -56,170 +42,38 @@ const opsiNutrisi = [
     { value: 1, label: 'Sangat Sedikit' },
 ];
 interface PropsPanenRumputLaut {
-    parameter: Transaction;
+    parameter: ParameterTransaction[];
+    indikator: IndikatorTypes[];
     handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
     handleSelectChange: (name: string, value: string) => void;
 }
 
-export default function FormPanen({ parameter, handleChange, handleSelectChange }: PropsPanenRumputLaut) {
+export default function FormPanen({ parameter, indikator, handleChange, handleSelectChange }: PropsPanenRumputLaut) {
     return (
         <>
-            <div className="col-span-2 grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                    <div>
-                        <Label className="text-xs text-gray-600">Panjang Garis Pantai (km)</Label>
-                        <Input
-                            type="number"
-                            name="panjangGarisPantai"
-                            value={parameter.panjangGarisPantai}
-                            onChange={handleChange}
-                            className="input-minimal"
-                            step="0.01"
-                        />
+            <div className="block">
+                {/* Parameter Lingkungan */}
+                {indikator.length > 0 && (
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        {indikator.map((item: { nama: string; id: number }, index: number) => {
+                            return (
+                                <div key={index}>
+                                    <Label className="text-xs text-gray-600">{item.nama}</Label>
+                                    <Input
+                                        type="number"
+                                        step={0.1}
+                                        name={`parameter.${index}`}
+                                        value={parameter[index].nilai || ''}
+                                        onChange={handleChange}
+                                        className="placeholder:text-gray-400"
+                                        placeholder={`masukkan ${item.nama}`}
+                                        required
+                                    />
+                                </div>
+                            );
+                        })}
                     </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">Jumlah Petani</Label>
-                        <Input type="number" name="jumlahPetani" value={parameter.jumlahPetani} onChange={handleChange} className="input-minimal" />
-                    </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">Luas Potensi (Ha)</Label>
-                        <Input
-                            type="number"
-                            name="luasPotensi"
-                            value={parameter.luasPotensi}
-                            onChange={handleChange}
-                            className="input-minimal"
-                            step="0.01"
-                        />
-                    </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">Luas Tanam (Ha)</Label>
-                        <Input
-                            type="number"
-                            name="luasTanam"
-                            value={parameter.luasTanam}
-                            onChange={handleChange}
-                            className="input-minimal"
-                            step="0.01"
-                        />
-                    </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">Jumlah Tali</Label>
-                        <Input type="number" name="jumlahTali" value={parameter.jumlahTali} onChange={handleChange} className="input-minimal" />
-                    </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">Bibit (kg)</Label>
-                        <Input
-                            type="number"
-                            name="jumlahBibit"
-                            value={parameter.jumlahBibit}
-                            onChange={handleChange}
-                            className="input-minimal"
-                            step="0.01"
-                        />
-                    </div>
-                </div>
-                <div className="space-y-2">
-                    <div>
-                        <Label className="text-xs text-gray-600">Suhu Air (°C)</Label>
-                        <Input type="number" name="suhuAir" value={parameter.suhuAir} onChange={handleChange} className="input-minimal" step="0.1" />
-                    </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">Salinitas (ppt)</Label>
-                        <Input
-                            type="number"
-                            name="salinitas"
-                            value={parameter.salinitas}
-                            onChange={handleChange}
-                            className="input-minimal"
-                            step="0.1"
-                        />
-                    </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">Kejernihan Air</Label>
-                        <Select value={parameter.kejernihanAir} onValueChange={(value) => handleSelectChange('kejernihanAir', value)}>
-                            <SelectTrigger className="input-minimal">
-                                <SelectValue placeholder="Pilih" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {opsiKejernihan.map((option) => (
-                                    <SelectItem key={option.value} value={option.label}>
-                                        {option.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">Cahaya Matahari</Label>
-                        <Select value={parameter.cahayaMatahari} onValueChange={(value) => handleSelectChange('cahayaMatahari', value)}>
-                            <SelectTrigger className="input-minimal">
-                                <SelectValue placeholder="Pilih" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {opsiCahaya.map((option) => (
-                                    <SelectItem key={option.value} value={option.label}>
-                                        {option.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">Arus Air</Label>
-                        <Select value={parameter.arusAir} onValueChange={(value) => handleSelectChange('arusAir', value)}>
-                            <SelectTrigger className="input-minimal">
-                                <SelectValue placeholder="Pilih" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {opsiArus.map((option) => (
-                                    <SelectItem key={option.value} value={option.label}>
-                                        {option.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">Kedalaman Air (m)</Label>
-                        <Input
-                            type="number"
-                            name="kedalamanAir"
-                            value={parameter.kedalamanAir}
-                            onChange={handleChange}
-                            className="input-minimal"
-                            step="0.1"
-                        />
-                    </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">pH Air</Label>
-                        <Input
-                            type="number"
-                            name="pHAir"
-                            value={parameter.pHAir}
-                            onChange={handleChange}
-                            className="input-minimal"
-                            step="0.1"
-                            min="0"
-                            max="14"
-                        />
-                    </div>
-                    <div>
-                        <Label className="text-xs text-gray-600">Ketersediaan Nutrisi</Label>
-                        <Select value={parameter.ketersediaanNutrisi} onValueChange={(value) => handleSelectChange('ketersediaanNutrisi', value)}>
-                            <SelectTrigger className="input-minimal">
-                                <SelectValue placeholder="Pilih" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {opsiNutrisi.map((option) => (
-                                    <SelectItem key={option.value} value={option.label}>
-                                        {option.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
+                )}
             </div>
         </>
     );

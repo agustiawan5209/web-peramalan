@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
+use App\Models\Indikator;
 use App\Models\HasilPanen;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class PredictionController extends Controller
 {
@@ -21,40 +22,38 @@ class PredictionController extends Controller
     public function index(Request $request)
     {
         $panen = HasilPanen::all();
-        $transaction = $panen->map(function ($item) {
-            $tr = json_decode($item->parameter, true);
-            $rumputlaut = json_decode($item->jenisRumputLaut, true);
-            $eucheuma_conttoni = array_values(array_filter($rumputlaut, function ($value) {
-                return $value['nama'] === 'eucheuma_conttoni';
-            }, 0))[0] ?? ['jumlah' => 0];
-            $eucheuma_spinosum = array_values(array_filter($rumputlaut, function ($value) {
-                return $value['nama'] === 'eucheuma_spinosum';
-            }, 1))[0] ?? ['jumlah' => 0];
-            $data = [
-                'panjangGarisPantai' => $tr['panjangGarisPantai'],
-                'jumlahPetani' => $tr['jumlahPetani'],
-                'luasPotensi' => $tr['luasPotensi'],
-                'luasTanam' => $tr['luasTanam'],
-                'jumlahTali' => $tr['jumlahTali'],
-                'jumlahBibit' => $tr['jumlahBibit'],
-                'suhuAir' => $tr['suhuAir'],
-                'pHAir' => $tr['pHAir'],
-                'salinitas' => $tr['salinitas'],
-                'kejernihanAir' => $tr['kejernihanAir'],
-                'cahayaMatahari' => $tr['cahayaMatahari'],
-                'kedalamanAir' => $tr['kedalamanAir'],
-                'ketersediaanNutrisi' => $tr['ketersediaanNutrisi'],
-                'arusAir' => $tr['arusAir'],
-                'eucheuma_conttoni' => $eucheuma_conttoni['jumlah'],
-                'eucheuma_spinosum' => $eucheuma_spinosum['jumlah'],
-            ];
+         $kriteria = Indikator::orderBy('id', 'asc')->get();
 
+        $transaction = $panen->map(function ($item) use ($kriteria) {
+            $parameter = $item->parameter;
+            $jenis = $item->jenisRumputLaut;
+            // dd($parameter);
+            $data = [];
+            foreach ($kriteria as $key => $value) {
+                $id = $value->id;
+                $nilai = array_values(array_filter($parameter, function ($pm) use ($id) {
+                    return $pm['indikator_id'] == $id;
+                }))[0]['nilai'];
+
+                $data[] = intval($nilai);
+            }
+            $data[] = intval($item->total_panen);
             return $data;
+        });
+        $transactionY = $panen->map(function ($item) use ($kriteria) {
+             $jenis = $item->jenisRumputLaut;
+             $data = [];
+             foreach ($jenis as $key => $value) {
+                $data[$value['nama']] = $value['jumlah'];
+             }
+             return $data;
         });
         return Inertia::render('prediction/index', [
             'breadcrumb' => self::BASE_BREADCRUMS,
             'titlePage' => 'Prediksi Panen',
-            'transaction' => $transaction,
+            'transactionX' => $transaction,
+            'indikator'=> $kriteria,
+            'transactionY'=> $transactionY,
         ]);
     }
 }

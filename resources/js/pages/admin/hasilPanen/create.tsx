@@ -240,6 +240,7 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                                         onChange={handleChange}
                                         className="placeholder:text-gray-400"
                                         placeholder={`masukkan ${item.nama}`}
+                                        required
                                     />
                                 </div>
                             );

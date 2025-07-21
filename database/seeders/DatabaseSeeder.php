@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             IndikatorSeeder::class,
-            // HasilPanenSeeder::class,
+            HasilPanenSeeder::class,
         ]);
     }
 }

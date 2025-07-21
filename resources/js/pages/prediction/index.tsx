@@ -4,7 +4,7 @@ import { Card, CardDescription } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem } from '@/types';
+import { BreadcrumbItem, IndikatorTypes } from '@/types';
 import { Head } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import React, { useMemo, useState } from 'react';
@@ -29,7 +29,14 @@ interface Transaction {
 interface MultipleLinearRegressionProps {
     breadcrumb?: BreadcrumbItem[];
     titlePage?: string;
-    transaction: Transaction[];
+    transactionX: Transaction[];
+    transactionY: {
+         eucheuma_conttoni_basah: number;
+        eucheuma_conttoni_kering: number;
+        eucheuma_spinosum_basah: number;
+        eucheuma_spinosum_kering: number;
+    }[];
+    indikator: IndikatorTypes[];
 }
 
 const opsiKejernihan = [
@@ -60,32 +67,15 @@ const opsiNutrisi = [
     { value: 1, label: 'Sangat Sedikit' },
 ];
 
-const MultipleLinearRegression: React.FC<MultipleLinearRegressionProps> = ({ breadcrumb, titlePage, transaction }: MultipleLinearRegressionProps) => {
+const MultipleLinearRegression: React.FC<MultipleLinearRegressionProps> = ({ breadcrumb, titlePage, transactionX, transactionY, indikator }: MultipleLinearRegressionProps) => {
     const breadcrumbs: BreadcrumbItem[] = useMemo(
         () => (breadcrumb ? breadcrumb.map((item) => ({ title: item.title, href: item.href })) : []),
         [breadcrumb],
     );
 
-    const HeaderTabel = [
-        'panjangGarisPantai',
-        'jumlahPetani',
-        'luasPotensi',
-        'luasTanam',
-        'jumlahTali',
-        'jumlahBibit',
-        'suhuAir',
-        'salinitas',
-        'kejernihanAir',
-        'cahayaMatahari',
-        'arusAir',
-        'kedalamanAir',
-        'pHAir',
-        'ketersediaanNutrisi',
-        'eucheuma_conttoni',
-        'eucheuma_spinosum',
-    ];
+
     const [showTable, setShowTable] = useState<boolean>(false);
-    const [data, setData] = useState<Transaction[]>(transaction || []);
+    const [data, setData] = useState<Transaction[]>(transactionX || []);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
@@ -116,10 +106,10 @@ const MultipleLinearRegression: React.FC<MultipleLinearRegressionProps> = ({ bre
                             <Table className="w-full border-separate border-spacing-y-2 text-left">
                                 <TableHeader>
                                     <TableRow>
-                                        {HeaderTabel &&
-                                            HeaderTabel.map((item, index) => (
+                                        {indikator &&
+                                            indikator.map((item, index) => (
                                                 <TableHead key={index} className="px-3 py-2 font-medium text-gray-600">
-                                                    {item}
+                                                    {item.nama}
                                                 </TableHead>
                                             ))}
                                     </TableRow>
@@ -127,9 +117,9 @@ const MultipleLinearRegression: React.FC<MultipleLinearRegressionProps> = ({ bre
                                 <TableBody>
                                     {currentItems.map((point: any, index) => (
                                         <TableRow key={index} className="bg-gray-50 transition hover:bg-gray-100">
-                                            {HeaderTabel.map((item, key: number | string) => (
+                                            {indikator.map((item, key: number | string) => (
                                                 <TableCell key={key} className="px-3 py-2">
-                                                    {typeof point[item] === 'number' ? point[item].toFixed(2) : point[item]}
+                                                    {typeof point[item.id] === 'number' ? point[item.id].toFixed(0) : point[item.id]}
                                                 </TableCell>
                                             ))}
                                         </TableRow>
@@ -187,7 +177,7 @@ const MultipleLinearRegression: React.FC<MultipleLinearRegressionProps> = ({ bre
                 </section>
 
                 {data.length > 5 ? (
-                    <FormPrediction transaction={transaction} />
+                    <FormPrediction transactionX={transactionX} transactionY={transactionY} indikator={indikator} />
                 ) : (
                     <Card>
                         <CardDescription className='text-center'>

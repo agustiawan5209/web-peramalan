@@ -1,28 +1,23 @@
 import FormPanen from '@/components/form-panen';
 import { Button } from '@/components/ui/button';
+import { IndikatorTypes } from '@/types';
 import * as tf from '@tensorflow/tfjs';
 import React, { useEffect, useState } from 'react';
 import PredictionChart from './prediction-chart';
-interface Transaction {
-    panjangGarisPantai: number;
-    jumlahPetani: number;
-    luasPotensi: number;
-    luasTanam: number;
-    jumlahTali: number;
-    jumlahBibit: number;
-    suhuAir: number;
-    salinitas: number;
-    kejernihanAir: string;
-    cahayaMatahari: string;
-    arusAir: string;
-    kedalamanAir: number;
-    pHAir: number;
-    ketersediaanNutrisi: string;
-    eucheuma_conttoni: number;
-    eucheuma_spinosum: number;
+
+interface ParameterTransaction {
+    indikator_id: number;
+    nilai: string | null;
 }
 interface MultipleLinearRegressionProps {
-    transaction: Transaction[];
+    transactionX: any[];
+    transactionY: {
+        eucheuma_conttoni_basah: number;
+        eucheuma_conttoni_kering: number;
+        eucheuma_spinosum_basah: number;
+        eucheuma_spinosum_kering: number;
+    }[];
+    indikator: IndikatorTypes[];
 }
 
 const opsiKejernihan = [
@@ -52,32 +47,12 @@ const opsiNutrisi = [
     { value: 2, label: 'Terbatas' },
     { value: 1, label: 'Sangat Sedikit' },
 ];
-export default function FormPrediction({ transaction }: MultipleLinearRegressionProps) {
+export default function FormPrediction({ transactionX, transactionY, indikator }: MultipleLinearRegressionProps) {
     const [modelEucheuma, setModelEucheuma] = useState<tf.Sequential | null>(null);
-    const [modelGraacilaria, setModelGraacilaria] = useState<tf.Sequential | null>(null);
     const [training, setTraining] = useState(false);
     const [prediction, setPrediction] = useState<number | null>(null);
     const [predictionEucheuma, setPredictionEucheuma] = useState<number | null>(null);
-    const [predictionGracilaria, setPredictionGracilaria] = useState<number | null>(null);
 
-    const HeaderTabel = [
-        'panjangGarisPantai',
-        'jumlahPetani',
-        'luasPotensi',
-        'luasTanam',
-        'jumlahTali',
-        'jumlahBibit',
-        'suhuAir',
-        'salinitas',
-        'kejernihanAir',
-        'cahayaMatahari',
-        'arusAir',
-        'kedalamanAir',
-        'pHAir',
-        'ketersediaanNutrisi',
-        'eucheuma_conttoni',
-        'eucheuma_spinosum',
-    ];
     useEffect(() => {
         // Inisialisasi modelEucheuma saat komponen mount
         const initModel = () => {
@@ -85,36 +60,22 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
             modelEucheuma.add(
                 tf.layers.dense({
                     units: 1,
-                    inputShape: [14], // 15 variabel input
+                    inputShape: [indikator.length], // 15 variabel input
                 }),
             );
             return modelEucheuma;
         };
-        const initModelGraacilaria = () => {
-            const modelGraacilaria = tf.sequential();
-            modelGraacilaria.add(
-                tf.layers.dense({
-                    units: 1,
-                    inputShape: [14], // 15 variabel input
-                }),
-            );
-            return modelGraacilaria;
-        };
 
         setModelEucheuma(initModel());
-        setModelGraacilaria(initModelGraacilaria());
         return () => {
             // Cleanup
             if (modelEucheuma) {
                 modelEucheuma.dispose();
             }
-            if (modelGraacilaria) {
-                modelGraacilaria.dispose();
-            }
         };
     }, []);
 
-    const [data, setData] = useState<Transaction[]>(transaction || []);
+    const [data, setData] = useState<any[]>(transactionX || []);
 
     const [normalizationParams, setNormalizationParams] = useState<{
         featureRanges: { min: number; max: number }[];
@@ -123,16 +84,10 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
     } | null>(null);
 
     // Hitung min-max untuk setiap fitur
-    const featureRanges = HeaderTabel.slice(0, 14).map((_, i) => {
+    const featureRanges = indikator.map((_, i) => {
         const values = data.map((point: any) => {
-            // Konversi nilai kategorikal ke numerik
-            if (i === 8) return opsiKejernihan.find((item) => item.label === point.kejernihanAir)?.value || 0;
-            if (i === 9) return opsiCahaya.find((item) => item.label === point.cahayaMatahari)?.value || 0;
-            if (i === 10) return opsiArus.find((item) => item.label === point.arusAir)?.value || 0;
-            if (i === 13) return opsiNutrisi.find((item) => item.label === point.ketersediaanNutrisi)?.value || 0;
-
             // Ambil nilai numerik langsung
-            return point[HeaderTabel[i]];
+            return point[i];
         });
         return {
             min: Math.min(...values),
@@ -157,42 +112,24 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
         if (normalizedValue > 1) normalizedValue = 1; // Pastikan tidak lebih dari 1
         return normalizedValue;
     };
-    const InputXs = data.map((point, key) => {
-        let kejernihan = opsiKejernihan.find((item) => item.label === point.kejernihanAir)?.value || 0;
-        let cahaya = opsiCahaya.find((item) => item.label === point.cahayaMatahari)?.value || 0;
-        let arus = opsiArus.find((item) => item.label === point.arusAir)?.value || 0;
-        let nutrisi = opsiNutrisi.find((item) => item.label === point.ketersediaanNutrisi)?.value || 0;
-
-        return [
-            normalize(point.panjangGarisPantai, featureRanges[0].min, featureRanges[0].max),
-            normalize(point.jumlahPetani, featureRanges[1].min, featureRanges[1].max),
-            normalize(point.luasPotensi, featureRanges[2].min, featureRanges[2].max),
-            normalize(point.luasTanam, featureRanges[3].min, featureRanges[3].max),
-            normalize(point.jumlahTali, featureRanges[4].min, featureRanges[4].max),
-            normalize(point.jumlahBibit, featureRanges[5].min, featureRanges[5].max),
-            normalize(point.suhuAir, featureRanges[6].min, featureRanges[6].max),
-            normalize(point.salinitas, featureRanges[7].min, featureRanges[7].max),
-            normalize(kejernihan, featureRanges[8].min, featureRanges[8].max),
-            normalize(cahaya, featureRanges[9].min, featureRanges[9].max),
-            normalize(arus, featureRanges[10].min, featureRanges[10].max),
-            normalize(point.kedalamanAir, featureRanges[11].min, featureRanges[11].max),
-            normalize(point.pHAir, featureRanges[12].min, featureRanges[12].max),
-            normalize(nutrisi, featureRanges[13].min, featureRanges[13].max),
-        ];
+    const InputXs = data.map((point: any, key) => {
+        let InputX: any = [];
+        indikator.map((item: any, index) => {
+            InputX.push(normalize(point[index], featureRanges[index].min, featureRanges[index].max));
+        });
+        return InputX;
     });
 
     // Normalisasi output juga
-    const outputValues = data.map((point) => point.eucheuma_conttoni);
+    const outputValues = transactionY.map((point) => point.eucheuma_conttoni_basah);
     const outputMin = Math.min(...outputValues);
     const outputMax = Math.max(...outputValues);
-    const Ydataeucheuma_conttoni = data.map((point) => point.eucheuma_conttoni);
+    const Ydataeucheuma_conttoni = transactionY.map((point) => point.eucheuma_conttoni_basah);
 
-    const Ydataeucheuma_spinosum = data.map((point) => point.eucheuma_spinosum);
-    const ysEuchuma = tf.tensor2d(data.map((point) => [normalize(point.eucheuma_conttoni, outputMin, outputMax)]));
-    const ysGlacilaria = tf.tensor2d(data.map((point) => [normalize(point.eucheuma_spinosum, outputMin, outputMax)]));
+    const ysEuchuma = tf.tensor2d(transactionY.map((point) => [normalize(point.eucheuma_conttoni_basah, outputMin, outputMax)]));
 
     const trainModel = async () => {
-        if (!modelEucheuma || !modelGraacilaria) return;
+        if (!modelEucheuma) return;
 
         setTraining(true);
 
@@ -203,11 +140,6 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
             optimizer: tf.train.adam(0.001), // Menggunakan Adam optimizer dengan learning rate lebih kecil
             loss: 'meanSquaredError',
         });
-        modelGraacilaria.compile({
-            optimizer: tf.train.adam(0.001), // Menggunakan Adam optimizer dengan learning rate lebih kecil
-            loss: 'meanSquaredError',
-        });
-
         // Pelatihan dengan lebih banyak epoch
         await modelEucheuma.fit(xs, ysEuchuma, {
             epochs: 200,
@@ -215,15 +147,6 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
             callbacks: {
                 onEpochEnd: (epoch, logs) => {
                     console.log(`Epoch Eucheuma ${epoch}: loss = ${logs?.loss}`);
-                },
-            },
-        });
-        await modelGraacilaria.fit(xs, ysGlacilaria, {
-            epochs: 200,
-            batchSize: 32,
-            callbacks: {
-                onEpochEnd: (epoch, logs) => {
-                    console.log(`Epoch Gracilaria ${epoch}: loss = ${logs?.loss}`);
                 },
             },
         });
@@ -238,34 +161,20 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
         // Simpan model ke session storage
         // Tidak perlu karena model akan dihapus ketika browser di-close
         localStorage.setItem('modelEucheuma', JSON.stringify(modelEucheuma));
-        localStorage.setItem('modelGraacilaria', JSON.stringify(modelGraacilaria));
 
         // Dispose tensors
         xs.dispose();
         ysEuchuma.dispose();
-        ysGlacilaria.dispose();
 
         setTraining(false);
     };
 
-    const [parameter, setParameter] = useState<Transaction>({
-        panjangGarisPantai: 6,
-        jumlahPetani: 261,
-        luasPotensi: 7,
-        luasTanam: 5,
-        jumlahTali: 1.74,
-        jumlahBibit: 1.671,
-        suhuAir: 31,
-        salinitas: 43,
-        kejernihanAir: 'Keruh',
-        cahayaMatahari: 'Cerah',
-        arusAir: 'Kuat',
-        kedalamanAir: 2,
-        pHAir: 8,
-        ketersediaanNutrisi: 'Terbatas',
-        eucheuma_conttoni: 687,
-        eucheuma_spinosum: 1.303,
-    });
+    const [parameter, setParameter] = useState<ParameterTransaction[]>(
+        indikator.map((_, index) => ({
+            indikator_id: indikator[index].id,
+            nilai: null,
+        })),
+    );
 
     const [mse, setMSE] = useState<number | null>(null);
     const [rSquared, setRSquared] = useState<number | null>(null);
@@ -287,46 +196,26 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
          */
         return value * (max - min) + min;
     };
+    const getNilaiParameter: any = (parameter: ParameterTransaction[], id: number) => {
+        return parameter.filter((item) => item.indikator_id == id)[0].nilai;
+    };
     /**
      * Fungsi untuk prediksi eucheuma conttoni
      */
     const predict = () => {
-        if (!modelEucheuma || !modelGraacilaria || !parameter || !normalizationParams) {
+        if (!modelEucheuma || !parameter || !normalizationParams) {
             console.error('Model, parameter, or normalization params not ready');
             return;
         }
 
         try {
-            // Konversi field kategorikal ke nilai numerik
-            let kejernihan = opsiKejernihan.find((item) => item.label === parameter.kejernihanAir)?.value || 0;
-            let cahaya = opsiCahaya.find((item) => item.label === parameter.cahayaMatahari)?.value || 0;
-            let arus = opsiArus.find((item) => item.label === parameter.arusAir)?.value || 0;
-            let nutrisi = opsiNutrisi.find((item) => item.label === parameter.ketersediaanNutrisi)?.value || 0;
-
             // Normalisasi input
-            const inputArr = [
-                normalize(parameter.panjangGarisPantai, normalizationParams.featureRanges[0].min, normalizationParams.featureRanges[0].max),
-                normalize(parameter.jumlahPetani, normalizationParams.featureRanges[1].min, normalizationParams.featureRanges[1].max),
-                normalize(parameter.luasPotensi, normalizationParams.featureRanges[2].min, normalizationParams.featureRanges[2].max),
-                normalize(parameter.luasTanam, normalizationParams.featureRanges[3].min, normalizationParams.featureRanges[3].max),
-                normalize(parameter.jumlahTali, normalizationParams.featureRanges[4].min, normalizationParams.featureRanges[4].max),
-                normalize(parameter.jumlahBibit, normalizationParams.featureRanges[5].min, normalizationParams.featureRanges[5].max),
-                normalize(parameter.suhuAir, normalizationParams.featureRanges[6].min, normalizationParams.featureRanges[6].max),
-                normalize(parameter.salinitas, normalizationParams.featureRanges[7].min, normalizationParams.featureRanges[7].max),
-                normalize(kejernihan, normalizationParams.featureRanges[8].min, normalizationParams.featureRanges[8].max),
-                normalize(cahaya, normalizationParams.featureRanges[9].min, normalizationParams.featureRanges[9].max),
-                normalize(arus, normalizationParams.featureRanges[10].min, normalizationParams.featureRanges[10].max),
-                normalize(parameter.kedalamanAir, normalizationParams.featureRanges[11].min, normalizationParams.featureRanges[11].max),
-                normalize(parameter.pHAir, normalizationParams.featureRanges[12].min, normalizationParams.featureRanges[12].max),
-                normalize(nutrisi, normalizationParams.featureRanges[13].min, normalizationParams.featureRanges[13].max),
-            ];
-
-            const inputTensor = tf.tensor2d([inputArr]);
-            // const outputTensor = modelEucheuma.predict(inputTensor) as tf.Tensor;
-            // const output = outputTensor.dataSync()[0];
+            const inputArr: number[] = [];
+            indikator.map((item: any, index) => {
+                inputArr.push(normalize(getNilaiParameter(parameter, item.id), featureRanges[index].min, featureRanges[index].max));
+            });
 
             setPredictionEucheuma(predictData(modelEucheuma, inputArr, normalizationParams.outputMin, normalizationParams.outputMax));
-            setPredictionGracilaria(predictData(modelGraacilaria, inputArr, normalizationParams.outputMin, normalizationParams.outputMax));
 
             const Hasil_MSE = tf.losses.meanSquaredError(ysEuchuma, modelEucheuma.predict(tf.tensor2d(InputXs)) as tf.Tensor);
             const Hasil_RSquared = tf.metrics.r2Score(ysEuchuma, modelEucheuma.predict(tf.tensor2d(InputXs)) as tf.Tensor);
@@ -340,23 +229,49 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
         }
     };
 
-    const [showTable, setShowTable] = useState<boolean>(false);
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setParameter({
-            ...parameter,
-            [name]: parseFloat(value),
-        });
+
+        const key = name.split('.')[1];
+        if (key === undefined) {
+            console.error('Key is undefined:', name);
+            return;
+        }
+
+        const index = Number(key);
+        if (isNaN(index)) {
+            console.error('Key is not a number:', key);
+            return;
+        }
+
+        const parameterCopy = [...parameter];
+        const item = parameterCopy[index];
+        if (!item) {
+            console.error('Item is undefined at index:', index);
+            return;
+        }
+
+        parameterCopy[index] = {
+            ...item,
+            nilai: value,
+        };
+
+        setParameter(parameterCopy);
     };
     const handleSelectChange = (name: string, value: string) => {
-        if (name && value !== undefined && parameter) {
-            setParameter((prevData) => ({
-                ...prevData,
-                [name]: value,
-            }));
-        } else {
-            console.error('Invalid data: name, value, or parameter may be undefined');
-        }
+        setParameter((prevData) => ({
+            ...prevData,
+            parameter: parameter.map((item, index) => {
+                if (index === Number(name)) {
+                    return {
+                        ...item,
+                        nilai: value,
+                    };
+                } else {
+                    return item;
+                }
+            }),
+        }));
     };
 
     return (
@@ -364,13 +279,12 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
             <section className="mb-10 rounded-2xl border border-gray-200 bg-gradient-to-br from-white via-gray-50 to-gray-100 p-8 shadow-xl">
                 <h2 className="mb-8 text-2xl font-bold tracking-tight text-gray-900">Input Parameter</h2>
                 <form
-                    className="grid grid-cols-1 gap-8 md:grid-cols-2"
                     onSubmit={(e) => {
                         e.preventDefault();
                         predict();
                     }}
                 >
-                    <FormPanen parameter={parameter} handleChange={handleChange} handleSelectChange={handleSelectChange} />
+                    <FormPanen parameter={parameter} indikator={indikator} handleChange={handleChange} handleSelectChange={handleSelectChange} />
                     <div className="mt-8 flex gap-4 md:col-span-2">
                         <Button
                             type="button"
@@ -404,10 +318,6 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
                                 <span className="font-semibold">Hasil Prediksi Eucheuma Conttoni:</span>
                                 <span className="ml-2 text-lg">{predictionEucheuma.toFixed(2)} kg</span>
                             </li>
-                            <li>
-                                <span className="font-semibold">Hasil Prediksi Gracilia:</span>
-                                <span className="ml-2 text-lg">{predictionGracilaria?.toFixed(2)} kg</span>
-                            </li>
                         </ul>
                         <ul className="mx-auto mt-6 flex flex-col gap-2 rounded-xl bg-blue-50 p-6 shadow-inner">
                             <li className="font-medium text-blue-900">
@@ -420,14 +330,14 @@ export default function FormPrediction({ transaction }: MultipleLinearRegression
                     </>
                 )}
                 <div className="mt-8 rounded-2xl border border-gray-100 bg-white/80 p-6 shadow">
-                    <PredictionChart
-                        dataRumputlautX1={Ydataeucheuma_conttoni}
-                        dataRumputlautX2={Ydataeucheuma_spinosum}
-                        predictionX1={predictionEucheuma}
-                        predictionX2={predictionGracilaria}
-                        mse={mse}
-                        rSquared={rSquared}
-                    />
+                    {predictionEucheuma !== null && (
+                        <PredictionChart
+                            dataRumputlautX1={Ydataeucheuma_conttoni.slice(-10)}
+                            predictionX1={predictionEucheuma}
+                            mse={mse}
+                            rSquared={rSquared}
+                        />
+                    )}
                 </div>
             </section>
         </>

@@ -15,34 +15,6 @@ class HasilPanenSeeder extends Seeder
     {
         $tahun = ['2023', '2024', '2025'];
         $bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-        $hasil_panens = array(
-            array(
-                "id" => 1,
-                "bulan" => "Januari",
-                "tahun" => 2024,
-                "total_panen" => "2000",
-                "jenisRumputLaut" => json_encode([["nama" => "eucheuma_conttoni", "jumlah" => 1000], ["nama" => "eucheuma_spinosum", "jumlah" => 1000]]),
-                "parameter" =>  json_encode([
-                    "panjangGarisPantai" => 4,
-                    "jumlahPetani" => 200,
-                    "luasPotensi" => 4,
-                    "luasTanam" => 5,
-                    "jumlahTali" => 1000,
-                    "jumlahBibit" => 1000,
-                    "suhuAir" => 34,
-                    "salinitas" => 40,
-                    "kejernihanAir" => "Jernih",
-                    "cahayaMatahari" => "Berawan",
-                    "arusAir" => "Sedang",
-                    "kedalamanAir" => 2,
-                    "phAir" => 7,
-                    "ketersediaanNutrisi" => "Cukup"
-                ]),
-                "keterangan" => "TEST",
-                "created_at" => "2025-07-03 14:04:16",
-                "updated_at" => "2025-07-08 11:50:09",
-            ),
-        );
 
         foreach ($tahun as $val_tahun) {
             foreach ($bulan as $key => $value) {
@@ -50,26 +22,22 @@ class HasilPanenSeeder extends Seeder
                     "bulan" => $value,
                     "tahun" => $val_tahun,
                     "total_panen" => fake()->numberBetween(1000, 5000),
-                    "jenisRumputLaut" => json_encode([
-                        ["nama" => "eucheuma_conttoni", "jumlah" => fake()->numberBetween(500, 2000)],
-                        ["nama" => "eucheuma_spinosum", "jumlah" => fake()->numberBetween(500, 2000)]
-                    ]),
-                    "parameter" => json_encode([
-                        "panjangGarisPantai" => fake()->numberBetween(1, 10),
-                        "jumlahPetani" => fake()->numberBetween(50, 500),
-                        "luasPotensi" => fake()->numberBetween(1, 10),
-                        "luasTanam" => fake()->numberBetween(3, 8),
-                        "jumlahTali" =>   fake()->numberBetween(500, 2000),
-                        "jumlahBibit" =>   fake()->numberBetween(500, 2000),
-                        "suhuAir" =>   fake()->numberBetween(30, 35),
-                        "salinitas" => fake()->numberBetween(10, 50),
-                        "kejernihanAir" => fake()->randomElement(['Sangat Jernih', 'Jernih', 'Agak Keruh', 'Keruh', 'Sangat Keruh']),
-                        "cahayaMatahari" => fake()->randomElement(['Sangat Cerah', 'Cerah', 'Berawan', 'Mendung', 'Gelap']),
-                        "arusAir" => fake()->randomElement(['Sangat Cerah', 'Cerah', 'Berawan', 'Mendung', 'Gelap']),
-                        "kedalamanAir" => fake()->numberBetween(2, 7),
-                        "pHAir" => fake()->numberBetween(3, 8),
-                        "ketersediaanNutrisi" => fake()->randomElement(['Melimpah', 'Cukup', 'Terbatas', 'Sangat Sedikit']),
-                    ]),
+                    "jenisRumputLaut" => [
+                        ["nama" => "eucheuma_conttoni_basah", "jumlah" => fake()->numberBetween(500, 1000)],
+                        ["nama" => "eucheuma_conttoni_kering", "jumlah" => fake()->numberBetween(500, 1000)],
+                        ["nama" => "eucheuma_spinosum_basah", "jumlah" => fake()->numberBetween(500, 1000)],
+                        ["nama" => "eucheuma_spinosum_kering", "jumlah" => fake()->numberBetween(500, 1000)]
+                    ],
+                    "parameter" => [
+                        ["nilai" => fake()->numberBetween(100,500), "indikator_id" => 1],
+                        ["nilai" => fake()->numberBetween(100,500), "indikator_id" => 2],
+                        ["nilai" => fake()->numberBetween(300,600), "indikator_id" => 3],
+                        ["nilai" => fake()->numberBetween(300,600), "indikator_id" => 4],
+                        ["nilai" => fake()->numberBetween(100,300), "indikator_id" => 5],
+                        ["nilai" => fake()->numberBetween(130,300), "indikator_id" => 6],
+                        ["nilai" => fake()->numberBetween(28,35), "indikator_id" => 7],
+                        ["nilai" => fake()->numberBetween(28,35), "indikator_id" => 8]
+                    ],
 
                 ]);
             }

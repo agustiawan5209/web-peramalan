@@ -25,18 +25,21 @@ class FPGrowthController extends Controller
         $kriteria = Indikator::orderBy('id', 'asc')->get();
 
         $transaction = $panen->map(function ($item) use ($kriteria) {
-            $parameter = json_decode($item->parameter, true);
-            $jenis = json_decode($item->jenisRumputLaut, true);
+            $parameter = $item->parameter;
+            $jenis = $item->jenisRumputLaut;
             // dd($parameter);
             $data = [];
             foreach ($kriteria as $key => $value) {
                 $id = $value->id;
-                $pm = array_values(array_filter($parameter, function ($pm) use ($id) {
+                $nilai = array_values(array_filter($parameter, function ($pm) use ($id) {
                     return $pm['indikator_id'] == $id;
                 }))[0]['nilai'];
-                $data[$id] = $pm;
-            }
 
+                $rules = $this->getRules($value->attribut, $nilai);
+
+                $data[$id] = $rules;
+            }
+            $data[] = $this->bin_panen(intval($item->total_panen));
             return array_values($data);
         });
         // dd($transaction);
@@ -47,7 +50,31 @@ class FPGrowthController extends Controller
         ]);
     }
 
-    public function getRules($kriteria){
-        $rules = [];
+    public function bin_panen($value){
+        if($value < 2000){
+            return 'hasil_panen_rendah';
+        } elseif ($value <= 3500) {
+            return 'hasil_panen_sedang';
+        } else{
+            return 'hasil_panen_tinggi';
+        }
     }
+
+  public function getRules($rules, $value){
+    foreach ($rules as $item) {
+        $nilai = $item['nilai'];
+        $batas = $item['batas'];
+        $operator = $item['operator'];
+
+        if ($operator == '<' && intval($value) < intval($batas)) {
+            return $nilai;
+        } elseif ($operator == '<=' && intval($value) <= intval($batas)) {
+            return $nilai;
+        } elseif ($operator == '>' && intval($value) > intval($batas)) {
+            return $nilai;
+        }
+    }
+    return 0; // Tidak ada kondisi yang sesuai
+}
+
 }

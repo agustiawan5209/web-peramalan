@@ -30,8 +30,8 @@ export default function FpGrowthView({ breadcrumb, titlePage, transaksiPanen }: 
     // Tentukan nilai support dan confidence threshold
     // Support: Seberapa sering itemset muncul (0.3 = 30% dari total transaksi)
     // Confidence: Seberapa sering aturan terbukti benar
-    const [supportThreshold, setSupportThreshold] = useState(0.3);
-    const [confidenceThreshold, setConfidenceThreshold] = useState(0.4);
+    const [supportThreshold, setSupportThreshold] = useState(20);
+    const [confidenceThreshold, setConfidenceThreshold] = useState(20);
 
     return (
         <>
@@ -51,8 +51,7 @@ export default function FpGrowthView({ breadcrumb, titlePage, transaksiPanen }: 
                             />
                         </>
                     ) : (
-                         <h2 className="mb-4 text-2xl text-destructive font-bold">Peringatan : Data Hasil Panen Harus lebih dari 5</h2>
-
+                        <h2 className="mb-4 text-2xl font-bold text-destructive">Peringatan : Data Hasil Panen Harus lebih dari 5</h2>
                     )}
                 </div>
             </AppLayout>
