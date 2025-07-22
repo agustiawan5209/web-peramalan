@@ -29,15 +29,11 @@ class RoleSeeder extends Seeder
         $admin = Role::create(['name' => 'admin']);
         $user = Role::create(['name' => 'user']);
 
-        Permission::create(['name' => 'add panen']);
-        Permission::create(['name' => 'edit panen']);
-        Permission::create(['name' => 'read panen']);
-        Permission::create(['name' => 'delete panen']);
+        Permission::create(['name' => 'add indikator']);
+        Permission::create(['name' => 'edit indikator']);
+        Permission::create(['name' => 'read indikator']);
+        Permission::create(['name' => 'delete indikator']);
         $permission_admin = [
-            ['name' => 'add indikator'],
-            ['name' => 'edit indikator'],
-            ['name' => 'read indikator'],
-            ['name' => 'delete indikator'],
 
             ['name' => 'add dataset'],
             ['name' => 'edit dataset'],
@@ -55,8 +51,7 @@ class RoleSeeder extends Seeder
             $prms = Permission::create($value);
             $admin->givePermissionTo($prms);
         }
-        $admin->givePermissionTo(['name'=> 'edit label']);
-        $admin->givePermissionTo(['name'=> 'edit panen']);
+        $admin->givePermissionTo(['name'=> 'edit indikator']);
 
         $permission_user = [
             ['name' => 'read dataset'],
