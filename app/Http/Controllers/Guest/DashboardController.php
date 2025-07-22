@@ -1,26 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Guest;
 
 use Inertia\Inertia;
 use App\Models\Indikator;
 use App\Models\HasilPanen;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function __construct()
-    {
-        $user = Auth::user();
-
-        if ($user === null || !$user->hasRole(['admin', 'super_admin'])) {
-            auth()->logout();
-
-            return redirect()->route('home');
-        }
-    }
     public const BASE_JENISRUMPUT_LAUT = [
         'conttoniBasah',
         'conttoniKering',
@@ -41,7 +30,7 @@ class DashboardController extends Controller
             }
             return $data;
         });
-        return Inertia::render('dashboard', [
+        return Inertia::render('guest/dashboard', [
             'baseJenisRumputLaut' => self::BASE_JENISRUMPUT_LAUT,
             'totalDataPanen' => HasilPanen::all()->count(),
             'indikator' => Indikator::all()->count(),

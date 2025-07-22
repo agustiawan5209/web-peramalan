@@ -46,7 +46,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall title="Profile information" description="Update your name and email address" />
+                    <HeadingSmall title="Profile information" description="Update your name and Alamat Email" />
 
                     <form onSubmit={submit} className="space-y-6">
                         <div className="grid gap-2">
@@ -66,7 +66,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email address</Label>
+                            <Label htmlFor="email">Alamat Email</Label>
 
                             <Input
                                 id="email"
@@ -76,7 +76,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                 onChange={(e) => setData('email', e.target.value)}
                                 required
                                 autoComplete="username"
-                                placeholder="Email address"
+                                placeholder="Alamat Email"
                             />
 
                             <InputError className="mt-2" message={errors.email} />
@@ -85,7 +85,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         {mustVerifyEmail && auth.user.email_verified_at === null && (
                             <div>
                                 <p className="-mt-4 text-sm text-muted-foreground">
-                                    Your email address is unverified.{' '}
+                                    Your Alamat Email is unverified.{' '}
                                     <Link
                                         href={route('verification.send')}
                                         method="post"
@@ -98,7 +98,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
 
                                 {status === 'verification-link-sent' && (
                                     <div className="mt-2 text-sm font-medium text-green-600">
-                                        A new verification link has been sent to your email address.
+                                        A new verification link has been sent to your Alamat Email.
                                     </div>
                                 )}
                             </div>

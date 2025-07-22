@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import MainLayout from '@/layouts/main-layout';
+import MainLayout from '@/layouts/guest/main-layout';
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import {

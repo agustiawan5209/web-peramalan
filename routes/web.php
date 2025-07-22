@@ -1,23 +1,23 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FPGrowthController;
 use App\Http\Controllers\IndikatorController;
 use App\Http\Controllers\HasilPanenController;
 use App\Http\Controllers\PredictionController;
-use App\Http\Controllers\ModelStorageController;
-use App\Http\Controllers\PredictionModelController;
 use App\Http\Controllers\Web\WebPageController;
+use App\Http\Controllers\ModelStorageController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\PredictionModelController;
+use App\Http\Controllers\Guest\DashboardController as GuestDashboardController;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin|super_admin'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-
 
     Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::group(['prefix' => 'indikator', 'as' => 'indikator.'], function () {
@@ -71,8 +71,13 @@ Route::prefix('api/prediction')->group(function () {
 
 
 //
-Route::group(['as' => 'user.'], function () {
-    Route::controller(WebPageController::class)->group(function () {
-        Route::get('/form/prediksi', 'index')->name('form.prediksi');
+Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
+    Route::group(['as' => 'user.'], function () {
+
+        Route::get('user/dashboard', [GuestDashboardController::class, 'dashboard'])->name('dashboard');
+
+        Route::controller(WebPageController::class)->group(function () {
+            Route::get('/form/prediksi', 'index')->name('form.prediksi');
+        });
     });
 });

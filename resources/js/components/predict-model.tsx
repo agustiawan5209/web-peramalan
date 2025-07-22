@@ -88,7 +88,8 @@ export default function PredictModels({ models, normalizationParams, transaction
      *
      * @returns void
      */
-    const predictAll = () => {
+    const predictAll = (e: React.FormEvent) => {
+        e.preventDefault();
         if (!normalizationParams && models && actualData) return;
 
         const newPredictions = { ...predictions };
@@ -164,13 +165,13 @@ export default function PredictModels({ models, normalizationParams, transaction
         <div className={'rounded-lg border bg-white p-6 shadow'}>
             <h3 className="mb-4 text-lg font-semibold">Prediksi 4 Jenis Rumput Laut</h3>
             <div className={cn('grid grid-cols-1 gap-4', className)}>
-                <div className='col-span-1'>
+                <form onSubmit={predictAll} className='col-span-1'>
                     <FormPanen parameter={parameter} indikator={indikator} handleChange={handleChange} />
 
-                    <Button onClick={predictAll} className="mt-4 w-full">
+                    <Button type='submit' variant={'default'} className="mt-4 w-full">
                         Prediksi Semua
                     </Button>
-                </div>
+                </form>
                 <div className='col-span-1'>
                     {(predictions.conttoniBasah !== null ||
                         predictions.conttoniKering !== null ||

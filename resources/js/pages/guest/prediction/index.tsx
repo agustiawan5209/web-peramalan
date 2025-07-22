@@ -1,7 +1,7 @@
 // components/form-prediction.tsx
 import PredictModels from '@/components/predict-model';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import MainLayout from '@/layouts/main-layout';
+import MainLayout from '@/layouts/guest/main-layout';
 import { IndikatorTypes } from '@/types';
 import { loadModelFromDB } from '@/utils/modelstorage';
 import { Head } from '@inertiajs/react';

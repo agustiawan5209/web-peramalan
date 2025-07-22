@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { Link } from '@inertiajs/react';
+import { SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Github, Mail, MapPin, Menu, Phone, Waves, X } from 'lucide-react';
 import React, { type ReactNode } from 'react';
@@ -8,6 +9,8 @@ interface AppLayoutProps {
     children: ReactNode;
 }
 export default function MainLayout({ children }: AppLayoutProps) {
+    const page = usePage<SharedData>();
+    const { auth } = page.props;
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
     const fadeInUp = {
@@ -31,7 +34,7 @@ export default function MainLayout({ children }: AppLayoutProps) {
                 initial={{ opacity: 0, y: -50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="fixed top-0 right-0 left-0 z-50 border-b border-teal-100 bg-white/90 backdrop-blur-md"
+                className="static top-0 right-0 left-0 z-50 border-b border-teal-100 bg-white/90 backdrop-blur-md"
             >
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 items-center justify-between">
@@ -42,15 +45,33 @@ export default function MainLayout({ children }: AppLayoutProps) {
 
                         {/* Desktop Menu */}
                         <div className="hidden items-center space-x-8 md:flex">
-                            <a href="#" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                            <Link href="/" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
                                 Beranda
-                            </a>
-                            <Link href={route('login')} className="font-medium text-gray-700 transition-colors hover:text-teal-600">
-                                Masuk
                             </Link>
-                            <Link href={route('register')}>
-                                <Button className="w-fit bg-teal-600 text-white hover:bg-teal-700">Daftar</Button>
-                            </Link>
+                            {auth.user ? (
+                                <>
+                                    <Link href={route('user.dashboard')} className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                        <Button className="w-fit bg-teal-600 text-white hover:bg-teal-700">Dashboard</Button>
+                                    </Link>
+
+                                    <Link
+                                        href={route('logout')}
+                                        method="post"
+                                        className="p-2.5 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring  focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40"
+                                    >
+                                       Keluar
+                                    </Link>
+                                </>
+                            ) : (
+                                <>
+                                    <Link href={route('login')} className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                        Masuk
+                                    </Link>
+                                    <Link href={route('register')}>
+                                        <Button className="w-fit bg-teal-600 text-white hover:bg-teal-700">Daftar</Button>
+                                    </Link>
+                                </>
+                            )}
                         </div>
 
                         {/* Mobile Menu Button */}
@@ -86,7 +107,7 @@ export default function MainLayout({ children }: AppLayoutProps) {
             </motion.nav>
 
             {/* content */}
-            <main>{children}</main>
+            <main className='py-10'>{children}</main>
             {/* Footer */}
             <motion.footer
                 initial={{ opacity: 0 }}
