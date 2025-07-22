@@ -1,7 +1,8 @@
 // components/form-prediction.tsx
 import { IndikatorTypes } from '@/types';
+import { loadModelFromDB } from '@/utils/modelstorage';
 import * as tf from '@tensorflow/tfjs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PredictModels from './predict-model';
 import TrainModels from './train-model';
 interface FormPredictionProps {
@@ -24,7 +25,7 @@ export default function FormPrediction({ transactionX, transactionY, indikator }
     });
 
     const [normalizationParams, setNormalizationParams] = useState<any>(null);
-
+    const [isLoadingModels, setIsLoadingModels] = useState(false);
     const handleModelsTrained = (
         trainedModels: {
             conttoniBasah: tf.Sequential;
@@ -38,6 +39,55 @@ export default function FormPrediction({ transactionX, transactionY, indikator }
         setNormalizationParams(params);
     };
 
+    // Memuat model saat komponen mount
+    useEffect(() => {
+        const loadModels = async () => {
+            setIsLoadingModels(true);
+            try {
+                const [
+                    { model: conttoniBasahModel, normalizationParams: conttoniBasahNormalizationParams },
+                    { model: conttoniKeringModel, normalizationParams: conttoniKeringNormalizationParams },
+                    { model: spinosumBasahModel, normalizationParams: spinosumBasahNormalizationParams },
+                    { model: spinosumKeringModel, normalizationParams: spinosumKeringNormalizationParams },
+                    // ... lainnya
+                ] = await Promise.all([
+                    loadModelFromDB('conttoni_basah'),
+                    loadModelFromDB('conttoni_kering'),
+                    loadModelFromDB('spinosum_basah'),
+                    loadModelFromDB('spinosum_kering'),
+                    // ... lainnya
+                ]);
+
+                setModels({
+                    conttoniBasah: conttoniBasahModel,
+                    conttoniKering: conttoniKeringModel,
+                    spinosumBasah: spinosumBasahModel,
+                    spinosumKering: spinosumKeringModel,
+                });
+
+                 setNormalizationParams({
+                    featureRanges: {
+                         conttoniBasah: conttoniBasahNormalizationParams.featureRanges,
+                        conttoniKering: conttoniKeringNormalizationParams.featureRanges,
+                        spinosumBasah: spinosumBasahNormalizationParams.featureRanges,
+                        spinosumKering: spinosumKeringNormalizationParams.featureRanges,
+                    },
+                    outputParams: {
+                        conttoniBasah: {outputMin:conttoniBasahNormalizationParams.outputMin, outputMax:conttoniBasahNormalizationParams.outputMax},
+                        conttoniKering: {outputMin:conttoniKeringNormalizationParams.outputMin, outputMax:conttoniKeringNormalizationParams.outputMax},
+                        spinosumBasah: {outputMin:spinosumBasahNormalizationParams.outputMin, outputMax:spinosumBasahNormalizationParams.outputMax},
+                        spinosumKering: {outputMin:spinosumBasahNormalizationParams.outputMin, outputMax:spinosumBasahNormalizationParams.outputMax},
+                    },
+                });
+            } finally {
+                setIsLoadingModels(false);
+            }
+        };
+
+        loadModels();
+    }, []);
+
+    console.log(normalizationParams);
     return (
         <div className="space-y-6">
             <TrainModels indikator={indikator} transactionX={transactionX} transactionY={transactionY} onModelsTrained={handleModelsTrained} />

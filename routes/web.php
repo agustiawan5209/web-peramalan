@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\FPGrowthController;
-use App\Http\Controllers\HasilPanenController;
-use App\Http\Controllers\IndikatorController;
-use App\Http\Controllers\PredictionController;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FPGrowthController;
+use App\Http\Controllers\IndikatorController;
+use App\Http\Controllers\HasilPanenController;
+use App\Http\Controllers\PredictionController;
+use App\Http\Controllers\ModelStorageController;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -57,3 +58,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
+// routes/api.php
+Route::prefix('models')->group(function () {
+    Route::post('api/models/', [ModelStorageController::class, 'store'])->name('model.store');
+    Route::get('api/models/{modelName}', [ModelStorageController::class, 'show'])->name('model.show');
+});

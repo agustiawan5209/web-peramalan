@@ -22,7 +22,6 @@ interface PredictModelsProps {
         spinosumKering: number[];
     };
 }
-
 export default function PredictModels({ models, normalizationParams, transactionX, indikator, actualData }: PredictModelsProps) {
     const [parameter, setParameter] = useState<ParameterTransaction[]>(
         indikator.map((_, index) => ({
@@ -76,13 +75,18 @@ export default function PredictModels({ models, normalizationParams, transaction
 
         return denormalizedValue;
     };
+    /**
+     * Prediksi untuk setiap jenis rumput laut.
+     *
+     * @description
+     * Fungsi ini akan memprediksi nilai dari setiap jenis rumput laut
+     * berdasarkan input yang diberikan oleh pengguna. Fungsi ini juga
+     * akan menghitung metrik evaluasi model untuk setiap jenis rumput laut.
+     *
+     * @returns void
+     */
     const predictAll = () => {
         if (!normalizationParams && models && actualData) return;
-
-        const inputArr = indikator.map((_, i) => {
-            const param = parameter.find((p) => p.indikator_id === indikator[i].id);
-            return normalize(Number(param?.nilai), normalizationParams.featureRanges[i].min, normalizationParams.featureRanges[i].max);
-        });
 
         const newPredictions = { ...predictions };
         const newMetrics = { ...metrics };
@@ -92,26 +96,47 @@ export default function PredictModels({ models, normalizationParams, transaction
             const model = models[key as keyof typeof models];
             if (!model) return;
 
+            // Initialize the inputArr object outside forEach
+            const inputArr: Record<string, number[]> = {};
+
+            // Initialize empty array for each model key
+            inputArr[key] = [];
+
+            indikator.forEach((indikatorItem, i) => {
+                const param = parameter.find((p) => p.indikator_id === indikatorItem.id);
+                if (param) {
+                    const normalizedValue = normalize(
+                        Number(param.nilai),
+                        normalizationParams.featureRanges[key][i].min,
+                        normalizationParams.featureRanges[key][i].max,
+                    );
+                    inputArr[key].push(normalizedValue);
+                }
+            });
+
             const prediction = makePrediction(
                 model,
-                inputArr,
+                inputArr[key],
                 normalizationParams.outputParams[key].outputMin,
                 normalizationParams.outputParams[key].outputMax,
             );
+            console.log(prediction);
+
 
             newPredictions[key as keyof typeof newPredictions] = prediction;
 
             // Hitung metrik
             const xs = tf.tensor2d(
-                actualData[key].map((_, i) =>
-                    indikator.map((_, j) =>
-                        normalize(transactionX[i][j], normalizationParams.featureRanges[j].min, normalizationParams.featureRanges[j].max),
-                    ),
-                ),
+                actualData[key as keyof typeof actualData].map((_, i) => {
+                    console.log(key);
+                    return indikator.map((_, j) =>
+                        normalize(transactionX[i][j], normalizationParams.featureRanges[key][j].min, normalizationParams.featureRanges[key][j].max),
+                    );
+                }),
             );
 
             const ys = tf.tensor2d(
-                actualData[key].map((val) => [
+                actualData[key as keyof typeof actualData].map((val) => [
                     normalize(val, normalizationParams.outputParams[key].outputMin, normalizationParams.outputParams[key].outputMax),
                 ]),
             );
@@ -142,42 +167,58 @@ export default function PredictModels({ models, normalizationParams, transaction
                 Prediksi Semua
             </Button>
 
-            {(predictions.conttoniBasah !== null || predictions.conttoniKering !== null || predictions.spinosumBasah !== null || predictions.spinosumKering !== null) && (
+            {(predictions.conttoniBasah !== null ||
+                predictions.conttoniKering !== null ||
+                predictions.spinosumBasah !== null ||
+                predictions.spinosumKering !== null) && (
                 <div className="mt-6 space-y-4">
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                       {predictions.conttoniBasah && <PredictionCard
-                            title="Eucheuma Cottoni Basah"
-                            value={predictions.conttoniBasah}
-                            unit="kg"
-                            mse={metrics.conttoniBasah.mse}
-                            r2={metrics.conttoniBasah.r2}
-                        />}
-                       {predictions.conttoniKering && <PredictionCard
-                            title="Eucheuma Cottoni Kering"
-                            value={predictions.conttoniKering}
-                            unit="kg"
-                            mse={metrics.conttoniKering.mse}
-                            r2={metrics.conttoniKering.r2}
-                        />}
-                       {predictions.spinosumBasah && <PredictionCard
-                            title="Eucheuma spinosum Basah"
-                            value={predictions.spinosumBasah}
-                            unit="kg"
-                            mse={metrics.spinosumBasah.mse}
-                            r2={metrics.spinosumBasah.r2}
-                        />}
-                       {predictions.spinosumKering && <PredictionCard
-                            title="Eucheuma spinosum Kering"
-                            value={predictions.spinosumKering}
-                            unit="kg"
-                            mse={metrics.spinosumKering.mse}
-                            r2={metrics.spinosumKering.r2}
-                        />}
+                        {predictions.conttoniBasah && (
+                            <PredictionCard
+                                title="Eucheuma Cottoni Basah"
+                                value={predictions.conttoniBasah}
+                                unit="kg"
+                                mse={metrics.conttoniBasah.mse}
+                                r2={metrics.conttoniBasah.r2}
+                            />
+                        )}
+                        {predictions.conttoniKering && (
+                            <PredictionCard
+                                title="Eucheuma Cottoni Kering"
+                                value={predictions.conttoniKering}
+                                unit="kg"
+                                mse={metrics.conttoniKering.mse}
+                                r2={metrics.conttoniKering.r2}
+                            />
+                        )}
+                        {predictions.spinosumBasah && (
+                            <PredictionCard
+                                title="Eucheuma spinosum Basah"
+                                value={predictions.spinosumBasah}
+                                unit="kg"
+                                mse={metrics.spinosumBasah.mse}
+                                r2={metrics.spinosumBasah.r2}
+                            />
+                        )}
+                        {predictions.spinosumKering && (
+                            <PredictionCard
+                                title="Eucheuma spinosum Kering"
+                                value={predictions.spinosumKering}
+                                unit="kg"
+                                mse={metrics.spinosumKering.mse}
+                                r2={metrics.spinosumKering.r2}
+                            />
+                        )}
 
                         {/* 3 card lainnya untuk jenis yang lain */}
                     </div>
 
-                    <PredictionCharts predictionX1={predictions.conttoniBasah} dataRumputlautX1={actualData.conttoniBasah.slice(-10)} mse={metrics.conttoniBasah.mse} rSquared={metrics.conttoniBasah.r2} />
+                    <PredictionCharts
+                        predictionX1={predictions.conttoniBasah}
+                        dataRumputlautX1={actualData.conttoniBasah.slice(-10)}
+                        mse={metrics.conttoniBasah.mse}
+                        rSquared={metrics.conttoniBasah.r2}
+                    />
                 </div>
             )}
         </div>
