@@ -147,10 +147,12 @@ export default function GuestDashboard({ baseJenisRumputLaut, totalDataPanen, in
                                     <TrendingUp className="ml-2 h-5 w-5" />
                                 </Button>
                             </Link>
+                           <Link href={route('user.riwayatPengguna.index')}>
                             <Button variant="outline" size="lg" className="border-teal-200 px-8 py-3 text-teal-700 hover:bg-teal-50">
-                                Lihat Demo
+                                Riwayat Prediksi
                                 <Eye className="ml-2 h-5 w-5" />
                             </Button>
+                           </Link>
                         </motion.div>
                     </motion.div>
                 </div>

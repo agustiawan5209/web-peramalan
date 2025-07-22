@@ -9,6 +9,7 @@ class RiwayatPengguna extends Model
 
     protected $table = "riwayat_penggunas";
     protected $fillable = [
+        'user_id',
         'model',
         'user',
         'parameter',

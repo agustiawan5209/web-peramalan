@@ -1,8 +1,9 @@
+import { NavUser } from '@/components/nav-user';
 import { Button } from '@/components/ui/button';
 import { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Github, Mail, MapPin, Menu, Phone, Waves, X } from 'lucide-react';
+import { ExternalLink, Eye, Github, Mail, MapPin, Menu, Phone, Waves, X } from 'lucide-react';
 import React, { type ReactNode } from 'react';
 
 interface AppLayoutProps {
@@ -51,16 +52,21 @@ export default function MainLayout({ children }: AppLayoutProps) {
                             {auth.user ? (
                                 <>
                                     <Link href={route('user.dashboard')} className="font-medium text-gray-700 transition-colors hover:text-teal-600">
-                                        <Button className="w-fit bg-teal-600 text-white hover:bg-teal-700">Dashboard</Button>
+                                        Dashboard
                                     </Link>
-
                                     <Link
-                                        href={route('logout')}
-                                        method="post"
-                                        className="p-2.5 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring  focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40"
+                                        href={route('user.form.prediksi')}
+                                        className="font-medium text-gray-700 transition-colors hover:text-teal-600"
                                     >
-                                       Keluar
+                                        Mulai Prediksi
                                     </Link>
+                                    <Link href={route('user.riwayatPengguna.index')}>
+                                        <Button variant="outline" size="lg" className="border-teal-200 px-8 py-3 text-teal-700 hover:bg-teal-50">
+                                           Riwayat Prediksi
+                                            <Eye className="ml-2 h-5 w-5" />
+                                        </Button>
+                                    </Link>
+                                    <NavUser />
                                 </>
                             ) : (
                                 <>
@@ -107,7 +113,7 @@ export default function MainLayout({ children }: AppLayoutProps) {
             </motion.nav>
 
             {/* content */}
-            <main className='py-10'>{children}</main>
+            <main className="py-10">{children}</main>
             {/* Footer */}
             <motion.footer
                 initial={{ opacity: 0 }}

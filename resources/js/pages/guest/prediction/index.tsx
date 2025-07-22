@@ -104,6 +104,9 @@ export default function FormPrediction({ transactionX, transactionY, indikator }
                 <CardContent>
                     <CardHeader>
                         <CardTitle>Prediksi</CardTitle>
+                        <p className="mt-2 text-sm text-gray-600">
+                            Silakan pilih indikator yang diinginkan dan klik tombol &quot;Prediksi&quot; untuk melihat hasil prediksi berdasarkan input yang diberikan.
+                        </p>
                     </CardHeader>
 
                     <CardDescription>

@@ -42,6 +42,7 @@ class RiwayatPenggunaController extends Controller
             "parameter" => "required",
         ]);
         RiwayatPengguna::create([
+            "user_id" => Auth::user()->id,
             "user" => Auth::user(),
             "model" => $request->model,
             "parameter" => $request->parameter,

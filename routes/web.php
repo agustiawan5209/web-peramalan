@@ -11,6 +11,7 @@ use App\Http\Controllers\ModelStorageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\PredictionModelController;
 use App\Http\Controllers\Guest\DashboardController as GuestDashboardController;
+use App\Http\Controllers\Guest\RiwayatPrediksiController;
 use App\Http\Controllers\RiwayatPenggunaController;
 
 Route::get('/', function () {
@@ -76,7 +77,7 @@ Route::prefix('api/prediction')->group(function () {
     Route::post('/', [PredictionModelController::class, 'store'])->name('prediction.store');
     Route::get('/{modelName}', [PredictionModelController::class, 'show'])->name('prediction.show');
 });
- Route::post('/riwayat/store', [RiwayatPenggunaController::class, 'store'])->name('riwayatPengguna.store')->middleware(['auth']);
+Route::post('/riwayat/store', [RiwayatPenggunaController::class, 'store'])->name('riwayatPengguna.store')->middleware(['auth']);
 
 //
 Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
@@ -86,6 +87,13 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
 
         Route::controller(WebPageController::class)->group(function () {
             Route::get('/form/prediksi', 'index')->name('form.prediksi');
+        });
+
+        // Riwayat Pengguna
+        Route::group(['prefix' => 'user/riwayat', 'as' => 'riwayatPengguna.'], function () {
+            Route::get('/', [RiwayatPrediksiController::class, 'index'])->name('index');
+            Route::get('/detail/{riwayatPengguna}', [RiwayatPrediksiController::class, 'show'])->name('show');
+            Route::delete('/destroy/{riwayatPengguna}', [RiwayatPrediksiController::class, 'destroy'])->name('destroy');
         });
     });
 });

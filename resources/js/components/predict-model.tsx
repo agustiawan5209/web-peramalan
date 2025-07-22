@@ -148,7 +148,7 @@ export default function PredictModels({ models, normalizationParams, transaction
             preds.dispose();
         });
 
-        if (auth.user) {
+        if (auth.user && auth.role === 'user') {
             saveRiwayatUser(
                 indikator.map((_, i) => {
                     const param = parameter.find((p) => p.indikator_id === indikator[i].id);
@@ -167,6 +167,7 @@ export default function PredictModels({ models, normalizationParams, transaction
     const saveRiwayatUser = async (parameter: any, prediction:any) => {
         try {
             const response = await axios.post(route('riwayatPengguna.store'), {
+                user_id: auth.user.id,
                 user: auth.user,
                 model: prediction,
                 parameter: parameter,

@@ -12,6 +12,7 @@ import AuthLayout from '@/layouts/auth-layout';
 type RegisterForm = {
     name: string;
     email: string;
+    alamat: string;
     password: string;
     password_confirmation: string;
 };
@@ -20,6 +21,7 @@ export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm<Required<RegisterForm>>({
         name: '',
         email: '',
+        alamat: '',
         password: '',
         password_confirmation: '',
     });
@@ -32,7 +34,7 @@ export default function Register() {
     };
 
     return (
-        <AuthLayout title="Create an account" description="Enter your details below to create your account">
+        <AuthLayout title="Buat Akun" description="Masukkan data sebelum mengakses sistem">
             <Head title="Register" />
             <form className="flex flex-col gap-6" onSubmit={submit}>
                 <div className="grid gap-6">
@@ -54,7 +56,7 @@ export default function Register() {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Alamat Email</Label>
+                        <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
                             type="email"
@@ -67,6 +69,21 @@ export default function Register() {
                             placeholder="email@example.com"
                         />
                         <InputError message={errors.email} />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="alamat">Alamat Lengkap</Label>
+                        <Input
+                            id="alamat"
+                            type="text"
+                            required
+                            tabIndex={2}
+                            autoComplete="alamat"
+                            value={data.alamat}
+                            onChange={(e) => setData('alamat', e.target.value)}
+                            disabled={processing}
+                            placeholder="alamat............"
+                        />
+                        <InputError message={errors.alamat} />
                     </div>
 
                     <div className="grid gap-2">
@@ -103,14 +120,14 @@ export default function Register() {
 
                     <Button type="submit" className="mt-2 w-full" tabIndex={5} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                        Create account
+                        Buat Akun
                     </Button>
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
-                    Already have an account?{' '}
+                   Sudah Punya Akun?{' '}
                     <TextLink href={route('login')} tabIndex={6}>
-                        Log in
+                       Masuk
                     </TextLink>
                 </div>
             </form>

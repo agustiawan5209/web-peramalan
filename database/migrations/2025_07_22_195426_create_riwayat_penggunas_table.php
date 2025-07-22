@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('riwayat_penggunas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id');
             $table->json('user')->comment('menyimpan data pengguna');
             $table->json('model')->comment('menyimpan hasil prediksi model');
             $table->json('parameter')->comment('menyimpan parameter prediksi model');
