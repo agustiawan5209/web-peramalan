@@ -2,9 +2,11 @@
 import FormPanen from '@/components/form-panen';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { IndikatorTypes, ParameterTransaction } from '@/types';
+import { IndikatorTypes, ParameterTransaction, SharedData } from '@/types';
 import { savePredictionToDB } from '@/utils/predictionstorage';
+import { usePage } from '@inertiajs/react';
 import * as tf from '@tensorflow/tfjs';
+import axios from 'axios';
 import { useState } from 'react';
 import PredictionCharts from './prediction-chart';
 interface PredictModelsProps {
@@ -26,6 +28,8 @@ interface PredictModelsProps {
     className?: string;
 }
 export default function PredictModels({ models, normalizationParams, transactionX, indikator, actualData, className }: PredictModelsProps) {
+    const { auth } = usePage<SharedData>().props;
+
     const [parameter, setParameter] = useState<ParameterTransaction[]>(
         indikator.map((_, index) => ({
             indikator_id: indikator[index].id,
@@ -95,43 +99,30 @@ export default function PredictModels({ models, normalizationParams, transaction
         const newPredictions = { ...predictions };
         const newMetrics = { ...metrics };
 
+        // Initialize empty array for each model key
+        const inputArr = indikator.map((_, i) => {
+            const param = parameter.find((p) => p.indikator_id === indikator[i].id);
+            return normalize(Number(param?.nilai), normalizationParams.featureRanges[i].min, normalizationParams.featureRanges[i].max);
+        });
+
         // Prediksi untuk setiap jenis
         Object.keys(models).forEach((key: any) => {
             const model = models[key as keyof typeof models];
             if (!model) return;
 
             // Initialize the inputArr object outside forEach
-            const inputArr: Record<string, number[]> = {};
-
-            // Initialize empty array for each model key
-            inputArr[key] = [];
-
-            indikator.forEach((indikatorItem, i) => {
-                const param = parameter.find((p) => p.indikator_id === indikatorItem.id);
-                if (param) {
-                    const normalizedValue = normalize(
-                        Number(param.nilai),
-                        normalizationParams.featureRanges[i].min,
-                        normalizationParams.featureRanges[i].max,
-                    );
-                    inputArr[key].push(normalizedValue);
-                }
-            });
 
             const prediction = makePrediction(
                 model,
-                inputArr[key],
+                inputArr,
                 normalizationParams.outputParams[key].outputMin,
                 normalizationParams.outputParams[key].outputMax,
             );
-            console.log(prediction);
-
             newPredictions[key as keyof typeof newPredictions] = prediction;
 
             // Hitung metrik
             const xs = tf.tensor2d(
                 actualData[key as keyof typeof actualData].map((_, i) => {
-                    console.log(key);
                     return indikator.map((_, j) =>
                         normalize(transactionX[i][j], normalizationParams.featureRanges[j].min, normalizationParams.featureRanges[j].max),
                     );
@@ -157,22 +148,45 @@ export default function PredictModels({ models, normalizationParams, transaction
             preds.dispose();
         });
 
+        if (auth.user) {
+            saveRiwayatUser(
+                indikator.map((_, i) => {
+                    const param = parameter.find((p) => p.indikator_id === indikator[i].id);
+                    return {
+                        indikator: _.nama,
+                        nilai: param?.nilai,
+                    };
+                }),
+                newPredictions
+            );
+        }
         setPredictions(newPredictions);
         setMetrics(newMetrics);
     };
 
+    const saveRiwayatUser = async (parameter: any, prediction:any) => {
+        try {
+            const response = await axios.post(route('riwayatPengguna.store'), {
+                user: auth.user,
+                model: prediction,
+                parameter: parameter,
+            });
+        } catch (err) {
+            console.log('gagal menyimpan riwayat', err);
+        }
+    };
     return (
         <div className={'rounded-lg border bg-white p-6 shadow'}>
             <h3 className="mb-4 text-lg font-semibold">Prediksi 4 Jenis Rumput Laut</h3>
             <div className={cn('grid grid-cols-1 gap-4', className)}>
-                <form onSubmit={predictAll} className='col-span-1'>
+                <form onSubmit={predictAll} className="col-span-1">
                     <FormPanen parameter={parameter} indikator={indikator} handleChange={handleChange} />
 
-                    <Button type='submit' variant={'default'} className="mt-4 w-full">
+                    <Button type="submit" variant={'default'} className="mt-4 w-full">
                         Prediksi Semua
                     </Button>
                 </form>
-                <div className='col-span-1'>
+                <div className="col-span-1">
                     {(predictions.conttoniBasah !== null ||
                         predictions.conttoniKering !== null ||
                         predictions.spinosumBasah !== null ||

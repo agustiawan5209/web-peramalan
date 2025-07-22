@@ -82,7 +82,6 @@ export default function FormPrediction({ transactionX, transactionY, indikator }
         loadModels();
     }, []);
 
-    console.log(normalizationParams);
     return (
         <div className="space-y-6">
             <TrainModels indikator={indikator} transactionX={transactionX} transactionY={transactionY} onModelsTrained={handleModelsTrained} />

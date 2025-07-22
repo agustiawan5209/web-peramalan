@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { BarChart3, ChartColumnIncreasing, Database, IndentIcon, Link2Icon, Settings, Waves } from 'lucide-react';
+import { BarChart3, ChartColumnIncreasing, Clock10, Database, IndentIcon, Link2Icon, Settings, Waves } from 'lucide-react';
 // Import the default export from each file
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { cn } from '@/lib/utils';
@@ -22,6 +22,7 @@ export default function AppSidebarLayout({ children, breadcrumbs = [] }: PropsWi
         { title: 'Data-Panen', href: '/admin/hasil-panen', icon: Database },
         { title: 'Pola-Asosiasi', href: '/fpgrowth', icon: Link2Icon },
         { title: 'Regresi Linear Berganda', href: '/prediction', icon: ChartColumnIncreasing },
+        { title: 'Riwayat Prediksi', href: '/admin/riwayat', icon: Clock10 },
     ];
 
     const page = usePage<SharedData>();
