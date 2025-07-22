@@ -1,10 +1,12 @@
 import ModelCard from '@/components/dashboard/ModelCard';
-import PredictionChart from '@/components/dashboard/PredictionChart';
+import PredictionCharts from '@/components/prediction-chart';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
+import { loadPredictionFromDB } from '@/utils/predictionstorage';
 import { Head } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Activity, Database, Leaf, TrendingUp } from 'lucide-react';
+import { Database, Leaf, TrendingUp } from 'lucide-react';
+import { useEffect, useState } from 'react';
 // Import the default export from each file
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -13,13 +15,62 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Dashboard() {
+interface DashboardViewProps {
+    baseJenisRumputLaut: string[];
+    totalDataPanen: number;
+    indikator: number;
+    transactionY: {
+        eucheuma_conttoni_basah: number;
+        eucheuma_conttoni_kering: number;
+        eucheuma_spinosum_basah: number;
+        eucheuma_spinosum_kering: number;
+    }[];
+}
+
+export default function Dashboard({ baseJenisRumputLaut, totalDataPanen, indikator, transactionY }: DashboardViewProps) {
     const stats = [
-        { title: 'Total Data Panen', value: '1,245', icon: <Database size={24} />, change: '+12%' },
-        { title: 'Model Tersedia', value: '3', icon: <Leaf size={24} />, change: '+1 baru' },
-        { title: 'Akurasi Terbaik', value: '92%', icon: <TrendingUp size={24} />, change: '+2%' },
-        { title: 'Prediksi Bulan Ini', value: '156', icon: <Activity size={24} />, change: '+8%' },
+        { title: 'Total Data Panen', value: totalDataPanen, icon: <Database size={24} /> },
+        { title: 'Model Tersedia', value: '4', icon: <Leaf size={24} /> },
+        { title: 'Total Indikator', value: indikator, icon: <TrendingUp size={24} />, change: '+2%' },
     ];
+
+    const [prediction, setPrediction] = useState<{
+        conttoniBasah: { prediction: number; mse: number; rsquared: number };
+        conttoniKering: { prediction: number; mse: number; rsquared: number };
+        spinosumBasah: { prediction: number; mse: number; rsquared: number };
+        spinosumKering: { prediction: number; mse: number; rsquared: number };
+    }>({
+        conttoniBasah: { prediction: 0, mse: 0, rsquared: 0 },
+        conttoniKering: { prediction: 0, mse: 0, rsquared: 0 },
+        spinosumBasah: { prediction: 0, mse: 0, rsquared: 0 },
+        spinosumKering: { prediction: 0, mse: 0, rsquared: 0 },
+    });
+    const [actualData, setActualData] = useState<{
+        conttoniBasah: number[];
+        conttoniKering: number[];
+        spinosumBasah: number[];
+        spinosumKering: number[];
+    }>({
+        conttoniBasah: [],
+        conttoniKering: [],
+        spinosumBasah: [],
+        spinosumKering: [],
+    });
+    useEffect(() => {
+        baseJenisRumputLaut.map(async (jenisRumputLaut) => {
+            const { prediction, mse, rsquared } = await loadPredictionFromDB(jenisRumputLaut);
+            setPrediction((prev: any) => ({
+                ...prev,
+                [jenisRumputLaut]: { prediction, mse, rsquared },
+            }));
+        });
+        setActualData({
+            conttoniBasah: transactionY.map((p) => p.eucheuma_conttoni_basah),
+            conttoniKering: transactionY.map((p) => p.eucheuma_conttoni_kering),
+            spinosumBasah: transactionY.map((p) => p.eucheuma_spinosum_basah),
+            spinosumKering: transactionY.map((p) => p.eucheuma_spinosum_kering),
+        });
+    }, [baseJenisRumputLaut]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -28,7 +79,7 @@ export default function Dashboard() {
                 <h1 className="text-2xl font-bold text-gray-800">Dashboard Prediksi Panen Rumput Laut</h1>
 
                 {/* Statistik */}
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {stats.map((stat, index) => (
                         <motion.div
                             key={stat.title}
@@ -58,13 +109,35 @@ export default function Dashboard() {
                         className="rounded-lg border border-gray-100 bg-white p-4 shadow-sm lg:col-span-2"
                     >
                         <h2 className="mb-4 text-lg font-semibold">Prediksi Panen 6 Bulan Mendatang</h2>
-                        <PredictionChart />
+                        <PredictionCharts
+                            predictionX1={prediction.conttoniBasah.prediction}
+                            predictionX2={prediction.conttoniKering.prediction}
+                            predictionX3={prediction.spinosumBasah.prediction}
+                            predictionX4={prediction.spinosumKering.prediction}
+                            dataRumputlautX1={actualData.conttoniBasah.slice(-10)}
+                            dataRumputlautX2={actualData.conttoniKering.slice(-10)}
+                            dataRumputlautX3={actualData.spinosumBasah.slice(-10)}
+                            dataRumputlautX4={actualData.spinosumKering.slice(-10)}
+                        />
                     </motion.div>
 
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="space-y-4">
-                        <ModelCard title="Regresi Linear Berganda" accuracy={0.92} lastUpdated="2 hari lalu" />
-                        <ModelCard title="FP-Growth" accuracy={0.88} lastUpdated="1 minggu lalu" />
-                    </motion.div>
+                    {prediction && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="space-y-4">
+                            {prediction &&
+                                Object.keys(prediction).map((jenisRumputLaut) => {
+                                    const jenisRumputLautKey = jenisRumputLaut as keyof typeof prediction;
+                                    return (
+                                        <ModelCard
+                                            key={jenisRumputLaut}
+                                            title={jenisRumputLaut}
+                                            prediction={prediction[jenisRumputLautKey].prediction}
+                                            mse={prediction[jenisRumputLautKey].mse}
+                                            rsquared={prediction[jenisRumputLautKey].rsquared}
+                                        />
+                                    );
+                                })}
+                        </motion.div>
+                    )}
                 </div>
             </div>
         </AppLayout>

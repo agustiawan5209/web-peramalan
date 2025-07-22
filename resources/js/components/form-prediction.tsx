@@ -66,12 +66,7 @@ export default function FormPrediction({ transactionX, transactionY, indikator }
                 });
 
                  setNormalizationParams({
-                    featureRanges: {
-                         conttoniBasah: conttoniBasahNormalizationParams.featureRanges,
-                        conttoniKering: conttoniKeringNormalizationParams.featureRanges,
-                        spinosumBasah: spinosumBasahNormalizationParams.featureRanges,
-                        spinosumKering: spinosumKeringNormalizationParams.featureRanges,
-                    },
+                    featureRanges: conttoniBasahNormalizationParams.featureRanges,
                     outputParams: {
                         conttoniBasah: {outputMin:conttoniBasahNormalizationParams.outputMin, outputMax:conttoniBasahNormalizationParams.outputMax},
                         conttoniKering: {outputMin:conttoniKeringNormalizationParams.outputMin, outputMax:conttoniKeringNormalizationParams.outputMax},

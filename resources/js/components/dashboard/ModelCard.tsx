@@ -2,12 +2,13 @@ import { motion } from 'framer-motion'
 import { Leaf, BarChart2, Clock, ChevronRight } from 'lucide-react'
 
 interface ModelCardProps {
-  title: string
-  accuracy: number
-  lastUpdated: string
+  title: string;
+  prediction: string | number;
+  mse: number;
+  rsquared: string | number;
 }
 
-const ModelCard = ({ title, accuracy, lastUpdated }: ModelCardProps) => {
+const ModelCard = ({ title, prediction, mse, rsquared }: ModelCardProps) => {
   return (
     <motion.div
       whileHover={{ y: -2 }}
@@ -19,15 +20,15 @@ const ModelCard = ({ title, accuracy, lastUpdated }: ModelCardProps) => {
             <Leaf size={20} />
           </div>
           <div>
-            <h3 className="font-medium">{title}</h3>
+            <h3 className="font-medium">Euchuma {title}</h3>
             <div className="flex items-center gap-2 mt-1">
               <BarChart2 size={14} className="text-gray-400" />
-              <span className="text-sm text-gray-500">Akurasi: {(accuracy * 100).toFixed(0)}%</span>
+              <span className="text-sm text-gray-500">Prediksi: {Number(prediction).toFixed(2)} Kg</span>
             </div>
-            <div className="flex items-center gap-2 mt-1">
+            {/* <div className="flex items-center gap-2 mt-1">
               <Clock size={14} className="text-gray-400" />
-              <span className="text-sm text-gray-500">Update: {lastUpdated}</span>
-            </div>
+              <span className="text-sm text-gray-500">Update: {mse}</span>
+            </div> */}
           </div>
         </div>
         <ChevronRight size={20} className="text-gray-400" />

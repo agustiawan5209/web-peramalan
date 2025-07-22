@@ -2,58 +2,45 @@ import Chart from 'chart.js/auto';
 import { useEffect, useRef } from 'react';
 
 interface PredictionChartProps {
-    predictionX1?: number | null; // Assuming prediction is an array of numbers
-    predictionX2?: number | null; // Assuming prediction is an array of numbers
-    dataRumputlautX1?: number[] | null; // Optional prop for additional data
-    dataRumputlautX2?: number[] | null; // Optional prop for additional data
-    mse: number | null;
-    rSquared: number | null;
+    predictionX1?: number | null; // Cottoni Basah
+    predictionX2?: number | null; // Cottoni Kering
+    predictionX3?: number | null; // Spinosum Basah
+    predictionX4?: number | null; // Spinosum Kering
+    dataRumputlautX1?: number[] | null; // Actual data for Cottoni Basah
+    dataRumputlautX2?: number[] | null; // Actual data for Cottoni Basah
+    dataRumputlautX3?: number[] | null; // Actual data for Cottoni Basah
+    dataRumputlautX4?: number[] | null; // Actual data for Cottoni Basah
 }
-const PredictionChart = ({ predictionX1, predictionX2, dataRumputlautX1, dataRumputlautX2, mse, rSquared }: PredictionChartProps) => {
+
+const PredictionChart = ({
+    predictionX1,
+    predictionX2,
+    predictionX3,
+    predictionX4,
+    dataRumputlautX1,
+    dataRumputlautX2,
+    dataRumputlautX3,
+    dataRumputlautX4,
+}: PredictionChartProps) => {
     const chartRef = useRef<HTMLCanvasElement>(null);
-    const metricChartRef = useRef<HTMLCanvasElement>(null);
+
     useEffect(() => {
-        if (chartRef.current && metricChartRef.current) {
-            // Chart untuk hasil prediksi
+        if (chartRef.current) {
             const ctx = chartRef.current.getContext('2d');
 
-            // Chart untuk metrik evaluasi
-            const metricCtx = metricChartRef.current.getContext('2d');
-            if (metricCtx && ctx) {
-                const metricChart = new Chart(metricCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['MSE', 'R-squared'],
-                        datasets: [
-                            {
-                                label: 'Metrik Evaluasi Model',
-                                data: [mse, rSquared],
-                                backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(75, 192, 192, 0.5)'],
-                                borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
-                                borderWidth: 1,
-                            },
-                        ],
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Nilai Metrik',
-                                },
-                            },
-                        },
-                    },
-                });
-                // Chart untuk hasil prediksi
+            if (ctx) {
+
+                // Prediction chart with all four datasets
                 const predictionChart = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: dataRumputlautX1 ? [...dataRumputlautX1.map((_, index) => ` ${index + 1}`), 'Prediksi'] : ['Prediksi'],
+                        labels: dataRumputlautX1
+                            ? [...dataRumputlautX1.map((_, index) => ` ${index + 1}`), 'Prediksi']
+                            : ['Prediksi'],
                         datasets: [
+                            // Actual Cottoni Basah data
                             {
-                                label: 'Produktivitas Rumput Laut Eucheuma',
+                                label: 'Actual Cottoni Basah',
                                 data: [...(dataRumputlautX1 || []), null],
                                 fill: false,
                                 backgroundColor: 'rgba(54, 162, 235, 0.5)',
@@ -63,14 +50,82 @@ const PredictionChart = ({ predictionX1, predictionX2, dataRumputlautX1, dataRum
                                 pointRadius: 3,
                             },
                             {
-                                label: 'Prediksi Rumput Laut Eucheuma',
-                                data: [...(dataRumputlautX1 || []), predictionX1],
+                                label: 'Actual Cottoni Kering',
+                                data: [...(dataRumputlautX2 || []), null],
                                 fill: false,
-                                backgroundColor: 'rgba(77, 255, 190,0.5)',
-                                borderColor: 'rgba(77, 255, 190,1)',
+                                backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                                borderColor: 'rgba(255, 159, 64, 1)',
                                 borderWidth: 2,
                                 tension: 0.3,
                                 pointRadius: 3,
+                            },
+                            {
+                                label: 'Actual Spinosum Basah',
+                                data: [...(dataRumputlautX3 || []), null],
+                                fill: false,
+                                backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                                borderColor: 'rgba(153, 102, 255, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                pointRadius: 3,
+                            },
+                            {
+                                label: 'Actual Spinosum Kering',
+                                data: [...(dataRumputlautX4 || []), null],
+                                fill: false,
+                                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                pointRadius: 3,
+                            },
+                            // Predicted Cottoni Basah
+                            {
+                                label: 'Prediksi Cottoni Basah',
+                                data: [...(dataRumputlautX1 || []).map((item) => item), predictionX1],
+                                fill: false,
+                                backgroundColor: 'rgba(77, 255, 190, 0.5)',
+                                borderColor: 'rgba(77, 255, 190, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                pointRadius: 5,
+                                borderDash: [5, 5],
+                            },
+                            // Predicted Cottoni Kering
+                            {
+                                label: 'Prediksi Cottoni Kering',
+                                data: [...(dataRumputlautX2 || []).map((item)=> item), predictionX2],
+                                fill: false,
+                                backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                                borderColor: 'rgba(255, 159, 64, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                pointRadius: 5,
+                                borderDash: [5, 5],
+                            },
+                            // Predicted Spinosum Basah
+                            {
+                                label: 'Prediksi Spinosum Basah',
+                                data: [...(dataRumputlautX3 || []).map((item)=> item), predictionX3],
+                                fill: false,
+                                backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                                borderColor: 'rgba(153, 102, 255, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                pointRadius: 5,
+                                borderDash: [5, 5],
+                            },
+                            // Predicted Spinosum Kering
+                            {
+                                label: 'Prediksi Spinosum Kering',
+                                data: [...(dataRumputlautX4 || []).map((item)=> item), predictionX4],
+                                fill: false,
+                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                pointRadius: 5,
+                                borderDash: [5, 5],
                             },
                         ],
                     },
@@ -79,6 +134,7 @@ const PredictionChart = ({ predictionX1, predictionX2, dataRumputlautX1, dataRum
                         plugins: {
                             legend: {
                                 display: true,
+                                position: 'bottom',
                             },
                         },
                         scales: {
@@ -98,27 +154,19 @@ const PredictionChart = ({ predictionX1, predictionX2, dataRumputlautX1, dataRum
                         },
                     },
                 });
+
                 return () => {
                     predictionChart.destroy();
-                    metricChart.destroy();
                 };
-            } else {
-                console.error('Metric chart context is null');
             }
         }
-    }, [predictionX1, predictionX2, mse, rSquared]);
+    }, [predictionX1, predictionX2, predictionX3, predictionX4]);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div>
-                <h3>Hasil Prediksi Produktivitas Rumput Laut 10 bulan terakhir</h3>
+            <div className='w-full flex flex-col items-center h-max'>
+                <h3>Hasil Prediksi Produktivitas Rumput Laut</h3>
                 <canvas ref={chartRef} width="400" height="200"></canvas>
             </div>
-            <div>
-                <h3>Metrik Evaluasi Model</h3>
-                <canvas ref={metricChartRef} width="400" height="200"></canvas>
-            </div>
-        </div>
     );
 };
 

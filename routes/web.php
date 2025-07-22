@@ -8,6 +8,7 @@ use App\Http\Controllers\IndikatorController;
 use App\Http\Controllers\HasilPanenController;
 use App\Http\Controllers\PredictionController;
 use App\Http\Controllers\ModelStorageController;
+use App\Http\Controllers\PredictionModelController;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -61,4 +62,8 @@ require __DIR__ . '/auth.php';
 Route::prefix('models')->group(function () {
     Route::post('api/models/', [ModelStorageController::class, 'store'])->name('model.store');
     Route::get('api/models/{modelName}', [ModelStorageController::class, 'show'])->name('model.show');
+});
+Route::prefix('api/prediction')->group(function () {
+    Route::post('/', [PredictionModelController::class, 'store'])->name('prediction.store');
+    Route::get('/{modelName}', [PredictionModelController::class, 'show'])->name('prediction.show');
 });

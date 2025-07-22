@@ -5,6 +5,7 @@ import { IndikatorTypes, ParameterTransaction } from '@/types';
 import * as tf from '@tensorflow/tfjs';
 import { useState } from 'react';
 import PredictionCharts from './prediction-chart';
+import { savePredictionToDB } from '@/utils/predictionstorage';
 interface PredictModelsProps {
     models: {
         conttoniBasah: tf.Sequential | null;
@@ -107,8 +108,8 @@ export default function PredictModels({ models, normalizationParams, transaction
                 if (param) {
                     const normalizedValue = normalize(
                         Number(param.nilai),
-                        normalizationParams.featureRanges[key][i].min,
-                        normalizationParams.featureRanges[key][i].max,
+                        normalizationParams.featureRanges[i].min,
+                        normalizationParams.featureRanges[i].max,
                     );
                     inputArr[key].push(normalizedValue);
                 }
@@ -130,7 +131,7 @@ export default function PredictModels({ models, normalizationParams, transaction
                 actualData[key as keyof typeof actualData].map((_, i) => {
                     console.log(key);
                     return indikator.map((_, j) =>
-                        normalize(transactionX[i][j], normalizationParams.featureRanges[key][j].min, normalizationParams.featureRanges[key][j].max),
+                        normalize(transactionX[i][j], normalizationParams.featureRanges[j].min, normalizationParams.featureRanges[j].max),
                     );
                 }),
             );
@@ -147,6 +148,7 @@ export default function PredictModels({ models, normalizationParams, transaction
                 r2: tf.metrics.r2Score(ys, preds).dataSync()[0],
             };
 
+            savePredictionToDB(prediction, key, newMetrics[key as keyof typeof newMetrics].mse, newMetrics[key as keyof typeof newMetrics].r2);
             // Cleanup
             xs.dispose();
             ys.dispose();
@@ -212,13 +214,17 @@ export default function PredictModels({ models, normalizationParams, transaction
 
                         {/* 3 card lainnya untuk jenis yang lain */}
                     </div>
-
                     <PredictionCharts
                         predictionX1={predictions.conttoniBasah}
+                        predictionX2={predictions.conttoniKering}
+                        predictionX3={predictions.spinosumBasah}
+                        predictionX4={predictions.spinosumKering}
                         dataRumputlautX1={actualData.conttoniBasah.slice(-10)}
-                        mse={metrics.conttoniBasah.mse}
-                        rSquared={metrics.conttoniBasah.r2}
+                        dataRumputlautX2={actualData.conttoniKering.slice(-10)}
+                        dataRumputlautX3={actualData.spinosumBasah.slice(-10)}
+                        dataRumputlautX4={actualData.spinosumKering.slice(-10)}
                     />
+
                 </div>
             )}
         </div>
