@@ -1,11 +1,12 @@
 // components/predict-models.tsx
 import FormPanen from '@/components/form-panen';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { IndikatorTypes, ParameterTransaction } from '@/types';
+import { savePredictionToDB } from '@/utils/predictionstorage';
 import * as tf from '@tensorflow/tfjs';
 import { useState } from 'react';
 import PredictionCharts from './prediction-chart';
-import { savePredictionToDB } from '@/utils/predictionstorage';
 interface PredictModelsProps {
     models: {
         conttoniBasah: tf.Sequential | null;
@@ -22,8 +23,9 @@ interface PredictModelsProps {
         spinosumBasah: number[];
         spinosumKering: number[];
     };
+    className?: string;
 }
-export default function PredictModels({ models, normalizationParams, transactionX, indikator, actualData }: PredictModelsProps) {
+export default function PredictModels({ models, normalizationParams, transactionX, indikator, actualData, className }: PredictModelsProps) {
     const [parameter, setParameter] = useState<ParameterTransaction[]>(
         indikator.map((_, index) => ({
             indikator_id: indikator[index].id,
@@ -123,7 +125,6 @@ export default function PredictModels({ models, normalizationParams, transaction
             );
             console.log(prediction);
 
-
             newPredictions[key as keyof typeof newPredictions] = prediction;
 
             // Hitung metrik
@@ -160,73 +161,76 @@ export default function PredictModels({ models, normalizationParams, transaction
     };
 
     return (
-        <div className="rounded-lg border bg-white p-6 shadow">
+        <div className={'rounded-lg border bg-white p-6 shadow'}>
             <h3 className="mb-4 text-lg font-semibold">Prediksi 4 Jenis Rumput Laut</h3>
+            <div className={cn('grid grid-cols-1 gap-4', className)}>
+                <div className='col-span-1'>
+                    <FormPanen parameter={parameter} indikator={indikator} handleChange={handleChange} />
 
-            <FormPanen parameter={parameter} indikator={indikator} handleChange={handleChange} />
-
-            <Button onClick={predictAll} className="mt-4 w-full">
-                Prediksi Semua
-            </Button>
-
-            {(predictions.conttoniBasah !== null ||
-                predictions.conttoniKering !== null ||
-                predictions.spinosumBasah !== null ||
-                predictions.spinosumKering !== null) && (
-                <div className="mt-6 space-y-4">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        {predictions.conttoniBasah && (
-                            <PredictionCard
-                                title="Eucheuma Cottoni Basah"
-                                value={predictions.conttoniBasah}
-                                unit="kg"
-                                mse={metrics.conttoniBasah.mse}
-                                r2={metrics.conttoniBasah.r2}
-                            />
-                        )}
-                        {predictions.conttoniKering && (
-                            <PredictionCard
-                                title="Eucheuma Cottoni Kering"
-                                value={predictions.conttoniKering}
-                                unit="kg"
-                                mse={metrics.conttoniKering.mse}
-                                r2={metrics.conttoniKering.r2}
-                            />
-                        )}
-                        {predictions.spinosumBasah && (
-                            <PredictionCard
-                                title="Eucheuma spinosum Basah"
-                                value={predictions.spinosumBasah}
-                                unit="kg"
-                                mse={metrics.spinosumBasah.mse}
-                                r2={metrics.spinosumBasah.r2}
-                            />
-                        )}
-                        {predictions.spinosumKering && (
-                            <PredictionCard
-                                title="Eucheuma spinosum Kering"
-                                value={predictions.spinosumKering}
-                                unit="kg"
-                                mse={metrics.spinosumKering.mse}
-                                r2={metrics.spinosumKering.r2}
-                            />
-                        )}
-
-                        {/* 3 card lainnya untuk jenis yang lain */}
-                    </div>
-                    <PredictionCharts
-                        predictionX1={predictions.conttoniBasah}
-                        predictionX2={predictions.conttoniKering}
-                        predictionX3={predictions.spinosumBasah}
-                        predictionX4={predictions.spinosumKering}
-                        dataRumputlautX1={actualData.conttoniBasah.slice(-10)}
-                        dataRumputlautX2={actualData.conttoniKering.slice(-10)}
-                        dataRumputlautX3={actualData.spinosumBasah.slice(-10)}
-                        dataRumputlautX4={actualData.spinosumKering.slice(-10)}
-                    />
-
+                    <Button onClick={predictAll} className="mt-4 w-full">
+                        Prediksi Semua
+                    </Button>
                 </div>
-            )}
+                <div className='col-span-1'>
+                    {(predictions.conttoniBasah !== null ||
+                        predictions.conttoniKering !== null ||
+                        predictions.spinosumBasah !== null ||
+                        predictions.spinosumKering !== null) && (
+                        <div className="mt-6 space-y-4">
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                {predictions.conttoniBasah && (
+                                    <PredictionCard
+                                        title="Eucheuma Cottoni Basah"
+                                        value={predictions.conttoniBasah}
+                                        unit="kg"
+                                        mse={metrics.conttoniBasah.mse}
+                                        r2={metrics.conttoniBasah.r2}
+                                    />
+                                )}
+                                {predictions.conttoniKering && (
+                                    <PredictionCard
+                                        title="Eucheuma Cottoni Kering"
+                                        value={predictions.conttoniKering}
+                                        unit="kg"
+                                        mse={metrics.conttoniKering.mse}
+                                        r2={metrics.conttoniKering.r2}
+                                    />
+                                )}
+                                {predictions.spinosumBasah && (
+                                    <PredictionCard
+                                        title="Eucheuma spinosum Basah"
+                                        value={predictions.spinosumBasah}
+                                        unit="kg"
+                                        mse={metrics.spinosumBasah.mse}
+                                        r2={metrics.spinosumBasah.r2}
+                                    />
+                                )}
+                                {predictions.spinosumKering && (
+                                    <PredictionCard
+                                        title="Eucheuma spinosum Kering"
+                                        value={predictions.spinosumKering}
+                                        unit="kg"
+                                        mse={metrics.spinosumKering.mse}
+                                        r2={metrics.spinosumKering.r2}
+                                    />
+                                )}
+
+                                {/* 3 card lainnya untuk jenis yang lain */}
+                            </div>
+                            <PredictionCharts
+                                predictionX1={predictions.conttoniBasah}
+                                predictionX2={predictions.conttoniKering}
+                                predictionX3={predictions.spinosumBasah}
+                                predictionX4={predictions.spinosumKering}
+                                dataRumputlautX1={actualData.conttoniBasah.slice(-10)}
+                                dataRumputlautX2={actualData.conttoniKering.slice(-10)}
+                                dataRumputlautX3={actualData.spinosumBasah.slice(-10)}
+                                dataRumputlautX4={actualData.spinosumKering.slice(-10)}
+                            />
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

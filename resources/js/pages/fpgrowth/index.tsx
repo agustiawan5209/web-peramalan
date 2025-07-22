@@ -39,17 +39,13 @@ export default function FpGrowthView({ breadcrumb, titlePage, transaksiPanen }: 
                 <Head title={titlePage} />
                 <div className="fp-growth-container rounded-lg bg-white p-4 shadow-lg">
                     {transactions.length > 0 ? (
-                        <>
-                            <h2 className="mb-4 text-2xl font-bold">FP-Growth Algorithm in React TypeScript</h2>
-
-                            <FPGrowthComponent
+                        <FPGrowthComponent
                                 transactions={transactions}
                                 support_threshold={supportThreshold}
                                 confidence_threshold={confidenceThreshold}
                                 setConfidenceThreshold={setConfidenceThreshold}
                                 setSupportThreshold={setSupportThreshold}
                             />
-                        </>
                     ) : (
                         <h2 className="mb-4 text-2xl font-bold text-destructive">Peringatan : Data Hasil Panen Harus lebih dari 5</h2>
                     )}

@@ -9,6 +9,7 @@ use App\Http\Controllers\HasilPanenController;
 use App\Http\Controllers\PredictionController;
 use App\Http\Controllers\ModelStorageController;
 use App\Http\Controllers\PredictionModelController;
+use App\Http\Controllers\Web\WebPageController;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -18,7 +19,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
 
-    Route::group(['prefix' => 'admin', 'as'=> 'admin.'], function () {
+    Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::group(['prefix' => 'indikator', 'as' => 'indikator.'], function () {
             Route::controller(IndikatorController::class)->group(function () {
                 Route::get('/', 'index')->name('index');
@@ -44,13 +45,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
 
-    Route::group(['prefix'=> 'fpgrowth', 'as'=> 'fpgrowth.'], function(){
-        Route::controller(FPGrowthController::class)->group(function(){
+    Route::group(['prefix' => 'fpgrowth', 'as' => 'fpgrowth.'], function () {
+        Route::controller(FPGrowthController::class)->group(function () {
             Route::get('/', 'index')->name('index');
         });
     });
-    Route::group(['prefix'=> 'prediction', 'as'=> 'prediction.'], function(){
-        Route::controller(PredictionController::class)->group(function(){
+    Route::group(['prefix' => 'prediction', 'as' => 'prediction.'], function () {
+        Route::controller(PredictionController::class)->group(function () {
             Route::get('/', 'index')->name('index');
         });
     });
@@ -66,4 +67,12 @@ Route::prefix('models')->group(function () {
 Route::prefix('api/prediction')->group(function () {
     Route::post('/', [PredictionModelController::class, 'store'])->name('prediction.store');
     Route::get('/{modelName}', [PredictionModelController::class, 'show'])->name('prediction.show');
+});
+
+
+//
+Route::group(['as' => 'user.'], function () {
+    Route::controller(WebPageController::class)->group(function () {
+        Route::get('/form/prediksi', 'index')->name('form.prediksi');
+    });
 });

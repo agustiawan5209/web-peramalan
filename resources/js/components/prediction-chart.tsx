@@ -165,7 +165,7 @@ const PredictionChart = ({
     return (
             <div className='w-full flex flex-col items-center h-max'>
                 <h3>Hasil Prediksi Produktivitas Rumput Laut</h3>
-                <canvas ref={chartRef} width="400" height="200"></canvas>
+                <canvas ref={chartRef} className='w-full h-max'></canvas>
             </div>
     );
 };
