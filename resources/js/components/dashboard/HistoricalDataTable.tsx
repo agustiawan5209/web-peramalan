@@ -1,439 +1,147 @@
-import React, { useState } from "react";
-import { Download, Filter, SortAsc, SortDesc } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Card } from "@/components/ui/card";
+import { motion } from 'framer-motion'
+import { Search, ChevronDown, ChevronUp } from 'lucide-react'
+import { useState } from 'react'
 
 interface HarvestData {
-  id: number;
-  date: string;
-  location: string;
-  waterTemperature: number;
-  salinity: number;
-  predictedYield: number;
-  actualYield: number;
-  harvestCondition: "optimal" | "suboptimal" | "poor";
+  id: number
+  bulan: string
+  tahun: number
+  total_panen: string
+  jenisRumputLaut: string[]
 }
 
-const HistoricalDataTable = ({ data = mockData }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortField, setSortField] = useState<keyof HarvestData>("date");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const itemsPerPage = 5;
+const HarvestDataTable = () => {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortConfig, setSortConfig] = useState<{ key: keyof HarvestData; direction: 'asc' | 'desc' } | null>(null)
 
-  // Filter data based on search term
-  const filteredData = data.filter((item) =>
-    Object.values(item).some(
-      (value) =>
-        typeof value === "string" &&
-        value.toLowerCase().includes(searchTerm.toLowerCase()),
-    ),
-  );
+  // Data contoh - nanti diganti dengan data dari Laravel
+  const data: HarvestData[] = [
+    { id: 1, bulan: 'Januari', tahun: 2024, total_panen: '125 kg', jenisRumputLaut: ['Eucheuma Cottonii'] },
+    { id: 2, bulan: 'Februari', tahun: 2024, total_panen: '98 kg', jenisRumputLaut: ['Gracilaria'] },
+    { id: 3, bulan: 'Maret', tahun: 2024, total_panen: '145 kg', jenisRumputLaut: ['Eucheuma Cottonii', 'Gracilaria'] },
+    { id: 4, bulan: 'April', tahun: 2024, total_panen: '112 kg', jenisRumputLaut: ['Eucheuma Cottonii'] },
+    { id: 5, bulan: 'Mei', tahun: 2024, total_panen: '156 kg', jenisRumputLaut: ['Gracilaria'] },
+  ]
 
-  // Sort data based on sort field and direction
-  const sortedData = [...filteredData].sort((a, b) => {
-    if (sortDirection === "asc") {
-      return a[sortField] > b[sortField] ? 1 : -1;
-    } else {
-      return a[sortField] < b[sortField] ? 1 : -1;
+  const sortedData = [...data]
+  if (sortConfig !== null) {
+    sortedData.sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? -1 : 1
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? 1 : -1
+      }
+      return 0
+    })
+  }
+
+  const filteredData = sortedData.filter(item =>
+    item.bulan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.tahun.toString().includes(searchTerm) ||
+    item.total_panen.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const requestSort = (key: keyof HarvestData) => {
+    let direction: 'asc' | 'desc' = 'asc'
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc'
     }
-  });
-
-  // Paginate data
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-
-  // Handle sort
-  const handleSort = (field: keyof HarvestData) => {
-    if (field === sortField) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  };
-
-  // Handle export
-  const handleExport = (format: "csv" | "excel" | "pdf") => {
-    // In a real implementation, this would generate and download the file
-    console.log(`Exporting data as ${format}`);
-    alert(`Exporting data as ${format} (mock implementation)`);
-  };
-
-  // Get condition badge color
-  const getConditionBadge = (condition: HarvestData["harvestCondition"]) => {
-    switch (condition) {
-      case "optimal":
-        return <Badge className="bg-green-500">Optimal</Badge>;
-      case "suboptimal":
-        return <Badge className="bg-yellow-500">Suboptimal</Badge>;
-      case "poor":
-        return <Badge className="bg-red-500">Poor</Badge>;
-      default:
-        return <Badge>Unknown</Badge>;
-    }
-  };
-
-  // Calculate accuracy percentage
-  const calculateAccuracy = (predicted: number, actual: number) => {
-    const accuracy = 100 - Math.abs(((predicted - actual) / actual) * 100);
-    return Math.max(0, Math.min(100, accuracy)).toFixed(1) + "%";
-  };
+    setSortConfig({ key, direction })
+  }
 
   return (
-    <Card className="p-6 bg-white shadow-md rounded-lg">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-4">
-        <h2 className="text-lg md:text-xl font-bold">
-          Historical Harvest Data
-        </h2>
-        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-          <Input
-            placeholder="Search data..."
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden"
+    >
+      <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+        <h2 className="text-lg font-semibold">Data Hasil Panen</h2>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+          <input
+            type="text"
+            placeholder="Cari data panen..."
+            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-48 md:w-64"
           />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleExport("csv")}>
-                Export as CSV
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleExport("excel")}>
-                Export as Excel
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleExport("pdf")}>
-                Export as PDF
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
 
-      <div className="rounded-md border overflow-x-auto">
-        <Table className="min-w-full">
-          <TableHeader>
-            <TableRow>
-              <TableHead
-                className="cursor-pointer"
-                onClick={() => handleSort("date")}
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort('bulan')}
               >
-                Date
-                {sortField === "date" && (
-                  <span className="ml-1">
-                    {sortDirection === "asc" ? (
-                      <SortAsc className="inline h-4 w-4" />
-                    ) : (
-                      <SortDesc className="inline h-4 w-4" />
-                    )}
-                  </span>
-                )}
-              </TableHead>
-              <TableHead
-                className="cursor-pointer"
-                onClick={() => handleSort("location")}
+                <div className="flex items-center">
+                  Bulan
+                  {sortConfig?.key === 'bulan' && (
+                    sortConfig.direction === 'asc' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />
+                  )}
+                </div>
+              </th>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort('tahun')}
               >
-                Location
-                {sortField === "location" && (
-                  <span className="ml-1">
-                    {sortDirection === "asc" ? (
-                      <SortAsc className="inline h-4 w-4" />
-                    ) : (
-                      <SortDesc className="inline h-4 w-4" />
-                    )}
-                  </span>
-                )}
-              </TableHead>
-              <TableHead
-                className="cursor-pointer"
-                onClick={() => handleSort("waterTemperature")}
+                <div className="flex items-center">
+                  Tahun
+                  {sortConfig?.key === 'tahun' && (
+                    sortConfig.direction === 'asc' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />
+                  )}
+                </div>
+              </th>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort('total_panen')}
               >
-                Water Temp (°C)
-                {sortField === "waterTemperature" && (
-                  <span className="ml-1">
-                    {sortDirection === "asc" ? (
-                      <SortAsc className="inline h-4 w-4" />
-                    ) : (
-                      <SortDesc className="inline h-4 w-4" />
-                    )}
-                  </span>
-                )}
-              </TableHead>
-              <TableHead
-                className="cursor-pointer"
-                onClick={() => handleSort("salinity")}
+                <div className="flex items-center">
+                  Total Panen
+                  {sortConfig?.key === 'total_panen' && (
+                    sortConfig.direction === 'asc' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />
+                  )}
+                </div>
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Jenis Rumput Laut
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {filteredData.map((item) => (
+              <motion.tr
+                key={item.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                whileHover={{ backgroundColor: 'rgba(240, 253, 244, 1)' }}
+                className="hover:bg-green-50"
               >
-                Salinity (ppt)
-                {sortField === "salinity" && (
-                  <span className="ml-1">
-                    {sortDirection === "asc" ? (
-                      <SortAsc className="inline h-4 w-4" />
-                    ) : (
-                      <SortDesc className="inline h-4 w-4" />
-                    )}
-                  </span>
-                )}
-              </TableHead>
-              <TableHead
-                className="cursor-pointer"
-                onClick={() => handleSort("predictedYield")}
-              >
-                Predicted Yield (kg)
-                {sortField === "predictedYield" && (
-                  <span className="ml-1">
-                    {sortDirection === "asc" ? (
-                      <SortAsc className="inline h-4 w-4" />
-                    ) : (
-                      <SortDesc className="inline h-4 w-4" />
-                    )}
-                  </span>
-                )}
-              </TableHead>
-              <TableHead
-                className="cursor-pointer"
-                onClick={() => handleSort("actualYield")}
-              >
-                Actual Yield (kg)
-                {sortField === "actualYield" && (
-                  <span className="ml-1">
-                    {sortDirection === "asc" ? (
-                      <SortAsc className="inline h-4 w-4" />
-                    ) : (
-                      <SortDesc className="inline h-4 w-4" />
-                    )}
-                  </span>
-                )}
-              </TableHead>
-              <TableHead>Accuracy</TableHead>
-              <TableHead
-                className="cursor-pointer"
-                onClick={() => handleSort("harvestCondition")}
-              >
-                Condition
-                {sortField === "harvestCondition" && (
-                  <span className="ml-1">
-                    {sortDirection === "asc" ? (
-                      <SortAsc className="inline h-4 w-4" />
-                    ) : (
-                      <SortDesc className="inline h-4 w-4" />
-                    )}
-                  </span>
-                )}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentItems.length > 0 ? (
-              currentItems.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.date}</TableCell>
-                  <TableCell>{item.location}</TableCell>
-                  <TableCell>{item.waterTemperature.toFixed(1)}</TableCell>
-                  <TableCell>{item.salinity.toFixed(1)}</TableCell>
-                  <TableCell>{item.predictedYield.toFixed(2)}</TableCell>
-                  <TableCell>{item.actualYield.toFixed(2)}</TableCell>
-                  <TableCell>
-                    {calculateAccuracy(item.predictedYield, item.actualYield)}
-                  </TableCell>
-                  <TableCell>
-                    {getConditionBadge(item.harvestCondition)}
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={8} className="text-center py-4">
-                  No data found
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.bulan}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.tahun}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">{item.total_panen}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <div className="flex flex-wrap gap-1">
+                    {item.jenisRumputLaut.map((jenis, index) => (
+                      <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        {jenis}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+              </motion.tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+    </motion.div>
+  )
+}
 
-      <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="text-xs md:text-sm text-gray-500 order-2 sm:order-1">
-          Showing {indexOfFirstItem + 1} to{" "}
-          {Math.min(indexOfLastItem, sortedData.length)} of {sortedData.length}{" "}
-          entries
-        </div>
-        <Pagination className="order-1 sm:order-2">
-          <PaginationContent className="flex-wrap justify-center">
-            <PaginationItem>
-              <PaginationPrevious
-                              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                              className={currentPage === 1 ? "pointer-events-none opacity-50" : ""} size={undefined}              />
-            </PaginationItem>
-            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-              let page;
-              if (totalPages <= 5) {
-                page = i + 1;
-              } else if (currentPage <= 3) {
-                page = i + 1;
-              } else if (currentPage >= totalPages - 2) {
-                page = totalPages - 4 + i;
-              } else {
-                page = currentPage - 2 + i;
-              }
-              return (
-                <PaginationItem key={page}>
-                  <PaginationLink
-                          isActive={page === currentPage}
-                          onClick={() => setCurrentPage(page)} size={undefined}                  >
-                    {page}
-                  </PaginationLink>
-                </PaginationItem>
-              );
-            })}
-            <PaginationItem>
-              <PaginationNext
-                              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                              className={currentPage === totalPages
-                                  ? "pointer-events-none opacity-50"
-                                  : ""} size={undefined}              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
-    </Card>
-  );
-};
-
-// Mock data for demonstration
-const mockData: HarvestData[] = [
-  {
-    id: 1,
-    date: "2023-05-15",
-    location: "North Bay",
-    waterTemperature: 24.5,
-    salinity: 32.1,
-    predictedYield: 450.25,
-    actualYield: 442.8,
-    harvestCondition: "optimal",
-  },
-  {
-    id: 2,
-    date: "2023-05-22",
-    location: "East Coast",
-    waterTemperature: 23.8,
-    salinity: 31.5,
-    predictedYield: 425.1,
-    actualYield: 398.75,
-    harvestCondition: "suboptimal",
-  },
-  {
-    id: 3,
-    date: "2023-05-29",
-    location: "South Reef",
-    waterTemperature: 25.2,
-    salinity: 33.0,
-    predictedYield: 475.5,
-    actualYield: 482.3,
-    harvestCondition: "optimal",
-  },
-  {
-    id: 4,
-    date: "2023-06-05",
-    location: "West Inlet",
-    waterTemperature: 22.1,
-    salinity: 30.2,
-    predictedYield: 380.75,
-    actualYield: 325.4,
-    harvestCondition: "poor",
-  },
-  {
-    id: 5,
-    date: "2023-06-12",
-    location: "Central Bay",
-    waterTemperature: 24.0,
-    salinity: 32.5,
-    predictedYield: 445.0,
-    actualYield: 451.2,
-    harvestCondition: "optimal",
-  },
-  {
-    id: 6,
-    date: "2023-06-19",
-    location: "North Bay",
-    waterTemperature: 24.8,
-    salinity: 32.3,
-    predictedYield: 455.3,
-    actualYield: 460.1,
-    harvestCondition: "optimal",
-  },
-  {
-    id: 7,
-    date: "2023-06-26",
-    location: "East Coast",
-    waterTemperature: 23.5,
-    salinity: 31.0,
-    predictedYield: 415.8,
-    actualYield: 390.25,
-    harvestCondition: "suboptimal",
-  },
-  {
-    id: 8,
-    date: "2023-07-03",
-    location: "South Reef",
-    waterTemperature: 25.5,
-    salinity: 33.2,
-    predictedYield: 480.0,
-    actualYield: 485.5,
-    harvestCondition: "optimal",
-  },
-  {
-    id: 9,
-    date: "2023-07-10",
-    location: "West Inlet",
-    waterTemperature: 21.8,
-    salinity: 29.8,
-    predictedYield: 370.25,
-    actualYield: 310.8,
-    harvestCondition: "poor",
-  },
-  {
-    id: 10,
-    date: "2023-07-17",
-    location: "Central Bay",
-    waterTemperature: 24.2,
-    salinity: 32.7,
-    predictedYield: 448.5,
-    actualYield: 455.3,
-    harvestCondition: "optimal",
-  },
-];
-
-export default HistoricalDataTable;
+export default HarvestDataTable

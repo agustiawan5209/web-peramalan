@@ -38,7 +38,7 @@ const FPGrowthComponent: React.FC<FPGrowthProps> = ({
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const timerRef = useRef<NodeJS.Timeout>();
+    const timerRef = useRef<NodeJS.Timeout>(null);
 
     // Run FP-Growth algorithm
     const runFPGrowth = async () => {

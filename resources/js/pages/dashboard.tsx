@@ -1,18 +1,11 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import ModelCard from '@/components/dashboard/ModelCard';
+import PredictionChart from '@/components/dashboard/PredictionChart';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { BarChart3, Calculator, Database, Download, Menu, RefreshCw, Settings, TrendingUp, Waves } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Activity, Database, Leaf, TrendingUp } from 'lucide-react';
 // Import the default export from each file
-import ConditionCard from '@/components/dashboard/ConditionCard';
-import HistoricalDataTable from '@/components/dashboard/HistoricalDataTable';
-import InteractiveChart from '@/components/dashboard/InteractiveChart';
-import MetricsPanel from '@/components/dashboard/MetricsPanel';
-import PredictionForm from '@/components/dashboard/PredictionForm';
-import { useState } from 'react';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -21,124 +14,59 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Dashboard() {
-    const [activeSection, setActiveSection] = useState('overview');
-    const navigationItems = [
-        { id: 'overview', label: 'Overview', icon: BarChart3 },
-        { id: 'predictions', label: 'Predictions', icon: TrendingUp },
-        { id: 'calculator', label: 'Calculator', icon: Calculator },
-        { id: 'data', label: 'Historical Data', icon: Database },
-        { id: 'conditions', label: 'Conditions', icon: Waves },
+    const stats = [
+        { title: 'Total Data Panen', value: '1,245', icon: <Database size={24} />, change: '+12%' },
+        { title: 'Model Tersedia', value: '3', icon: <Leaf size={24} />, change: '+1 baru' },
+        { title: 'Akurasi Terbaik', value: '92%', icon: <TrendingUp size={24} />, change: '+2%' },
+        { title: 'Prediksi Bulan Ini', value: '156', icon: <Activity size={24} />, change: '+8%' },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <header className="mb-6 flex flex-col items-start justify-between gap-4 md:mb-8 lg:flex-row lg:items-center lg:gap-6">
-                <div className="flex w-full items-start gap-3 md:gap-4 lg:w-auto">
-                    {/* Mobile Menu */}
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <Button variant="outline" size="icon" className="mt-1 flex-shrink-0 lg:hidden">
-                                <Menu className="h-4 w-4" />
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent side="left" className="w-64">
-                            <SheetHeader>
-                                <SheetTitle className="flex items-center">
-                                    <Waves className="mr-2 h-6 w-6 text-primary" />
-                                    SeaHarvest
-                                </SheetTitle>
-                            </SheetHeader>
-                            <Separator className="my-4" />
-                            <nav className="space-y-1">
-                                {navigationItems.map((item) => {
-                                    const Icon = item.icon;
-                                    return (
-                                        <button
-                                            key={item.id}
-                                            onClick={() => setActiveSection(item.id)}
-                                            className={`flex w-full items-center rounded-md px-2 py-2 text-sm font-medium transition-colors ${
-                                                activeSection === item.id
-                                                    ? 'bg-primary text-primary-foreground'
-                                                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                                            }`}
-                                        >
-                                            <Icon className="mr-3 h-4 w-4" />
-                                            {item.label}
-                                        </button>
-                                    );
-                                })}
-                            </nav>
-                            <Separator className="my-4" />
-                            <Button variant="outline" size="sm" className="w-full">
-                                <Settings className="mr-2 h-4 w-4" />
-                                Settings
-                            </Button>
-                        </SheetContent>
-                    </Sheet>
+            <div className="space-y-6">
+                <h1 className="text-2xl font-bold text-gray-800">Dashboard Prediksi Panen Rumput Laut</h1>
 
-                    <div className="min-w-0 flex-1">
-                        <h1 className="text-xl leading-tight font-bold tracking-tight md:text-2xl lg:text-3xl">
-                           Prediksi Panen Rumput Laut Dashboard
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground md:text-base">
-                            Monitor dan prediksi hasil panen menggunakan regresi linier berganda
-                        </p>
-                    </div>
+                {/* Statistik */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    {stats.map((stat, index) => (
+                        <motion.div
+                            key={stat.title}
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="rounded-lg border border-gray-100 bg-white p-4 shadow-sm"
+                        >
+                            <div className="flex justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-500">{stat.title}</p>
+                                    <p className="mt-1 text-2xl font-semibold">{stat.value}</p>
+                                    <p className="mt-1 text-xs text-green-500">{stat.change}</p>
+                                </div>
+                                <div className="rounded-full bg-green-50 p-2 text-green-500">{stat.icon}</div>
+                            </div>
+                        </motion.div>
+                    ))}
                 </div>
-                <div className="flex w-full items-center justify-end gap-2 lg:w-auto">
-                    <Button variant="outline" size="sm" className="text-xs md:text-sm">
-                        <RefreshCw className="mr-1 h-3 w-3 md:mr-2 md:h-4 md:w-4" />
-                        <span className="hidden sm:inline">Refresh Data</span>
-                        <span className="sm:hidden">Refresh</span>
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-xs md:text-sm">
-                        <Download className="mr-1 h-3 w-3 md:mr-2 md:h-4 md:w-4" />
-                        <span className="hidden sm:inline">Export</span>
-                        <span className="sm:hidden">Export</span>
-                    </Button>
-                    <Button variant="outline" size="icon" className="hidden lg:flex">
-                        <Settings className="h-4 w-4" />
-                    </Button>
+
+                {/* Grafik dan Model */}
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className="rounded-lg border border-gray-100 bg-white p-4 shadow-sm lg:col-span-2"
+                    >
+                        <h2 className="mb-4 text-lg font-semibold">Prediksi Panen 6 Bulan Mendatang</h2>
+                        <PredictionChart />
+                    </motion.div>
+
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="space-y-4">
+                        <ModelCard title="Regresi Linear Berganda" accuracy={0.92} lastUpdated="2 hari lalu" />
+                        <ModelCard title="FP-Growth" accuracy={0.88} lastUpdated="1 minggu lalu" />
+                    </motion.div>
                 </div>
-            </header>
-
-            <div className="mb-4 grid grid-cols-1 gap-4 md:mb-6 md:gap-6 xl:grid-cols-3">
-                <Card className="xl:col-span-2">
-                    <CardHeader className="pb-3 md:pb-6">
-                        <CardTitle className="text-lg md:text-xl">Harvest Yield Predictions</CardTitle>
-                        <CardDescription className="text-sm md:text-base">Predicted vs actual harvest yields over time</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-3 md:p-6">
-                        <InteractiveChart />
-                    </CardContent>
-                </Card>
-                {/* Metrics panel */}
-                <MetricsPanel />
             </div>
-
-            <div className="mb-4 grid grid-cols-1 gap-4 md:mb-6 md:gap-6 xl:grid-cols-3">
-                {/* Prediction Form */}
-                <PredictionForm />
-
-                <Card className="order-1 xl:order-2 xl:col-span-2">
-                    <CardHeader className="pb-3 md:pb-6">
-                        <CardTitle className="text-lg md:text-xl">Harvesting Conditions</CardTitle>
-                        <CardDescription className="text-sm md:text-base">
-                            Current environmental conditions and optimal harvesting status
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-3 md:p-6">
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
-                            <ConditionCard title="Water Temperature" value="24.5°C" status="optimal" range="22-26°C" />
-                            <ConditionCard title="Salinity" value="32 ppt" status="warning" range="30-35 ppt" />
-                            <ConditionCard title="Light Exposure" value="High" status="optimal" range="Medium-High" />
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <HistoricalDataTable />
         </AppLayout>
     );
 }
