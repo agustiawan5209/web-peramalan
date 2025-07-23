@@ -16,6 +16,8 @@ type JenisRumputLaut = {
 
 type Dataset = {
     bulan: string;
+    kecamatan: string;
+    desa: string;
     tahun: string;
     total_panen: string;
     jenisRumputLaut: JenisRumputLaut[];
@@ -52,6 +54,8 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
     const breadcrumbs: BreadcrumbItem[] = breadcrumb ? breadcrumb.map((item) => ({ title: item.title, href: item.href })) : [];
    const { data, setData, put, processing, errors } = useForm<Dataset>({
     bulan: hasilPanen?.bulan || '',
+    kecamatan: hasilPanen?.kecamatan || '',
+    desa: hasilPanen?.desa || '',
     tahun: hasilPanen?.tahun || new Date().getFullYear().toString(),
     total_panen: (hasilPanen?.total_panen || '').toString(),
     jenisRumputLaut: hasilPanen?.jenisRumputLaut || jenisRumputLaut,
@@ -64,10 +68,7 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
         const { name, value } = e.target;
 
         const key = name.split('.')[1];
-        if(name.includes('total')){
-            setData('total_panen', value);
-        }
-        if(name.includes('jenisRumputLaut')) {
+        if (name.includes('jenisRumputLaut')) {
             const [_, index, field] = name.split('.');
             const updatedTypes = [...data.jenisRumputLaut];
             updatedTypes[parseInt(index)] = {
@@ -75,25 +76,29 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                 [field === 'jumlah' ? 'jumlah' : 'nama']: field === 'jumlah' ? parseFloat(value) : value,
             };
             setData({ ...data, jenisRumputLaut: updatedTypes });
-        }
-        else{
+        } else if (name.includes('parameter')) {
             setData((prevData) => ({
-            ...prevData,
-            parameter: prevData.parameter.map((item, index) => {
-                if (index === Number(key)) {
-                    return {
-                        ...item,
-                        nilai: value,
-                    };
-                }
-                return item;
-            }),
-        }));
+                ...prevData,
+                parameter: prevData.parameter.map((item, index) => {
+                    if (index === Number(key)) {
+                        return {
+                            ...item,
+                            nilai: value,
+                        };
+                    }
+                    return item;
+                }),
+            }));
+        } else {
+            setData((prevData) => ({
+                ...prevData,
+                [name]: value,
+            }));
         }
     };
     const handleSelectChange = (name: string, value: string) => {
         if (name && value !== undefined && data && data.parameter) {
-            if (name === 'label' || name === 'jenis_tanaman' || name == "bulan") {
+            if (name === 'label' || name === 'jenis_tanaman' || name == 'bulan') {
                 setData((prevData) => ({
                     ...prevData,
                     [name]: value,

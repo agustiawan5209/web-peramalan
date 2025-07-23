@@ -50,18 +50,14 @@ export default function FormPanenView({
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mt-4">
                             <div>
                                 <Label className="text-xs text-gray-600">Bulan</Label>
-                                <Select value={data.bulan} required onValueChange={(value) => handleSelectChange('bulan', value)}>
-                                    <SelectTrigger className="placeholder:text-gray-400">
-                                        <SelectValue placeholder="Pilih" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {daftarBulan.map((bulan) => (
-                                            <SelectItem key={bulan} value={bulan}>
-                                                {bulan}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <Input
+                                    type="text"
+                                    name="bulan"
+                                    value={data.bulan}
+                                    onChange={handleChange}
+                                    className="placeholder:text-gray-400"
+                                    required
+                                />
                                 {errors.bulan && <InputError message={errors.bulan} className="mt-2" />}
                             </div>
                             <div>
@@ -76,7 +72,7 @@ export default function FormPanenView({
                                 />
                                 {errors.tahun && <InputError message={errors.tahun} className="mt-2" />}
                             </div>
-                            <div>
+                             <div>
                                 <Label className="text-xs text-gray-600">Total Panen (kg)</Label>
                                 <Input
                                     type="number"
@@ -89,6 +85,31 @@ export default function FormPanenView({
                                 />
                                 {errors.total_panen && <InputError message={errors.total_panen} className="mt-2" />}
                             </div>
+                            <div>
+                                <Label className="text-xs text-gray-600">Kecamatan</Label>
+                                <Input
+                                    type="text"
+                                    name="kecamatan"
+                                    value={data.kecamatan}
+                                    onChange={handleChange}
+                                    className="placeholder:text-gray-400"
+                                    required
+                                />
+                                {errors.kecamatan && <InputError message={errors.kecamatan} className="mt-2" />}
+                            </div>
+                            <div>
+                                <Label className="text-xs text-gray-600">Desa</Label>
+                                <Input
+                                    type="text"
+                                    name="desa"
+                                    value={data.desa}
+                                    onChange={handleChange}
+                                    className="placeholder:text-gray-400"
+                                    required
+                                />
+                                {errors.desa && <InputError message={errors.desa} className="mt-2" />}
+                            </div>
+
                         </div>
                     </CardDescription>
                 </CardContent>

@@ -61,6 +61,8 @@ export default function IndikatorIndex({ hasilPanen, breadcrumb, titlePage }: In
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="cursor-pointer">no</TableHead>
+                                    <TableHead className="cursor-pointer">kecamatan</TableHead>
+                                    <TableHead className="cursor-pointer">desa</TableHead>
                                     <TableHead className="cursor-pointer">bulan</TableHead>
                                     <TableHead className="cursor-pointer">tahun</TableHead>
                                     <TableHead className="cursor-pointer">total_panen</TableHead>
@@ -72,6 +74,8 @@ export default function IndikatorIndex({ hasilPanen, breadcrumb, titlePage }: In
                                     hasilPanen.data.map((item, index) => (
                                         <TableRow key={item.id}>
                                             <TableCell>{index + 1}</TableCell>
+                                            <TableCell>{item.kecamatan}</TableCell>
+                                            <TableCell>{item.desa}</TableCell>
                                             <TableCell>{item.bulan}</TableCell>
                                             <TableCell>{item.tahun}</TableCell>
                                             <TableCell>{item.total_panen}</TableCell>

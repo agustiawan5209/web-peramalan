@@ -22,7 +22,9 @@ class UpdateHasilPanenRequest extends FormRequest
     public function rules(): array
     {
         return [
-           'bulan' => ['required', 'string', 'max:20'],
+           'bulan' => ['required', 'string', 'max:50'],
+            'kecamatan' => ['required', 'string', 'max:50'],
+            'desa' => ['required', 'string', 'max:50'],
             'tahun' => ['required', 'integer', 'digits:4'],
             'total_panen' => ['required', 'numeric', 'min:30'],
             'jenisRumputLaut' => ['required', 'array'],

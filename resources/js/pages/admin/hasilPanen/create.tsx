@@ -1,9 +1,4 @@
-import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, IndikatorTypes, SeaweedType } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
@@ -18,6 +13,8 @@ type JenisRumputLaut = {
 type Dataset = {
     bulan: string;
     tahun: string;
+    kecamatan: string;
+    desa: string;
     total_panen: string;
     jenisRumputLaut: JenisRumputLaut[];
     parameter: {
@@ -52,6 +49,8 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
     const breadcrumbs: BreadcrumbItem[] = breadcrumb ? breadcrumb.map((item) => ({ title: item.title, href: item.href })) : [];
     const { data, setData, post, processing, errors } = useForm<Dataset>({
         bulan: '',
+        kecamatan: '',
+        desa: '',
         tahun: new Date().getFullYear().toString(),
         total_panen: '',
         jenisRumputLaut: jenisRumputLaut,
@@ -65,9 +64,6 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
         const { name, value } = e.target;
 
         const key = name.split('.')[1];
-        if (name.includes('total')) {
-            setData('total_panen', value);
-        }
         if (name.includes('jenisRumputLaut')) {
             const [_, index, field] = name.split('.');
             const updatedTypes = [...data.jenisRumputLaut];
@@ -76,7 +72,7 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                 [field === 'jumlah' ? 'jumlah' : 'nama']: field === 'jumlah' ? parseFloat(value) : value,
             };
             setData({ ...data, jenisRumputLaut: updatedTypes });
-        } else {
+        } else if (name.includes('parameter')) {
             setData((prevData) => ({
                 ...prevData,
                 parameter: prevData.parameter.map((item, index) => {
@@ -88,6 +84,11 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
                     }
                     return item;
                 }),
+            }));
+        } else {
+            setData((prevData) => ({
+                ...prevData,
+                [name]: value,
             }));
         }
     };
@@ -133,7 +134,13 @@ export default function FormDatasetView({ breadcrumb, indikator, jenisRumputLaut
             <div className="mx-auto max-w-7xl rounded-xl border border-gray-100 bg-white p-6 shadow">
                 <h1 className="mb-6 text-center text-xl font-semibold text-primary">Input Data Panen Rumput Laut</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                <FormPanenView data={data} errors={errors} indikator={indikator} handleChange={handleChange} handleSelectChange={handleSelectChange} />
+                    <FormPanenView
+                        data={data}
+                        errors={errors}
+                        indikator={indikator}
+                        handleChange={handleChange}
+                        handleSelectChange={handleSelectChange}
+                    />
                     <div className="flex justify-end">
                         <Button type="submit" variant={'default'}>
                             {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}

@@ -51,7 +51,7 @@ class RoleSeeder extends Seeder
             $prms = Permission::create($value);
             $admin->givePermissionTo($prms);
         }
-        $admin->givePermissionTo(['name'=> 'edit indikator']);
+        $admin->givePermissionTo(['name'=> 'read indikator']);
 
         $permission_user = [
             ['name' => 'read dataset'],

@@ -32,7 +32,7 @@ class HasilPanenController extends Controller
      */
     public function index()
     {
-        $hasilPanen = HasilPanen::paginate(10);
+        $hasilPanen = HasilPanen::orderBy('id','desc')->paginate(10);
         return Inertia::render("admin/hasilPanen/index", [
             "hasilPanen" => $hasilPanen,
             'breadcrumb' => self::BASE_BREADCRUMB,
@@ -62,6 +62,8 @@ class HasilPanenController extends Controller
     {
         $data =  [
             "bulan" => $request->bulan,
+            "desa" => $request->desa,
+            "kecamatan" => $request->kecamatan,
             "tahun" => $request->tahun,
             "total_panen" => $request->total_panen,
            "jenisRumputLaut" =>  $request->jenisRumputLaut,
@@ -117,6 +119,8 @@ class HasilPanenController extends Controller
         $data =  [
             "bulan" => $request->bulan,
             "tahun" => $request->tahun,
+            "desa" => $request->desa,
+            "kecamatan" => $request->kecamatan,
             "total_panen" => $request->total_panen,
             "jenisRumputLaut" =>  $request->jenisRumputLaut,
             "parameter" => $request->parameter,

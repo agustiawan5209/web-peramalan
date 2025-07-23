@@ -62,6 +62,8 @@ export interface IndikatorTypes {
 export interface HasilPanenTypes {
     id: number | null;
     bulan: string;
+    kecamatan: string;
+    desa: string;
     tahun: string;
     total_panen: number;
     jenisRumputLaut: {nama: string; jumlah: number}[];

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tags;
 use Inertia\Inertia;
 use App\Models\Indikator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreIndikatorRequest;
 use App\Http\Requests\UpdateIndikatorRequest;
-use App\Models\Tags;
-use Illuminate\Http\Request;
 
 class IndikatorController extends Controller
 {
@@ -28,10 +29,17 @@ class IndikatorController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
         return Inertia::render("admin/indikator/index", [
             'indikator' => Indikator::all(),
             'breadcrumb' => self::BASE_BREADCRUMB,
             'titlePage'=> 'Indikator',
+            'can'=>[
+                'add'=> $user->can('add indikator'),
+                'edit'=> $user->can('edit indikator'),
+                'read'=> $user->can('read indikator'),
+                'delete'=> $user->can('delete indikator'),
+            ]
         ]);
     }
  private function applyFilters($query, Request $request): void

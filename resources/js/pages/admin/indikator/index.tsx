@@ -16,6 +16,12 @@ interface IndikatorIndexProps {
     indikator: IndikatorTypes[];
     breadcrumb?: BreadcrumbItem[];
     titlePage?: string;
+    can: {
+        add: boolean;
+        edit: boolean;
+        read: boolean;
+        delete: boolean;
+    };
 }
 interface AttributTypes {
     batas: number;
@@ -29,7 +35,7 @@ type indikatorFormData = {
     attribut: AttributTypes[];
 };
 
-export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: IndikatorIndexProps) {
+export default function IndikatorIndex({ indikator, breadcrumb, titlePage, can }: IndikatorIndexProps) {
     const breadcrumbs: BreadcrumbItem[] = useMemo(
         () => (breadcrumb ? breadcrumb.map((item) => ({ title: item.title, href: item.href })) : []),
         [breadcrumb],
@@ -190,6 +196,12 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
             }),
         }));
     };
+
+    const actionCan = ()  => {
+        if (can.add || can.edit || can.delete) {
+            return true;
+        }
+    };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={titlePage ?? 'Indikator'} />
@@ -199,11 +211,11 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                 <div className="container mx-auto px-4">
                     <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <h2 className="text-lg font-bold md:text-xl">Parameter Prediksi Rumput Laut</h2>
-                        <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+                        {can.add &&<div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
                             <Button variant={'default'} type="button" className="cursor-pointer" onClick={() => setIsOpenDialog(true)}>
                                 Tambah Data
                             </Button>
-                        </div>
+                        </div>}
                     </div>
                     <div className="overflow-x-auto rounded-md border">
                         <Table className="min-w-full">
@@ -212,7 +224,7 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                                     <TableHead className="cursor-pointer">no</TableHead>
                                     <TableHead className="cursor-pointer">Nama</TableHead>
                                     <TableHead className="cursor-pointer">keterangan</TableHead>
-                                    <TableHead className="cursor-pointer">Aksi</TableHead>
+                                    {actionCan() && <TableHead className="cursor-pointer">Aksi</TableHead>}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -222,27 +234,27 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                                             <TableCell>{index + 1}</TableCell>
                                             <TableCell>{item.nama}</TableCell>
                                             <TableCell>{item.keterangan}</TableCell>
-                                            <TableCell>
-                                                <div className="flex flex-row items-center gap-2">
-                                                    <Button
-                                                        type="button"
-                                                        variant={'default'}
-                                                        tooltip="edit"
-                                                        onClick={() => handleEdit(item.id)}
-                                                        className="border border-chart-4 bg-chart-4"
-                                                    >
-                                                        {' '}
-                                                        <PenBox />{' '}
-                                                    </Button>
+                                        {actionCan()&&<TableCell>
+                                            <div className="flex flex-row items-center gap-2">
+                                                {can.edit && <Button
+                                                    type="button"
+                                                    variant={'default'}
+                                                    tooltip="edit"
+                                                    onClick={() => handleEdit(item.id)}
+                                                    className="border border-chart-4 bg-chart-4"
+                                                >
+                                                    {' '}
+                                                    <PenBox />{' '}
+                                                </Button>}
 
-                                                    <DeleteConfirmationForm
-                                                        title={`Hapus indikator ${item.id}`}
-                                                        id={item.id}
-                                                        url={route('admin.indikator.destroy', {indikator: item.id})}
-                                                        setOpenDialog={setisDeleteDialog}
-                                                    />
-                                                </div>
-                                            </TableCell>
+                                                {can.delete && <DeleteConfirmationForm
+                                                    title={`Hapus indikator ${item.id}`}
+                                                    id={item.id}
+                                                    url={route('admin.indikator.destroy', { indikator: item.id })}
+                                                    setOpenDialog={setisDeleteDialog}
+                                                />}
+                                            </div>
+                                        </TableCell>}
                                         </TableRow>
                                     ))
                                 ) : (
@@ -278,6 +290,7 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                                     className="input"
                                     disabled={processing}
                                     placeholder="Masukkan nama indikator"
+                                    readOnly={(!can.add)}
                                 />
                                 <InputError message={errors.nama} className="mt-2" />
                             </div>
@@ -297,7 +310,8 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                                 />
                                 <InputError message={errors.keterangan} className="mt-2" />
                             </div>
-                            <div className="block space-y-2">
+                            {(can.add && can.edit && can.delete) && (
+                                <div className="block space-y-2">
                                 {data.attribut.map((item, index) => {
                                     return (
                                         <div className="flex items-center" key={index}>
@@ -366,6 +380,7 @@ export default function IndikatorIndex({ indikator, breadcrumb, titlePage }: Ind
                                     + Tambah Operator
                                 </Button>
                             </div>
+                            )}
                         </div>
                         <DialogFooter>
                             <Button type="button" variant="secondary" onClick={() => setIsOpenDialog(false)}>

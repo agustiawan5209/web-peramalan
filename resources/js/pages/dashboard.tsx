@@ -56,21 +56,32 @@ export default function Dashboard({ baseJenisRumputLaut, totalDataPanen, indikat
         spinosumBasah: [],
         spinosumKering: [],
     });
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const handleLoadingModel = async () => {
+        setIsLoading(true);
+        try {
+            baseJenisRumputLaut.map(async (jenisRumputLaut) => {
+                const { prediction, mse, rsquared } = await loadPredictionFromDB(jenisRumputLaut);
+                setPrediction((prev: any) => ({
+                    ...prev,
+                    [jenisRumputLaut]: { prediction, mse, rsquared },
+                }));
+            });
+            setActualData({
+                conttoniBasah: transactionY.map((p) => p.eucheuma_conttoni_basah),
+                conttoniKering: transactionY.map((p) => p.eucheuma_conttoni_kering),
+                spinosumBasah: transactionY.map((p) => p.eucheuma_spinosum_basah),
+                spinosumKering: transactionY.map((p) => p.eucheuma_spinosum_kering),
+            });
+        } catch (error) {
+            console.log(error);
+        }
+        setIsLoading(false);
+    };
     useEffect(() => {
-        baseJenisRumputLaut.map(async (jenisRumputLaut) => {
-            const { prediction, mse, rsquared } = await loadPredictionFromDB(jenisRumputLaut);
-            setPrediction((prev: any) => ({
-                ...prev,
-                [jenisRumputLaut]: { prediction, mse, rsquared },
-            }));
-        });
-        setActualData({
-            conttoniBasah: transactionY.map((p) => p.eucheuma_conttoni_basah),
-            conttoniKering: transactionY.map((p) => p.eucheuma_conttoni_kering),
-            spinosumBasah: transactionY.map((p) => p.eucheuma_spinosum_basah),
-            spinosumKering: transactionY.map((p) => p.eucheuma_spinosum_kering),
-        });
-    }, [baseJenisRumputLaut]);
+        handleLoadingModel();
+    }, [baseJenisRumputLaut, transactionY]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -102,24 +113,26 @@ export default function Dashboard({ baseJenisRumputLaut, totalDataPanen, indikat
 
                 {/* Grafik dan Model */}
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                        className="rounded-lg border border-gray-100 bg-white p-4 shadow-sm lg:col-span-2"
-                    >
-                        <h2 className="mb-4 text-lg font-semibold">Prediksi Panen 6 Bulan Mendatang</h2>
-                        <PredictionCharts
-                            predictionX1={prediction.conttoniBasah.prediction}
-                            predictionX2={prediction.conttoniKering.prediction}
-                            predictionX3={prediction.spinosumBasah.prediction}
-                            predictionX4={prediction.spinosumKering.prediction}
-                            dataRumputlautX1={actualData.conttoniBasah.slice(-10)}
-                            dataRumputlautX2={actualData.conttoniKering.slice(-10)}
-                            dataRumputlautX3={actualData.spinosumBasah.slice(-10)}
-                            dataRumputlautX4={actualData.spinosumKering.slice(-10)}
-                        />
-                    </motion.div>
+                    {actualData && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                            className="rounded-lg border border-gray-100 bg-white p-4 shadow-sm lg:col-span-2"
+                        >
+                            <h2 className="mb-4 text-lg font-semibold">Prediksi Panen 6 Bulan Mendatang</h2>
+                            <PredictionCharts
+                                predictionX1={prediction.conttoniBasah.prediction}
+                                predictionX2={prediction.conttoniKering.prediction}
+                                predictionX3={prediction.spinosumBasah.prediction}
+                                predictionX4={prediction.spinosumKering.prediction}
+                                dataRumputlautX1={actualData.conttoniBasah.slice(-10)}
+                                dataRumputlautX2={actualData.conttoniKering.slice(-10)}
+                                dataRumputlautX3={actualData.spinosumBasah.slice(-10)}
+                                dataRumputlautX4={actualData.spinosumKering.slice(-10)}
+                            />
+                        </motion.div>
+                    )}
 
                     {prediction && (
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="space-y-4">

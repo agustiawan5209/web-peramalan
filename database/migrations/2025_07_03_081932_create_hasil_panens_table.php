@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('hasil_panens', function (Blueprint $table) {
             $table->id();
-            $table->string('bulan', 20);
+            $table->string('bulan', 40);
+            $table->string('kecamatan', 20)->nullable();
+            $table->string('desa', 20)->nullable();
             $table->integer('tahun');
             $table->string('total_panen', 30)
                 ->comment('Total panen dalam satuan kg');

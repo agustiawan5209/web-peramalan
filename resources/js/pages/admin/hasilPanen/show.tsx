@@ -63,8 +63,22 @@ export default function HarvestDetailPage({ hasilPanen, breadcrumb, indikator, t
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2, duration: 0.5 }}
-                        className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2"
+                        className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-3"
                     >
+                        {/* Daerah */}
+                          <div className="overflow-hidden rounded-xl border-l-4 border-yellow-500 bg-white p-6 shadow-md">
+                            <h3 className="text-sm font-medium text-gray-500">Daerah Penghasil Rumput Laut</h3>
+                            <div className="mt-4">
+                                        <div className="flex justify-between py-1">
+                                            <span className="text-sm text-gray-600">Kecamatan</span>
+                                            <span className="text-sm font-medium">{data.kecamatan}</span>
+                                        </div>
+                                        <div className="flex justify-between py-1">
+                                            <span className="text-sm text-gray-600">Desa</span>
+                                            <span className="text-sm font-medium">{data.desa}</span>
+                                        </div>
+                            </div>
+                        </div>
                         {/* Total Harvest */}
                         <div className="overflow-hidden rounded-xl border-l-4 border-blue-500 bg-white p-6 shadow-md">
                             <h3 className="text-sm font-medium text-gray-500">Total Panen</h3>
@@ -84,6 +98,7 @@ export default function HarvestDetailPage({ hasilPanen, breadcrumb, indikator, t
                                     ))}
                             </div>
                         </div>
+
                     </motion.div>
 
                     {/* Detailed Parameters */}

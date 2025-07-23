@@ -12,6 +12,8 @@ class HasilPanen extends Model
 
     protected $fillable = [
         "bulan",
+        "kecamatan",
+        "desa",
         "tahun",
         "total_panen",
         "jenisRumputLaut",
