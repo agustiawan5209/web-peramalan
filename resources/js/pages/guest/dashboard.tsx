@@ -79,7 +79,7 @@ export default function GuestDashboard({ baseJenisRumputLaut, totalDataPanen, in
     return (
         <UserAuthLayout>
             <Head title="Dashboard" />
-            <div className="mx-auto max-w-7xl">
+            <div className="mx-auto max-w-7xl h-max py-10">
                 <header className="mb-8">
                     <h1 className="text-3xl font-semibold text-foreground">Hydroponic Dashboard</h1>
                     <p className="mt-1 text-muted-foreground">Monitor and maintain optimal growing conditions</p>
@@ -87,7 +87,7 @@ export default function GuestDashboard({ baseJenisRumputLaut, totalDataPanen, in
                 {/* Statistik */}
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                     <motion.div variants={staggerContainer} initial="initial" animate="animate" className="col-span-1">
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mb-4">
+                        <div className="grid grid-cols-1 gap-4  md:grid-cols-3 mb-4">
                             {stats.map((stat, index) => (
                                 <motion.div
                                     key={stat.title}
@@ -126,7 +126,7 @@ export default function GuestDashboard({ baseJenisRumputLaut, totalDataPanen, in
                         )}
                     </motion.div>
                     {/* Hero Section */}
-                    <motion.div className="mx-auto max-w-7xl" variants={staggerContainer} initial="initial" animate="animate">
+                    <motion.div className="mx-auto max-w-7xl px-4 h-auto" variants={staggerContainer} initial="initial" animate="animate">
 
                         <motion.h1 variants={fadeInUp} className="mb-6 text-2xl leading-tight font-bold text-gray-900 md:text-2xl">
                             Sistem Prediksi

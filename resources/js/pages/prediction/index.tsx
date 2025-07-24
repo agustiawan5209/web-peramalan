@@ -92,11 +92,11 @@ const MultipleLinearRegression: React.FC<MultipleLinearRegressionProps> = ({ bre
                 <h1 className="mb-10 text-4xl font-extrabold tracking-tight text-gray-900">Regresi Linear Berganda</h1>
 
                 <section className="mb-10 rounded-xl bg-white p-6 shadow-md">
-                    <Button type="button" variant={'default'} onClick={() => setShowTable(showTable ? false : true)}>
+                    <Button type="button" variant={'default'} onClick={() => setShowTable(!showTable)}>
                         Tampilkan Data Panen
                     </Button>
                     <h2 className="mb-6 text-xl font-semibold text-gray-800">Data Input</h2>
-                    {(showTable || data.length > 0) && (
+                    {(showTable && data.length > 0) && (
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}

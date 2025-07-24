@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/card';
 import MainLayout from '@/layouts/guest/main-layout';
 import { BreadcrumbItem, IndikatorTypes } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -35,7 +36,9 @@ export default function HarvestDetailPage({ riwayatPengguna, breadcrumb, indikat
     return (
         <MainLayout>
             <Head title={titlePage ?? 'Detail'} />
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="min-h-screen bg-gray-50">
+            <div className="container mx-auto px-4 py-10">
+                <Card>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="min-h-screen ">
                 <div className="mx-auto max-w-7xl">
                     {/* Header */}
                     <motion.div initial={{ y: -20 }} animate={{ y: 0 }} transition={{ duration: 0.5 }} className="mb-10 text-center">
@@ -128,6 +131,8 @@ export default function HarvestDetailPage({ riwayatPengguna, breadcrumb, indikat
                     </motion.div>
                 </div>
             </motion.div>
+            </Card>
+            </div>
         </MainLayout>
     );
 }

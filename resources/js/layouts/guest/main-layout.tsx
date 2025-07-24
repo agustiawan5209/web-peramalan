@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Eye, Github, Mail, MapPin, Menu, Phone, Waves, X } from 'lucide-react';
+import { Eye, Menu, Waves, X } from 'lucide-react';
 import React, { type ReactNode } from 'react';
 
 interface AppLayoutProps {
@@ -35,7 +35,7 @@ export default function MainLayout({ children }: AppLayoutProps) {
                 initial={{ opacity: 0, y: -50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="static top-0 right-0 left-0 z-50 border-b border-teal-100 bg-white/90 backdrop-blur-md"
+                className="fixed top-0 right-0 left-0 z-50 border-b border-teal-100 bg-white/90 backdrop-blur-md"
             >
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 items-center justify-between">
@@ -46,11 +46,12 @@ export default function MainLayout({ children }: AppLayoutProps) {
 
                         {/* Desktop Menu */}
                         <div className="hidden items-center space-x-8 md:flex">
-                            <Link href="/" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
-                                Beranda
-                            </Link>
+
                             {auth.user ? (
                                 <>
+                                    <Link href="/" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                        Beranda
+                                    </Link>
                                     <Link href={route('user.dashboard')} className="font-medium text-gray-700 transition-colors hover:text-teal-600">
                                         Dashboard
                                     </Link>
@@ -62,7 +63,7 @@ export default function MainLayout({ children }: AppLayoutProps) {
                                     </Link>
                                     <Link href={route('user.riwayatPengguna.index')}>
                                         <Button variant="outline" size="lg" className="border-teal-200 px-8 py-3 text-teal-700 hover:bg-teal-50">
-                                           Riwayat Prediksi
+                                            Riwayat Prediksi
                                             <Eye className="ml-2 h-5 w-5" />
                                         </Button>
                                     </Link>
@@ -70,6 +71,21 @@ export default function MainLayout({ children }: AppLayoutProps) {
                                 </>
                             ) : (
                                 <>
+                                <a href="#hero" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                Beranda
+                            </a>
+                            <a href="#about" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                Tentang Sistem
+                            </a>
+                            <a href="#features" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                Fitur
+                            </a>
+                            <a href="#how-it-works" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                Cara Kerja
+                            </a>
+                            <a href="#testimoni" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                Jenis Rumput Laut
+                            </a>
                                     <Link href={route('login')} className="font-medium text-gray-700 transition-colors hover:text-teal-600">
                                         Masuk
                                     </Link>
@@ -97,15 +113,54 @@ export default function MainLayout({ children }: AppLayoutProps) {
                             className="border-t border-teal-100 py-4 md:hidden"
                         >
                             <div className="flex flex-col space-y-4">
-                                <a href="#" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
-                                    Beranda
-                                </a>
-                                <Link href={route('login')} className="font-medium text-gray-700 transition-colors hover:text-teal-600">
-                                    Masuk
-                                </Link>
-                                <Link href={route('register')}>
-                                    <Button className="w-fit bg-teal-600 text-white hover:bg-teal-700">Daftar</Button>
-                                </Link>
+
+                            {auth.user ? (
+                                <>
+                                    <Link href="/" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                        Beranda
+                                    </Link>
+                                    <Link href={route('user.dashboard')} className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                        Dashboard
+                                    </Link>
+                                    <Link
+                                        href={route('user.form.prediksi')}
+                                        className="font-medium text-gray-700 transition-colors hover:text-teal-600"
+                                    >
+                                        Mulai Prediksi
+                                    </Link>
+                                    <Link href={route('user.riwayatPengguna.index')}>
+                                        <Button variant="outline" size="lg" className="border-teal-200 px-8 py-3 text-teal-700 hover:bg-teal-50">
+                                            Riwayat Prediksi
+                                            <Eye className="ml-2 h-5 w-5" />
+                                        </Button>
+                                    </Link>
+                                    <NavUser />
+                                </>
+                            ) : (
+                                <>
+                                <a href="#hero" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                Beranda
+                            </a>
+                            <a href="#about" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                Tentang Sistem
+                            </a>
+                            <a href="#features" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                Fitur
+                            </a>
+                            <a href="#how-it-works" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                Cara Kerja
+                            </a>
+                            <a href="#testimoni" className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                Jenis Rumput Laut
+                            </a>
+                                    <Link href={route('login')} className="font-medium text-gray-700 transition-colors hover:text-teal-600">
+                                        Masuk
+                                    </Link>
+                                    <Link href={route('register')}>
+                                        <Button className="w-fit bg-teal-600 text-white hover:bg-teal-700">Daftar</Button>
+                                    </Link>
+                                </>
+                            )}
                             </div>
                         </motion.div>
                     )}
@@ -113,14 +168,14 @@ export default function MainLayout({ children }: AppLayoutProps) {
             </motion.nav>
 
             {/* content */}
-            <main className="py-10">{children}</main>
+            <main className="pt-16 pb-16">{children}</main>
             {/* Footer */}
             <motion.footer
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="bg-gray-900 py-16 text-white"
+                className="bg-gray-900 py-10 text-white"
             >
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <motion.div
@@ -139,70 +194,6 @@ export default function MainLayout({ children }: AppLayoutProps) {
                                 Sistem prediksi panen rumput laut canggih yang didukung oleh algoritma pembelajaran mesin. Membantu petani laut
                                 mengoptimalkan operasi mereka di seluruh dunia.
                             </p>
-                            <div className="flex space-x-4">
-                                <motion.div whileHover={{ scale: 1.1 }}>
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="border-gray-600 text-gray-400 hover:border-teal-400 hover:text-white"
-                                    >
-                                        <Github className="h-4 w-4" />
-                                    </Button>
-                                </motion.div>
-                                <motion.div whileHover={{ scale: 1.1 }}>
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="border-gray-600 text-gray-400 hover:border-teal-400 hover:text-white"
-                                    >
-                                        <ExternalLink className="h-4 w-4" />
-                                    </Button>
-                                </motion.div>
-                            </div>
-                        </motion.div>
-
-                        <motion.div variants={fadeInUp}>
-                            <h3 className="mb-4 text-lg font-semibold">Tautan Cepat</h3>
-                            <ul className="space-y-2 text-gray-400">
-                                <li>
-                                    <a href="#" className="transition-colors hover:text-teal-400">
-                                        Dokumentasi
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" className="transition-colors hover:text-teal-400">
-                                        Referensi API
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" className="transition-colors hover:text-teal-400">
-                                        Panduan Pengguna
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" className="transition-colors hover:text-teal-400">
-                                        Masuk
-                                    </a>
-                                </li>
-                            </ul>
-                        </motion.div>
-
-                        <motion.div variants={fadeInUp}>
-                            <h3 className="mb-4 text-lg font-semibold">Info Kontak</h3>
-                            <div className="space-y-3 text-gray-400">
-                                <div className="flex items-center">
-                                    <Mail className="mr-2 h-4 w-4 text-teal-400" />
-                                    <span className="text-sm">support@seaharvest.com</span>
-                                </div>
-                                <div className="flex items-center">
-                                    <Phone className="mr-2 h-4 w-4 text-teal-400" />
-                                    <span className="text-sm">+62 (21) 123-4567</span>
-                                </div>
-                                <div className="flex items-center">
-                                    <MapPin className="mr-2 h-4 w-4 text-teal-400" />
-                                    <span className="text-sm">Pusat Penelitian Kelautan</span>
-                                </div>
-                            </div>
                         </motion.div>
                     </motion.div>
 
@@ -213,7 +204,7 @@ export default function MainLayout({ children }: AppLayoutProps) {
                         viewport={{ once: true }}
                         className="mt-12 border-t border-gray-800 pt-8 text-center text-gray-400"
                     >
-                        <p>&copy; 2024 SeaHarvest Predict. Semua hak dilindungi. Dibangun dengan algoritma ML canggih.</p>
+                        <p>&copy; 2024 SeaHarvest Predict. Semua hak dilindungi. Dibangun dengan algoritma ML .</p>
                     </motion.div>
                 </div>
             </motion.footer>

@@ -1,26 +1,10 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardTitle } from '@/components/ui/card';
 import MainLayout from '@/layouts/guest/main-layout';
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import {
-    BarChart3,
-    Calculator,
-    Database,
-    ExternalLink,
-    Eye,
-    FileText,
-    Github,
-    Mail,
-    MapPin,
-    Menu,
-    Phone,
-    Search,
-    TrendingUp,
-    Waves,
-    X,
-} from 'lucide-react';
+import { BarChart3, Calculator, Database, Eye, FileText, Search, TrendingUp, Waves } from 'lucide-react';
 import React from 'react';
 
 const Home = () => {
@@ -41,10 +25,10 @@ const Home = () => {
     };
 
     return (
-        <MainLayout >
-            <Head title='Home' />
-                     {/* Hero Section */}
-            <section className="relative overflow-hidden pt-16">
+        <MainLayout>
+            <Head title="Home" />
+            {/* Hero Section */}
+            <section id='hero' className="relative overflow-hidden pt-16">
                 <div className="absolute inset-0 bg-gradient-to-r from-teal-600/10 to-blue-600/10" />
                 <div className="relative mx-auto max-w-7xl px-4 pt-20 pb-16 text-center sm:px-6 lg:px-8">
                     <motion.div className="mx-auto max-w-4xl" variants={staggerContainer} initial="initial" animate="animate">
@@ -67,11 +51,11 @@ const Home = () => {
                             budidaya laut Anda, dan maksimalkan potensi panen.
                         </motion.p>
                         <motion.div variants={fadeInUp} className="flex flex-col justify-center gap-4 sm:flex-row">
-                           <Link href={route('user.form.prediksi')}>
-                            <Button size="lg" className="bg-teal-600 px-8 py-3 text-white hover:bg-teal-700">
-                                Mulai Prediksi
-                                <TrendingUp className="ml-2 h-5 w-5" />
-                            </Button>
+                            <Link href={route('user.form.prediksi')}>
+                                <Button size="lg" className="bg-teal-600 px-8 py-3 text-white hover:bg-teal-700">
+                                    Mulai Prediksi
+                                    <TrendingUp className="ml-2 h-5 w-5" />
+                                </Button>
                             </Link>
                             <Button variant="outline" size="lg" className="border-teal-200 px-8 py-3 text-teal-700 hover:bg-teal-50">
                                 Lihat Demo
@@ -105,6 +89,7 @@ const Home = () => {
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
                 className="bg-white py-20"
+                id='about'
             >
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <motion.div
@@ -179,6 +164,7 @@ const Home = () => {
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
                 className="bg-gradient-to-br from-gray-50 to-teal-50 py-20"
+                id='features'
             >
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <motion.div
@@ -268,103 +254,6 @@ const Home = () => {
                 </div>
             </motion.section>
 
-            {/* Prediction Insight Preview */}
-            <motion.section
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true }}
-                className="bg-white py-20"
-            >
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                        viewport={{ once: true }}
-                        className="mb-16 text-center"
-                    >
-                        <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">Pratinjau Wawasan Prediksi</h2>
-                        <p className="mx-auto max-w-2xl text-lg text-gray-600">
-                            Lihat bagaimana sistem kami mengubah data Anda menjadi wawasan yang dapat ditindaklanjuti
-                        </p>
-                    </motion.div>
-
-                    <div className="grid gap-8 lg:grid-cols-3">
-                        <motion.div
-                            initial={{ opacity: 0, x: -50 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.6, delay: 0.2 }}
-                            viewport={{ once: true }}
-                            className="lg:col-span-2"
-                        >
-                            <Card className="p-6 shadow-lg transition-shadow hover:shadow-xl">
-                                <CardHeader className="pb-4">
-                                    <CardTitle className="flex items-center">
-                                        <BarChart3 className="mr-2 h-5 w-5 text-teal-600" />
-                                        Grafik Prediksi Hasil Panen
-                                    </CardTitle>
-                                    <CardDescription>Contoh data prediksi yang menunjukkan hasil yang diharapkan vs aktual</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="flex h-64 items-center justify-center rounded-lg bg-gradient-to-r from-teal-50 to-blue-50">
-                                        <div className="text-center">
-                                            <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }}>
-                                                <BarChart3 className="mx-auto mb-4 h-16 w-16 text-teal-400" />
-                                            </motion.div>
-                                            <p className="text-gray-500">Pratinjau Grafik Interaktif</p>
-                                            <p className="mt-2 text-sm text-gray-400">Visualisasi prediksi real-time</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0, x: 50 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.6, delay: 0.4 }}
-                            viewport={{ once: true }}
-                        >
-                            <Card className="bg-gradient-to-br from-teal-500 to-blue-600 p-6 text-white shadow-lg transition-shadow hover:shadow-xl">
-                                <CardHeader className="pb-4">
-                                    <CardTitle className="text-white">Hasil Prediksi</CardTitle>
-                                    <CardDescription className="text-teal-100">Siklus panen berikutnya</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-center">
-                                        <motion.div
-                                            initial={{ scale: 0 }}
-                                            whileInView={{ scale: 1 }}
-                                            transition={{ duration: 0.5, delay: 0.6 }}
-                                            viewport={{ once: true }}
-                                            className="mb-2 text-4xl font-bold"
-                                        >
-                                            2,847
-                                        </motion.div>
-                                        <div className="mb-4 text-lg">kg</div>
-                                        <div className="flex items-center justify-center text-teal-100">
-                                            <TrendingUp className="mr-1 h-4 w-4" />
-                                            <span className="text-sm">+12% dari siklus terakhir</span>
-                                        </div>
-                                    </div>
-                                    <div className="mt-6 space-y-2">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-teal-100">Kepercayaan</span>
-                                            <span>94%</span>
-                                        </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-teal-100">Kondisi Optimal</span>
-                                            <span>Ya</span>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    </div>
-                </div>
-            </motion.section>
-
             {/* How It Works */}
             <motion.section
                 initial={{ opacity: 0 }}
@@ -372,6 +261,7 @@ const Home = () => {
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
                 className="bg-gradient-to-br from-gray-50 to-blue-50 py-20"
+                id='how-it-works'
             >
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <motion.div
@@ -468,15 +358,18 @@ const Home = () => {
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
                 className="bg-white py-20"
+                id='testimoni'
             >
-                <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 50 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                         viewport={{ once: true }}
+                        className='grid grid-cols-1 md:grid-cols-3 gap-4'
                     >
                         <Card className="border-teal-100 p-8 shadow-lg transition-shadow hover:shadow-xl">
+                            <CardTitle>Jenis Rumput Laut: Eucheuma cottonii dan Eucheuma spinosum</CardTitle>
                             <div className="mb-6">
                                 <motion.div
                                     animate={{ rotate: [0, 10, -10, 0] }}
@@ -485,23 +378,87 @@ const Home = () => {
                                 >
                                     <Waves className="h-8 w-8 text-teal-600" />
                                 </motion.div>
-                                <blockquote className="mb-6 text-xl leading-relaxed text-gray-700 italic md:text-2xl">
-                                    &quot;Sistem prediksi ini telah merevolusi operasi budidaya rumput laut kami. Akurasi prediksi hasil telah
-                                    membantu kami mengoptimalkan sumber daya dan meningkatkan produktivitas sebesar 25%. Ini adalah alat yang sangat
-                                    berharga untuk setiap petani laut yang serius.&quot;
+                                <blockquote className="mb-6 text-sm leading-relaxed text-gray-700 italic md:text-base">
+                                    Eucheuma cottonii dan Eucheuma spinosum adalah dua jenis rumput laut merah yang sangat penting dalam industri
+                                    alginat dan karagenan, terutama di Indonesia. Keduanya memiliki peran besar sebagai sumber bahan baku karagenan,
+                                    sebuah hidrokoloid yang banyak digunakan dalam makanan, kosmetik, dan farmasi karena sifatnya sebagai pengental
+                                    dan penstabil.
                                 </blockquote>
-                                <div className="flex items-center justify-center">
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Dr. Maria Santos</p>
-                                        <p className="text-gray-600">Ahli Biologi Kelautan & Pemilik Budidaya Rumput Laut</p>
-                                    </div>
-                                </div>
+                            </div>
+                        </Card>
+
+                        <Card className="border-teal-100 p-8 shadow-lg transition-shadow hover:shadow-xl">
+                            <CardTitle>Eucheuma cottonii</CardTitle>
+                            <div className="mb-6">
+                                <motion.div
+                                    animate={{ rotate: [0, 10, -10, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity }}
+                                    className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-teal-100"
+                                >
+                                    <Waves className="h-8 w-8 text-teal-600" />
+                                </motion.div>
+                                <blockquote className="mb-6 text-sm leading-relaxed text-gray-700 italic md:text-base">
+                                    **Eucheuma cottonii** dikenal juga dengan nama ilmiah *Kappaphycus alvarezii*. Rumput laut ini adalah penghasil
+                                    utama **kappa karagenan**. Kappa karagenan dikenal karena kemampuannya membentuk gel yang kuat dan kaku, yang
+                                    sangat ideal untuk produk seperti jeli, puding, dan pengental dalam produk susu. Tekstur *E. cottonii* cenderung
+                                    lebih kasar dan cabangnya lebih besar dibandingkan *E. spinosum*.
+                                </blockquote>
+                            </div>
+                        </Card>
+
+                        <Card className="border-teal-100 p-8 shadow-lg transition-shadow hover:shadow-xl">
+                            <CardTitle>Eucheuma spinosum</CardTitle>
+                            <div className="mb-6">
+                                <motion.div
+                                    animate={{ rotate: [0, 10, -10, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity }}
+                                    className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-teal-100"
+                                >
+                                    <Waves className="h-8 w-8 text-teal-600" />
+                                </motion.div>
+                                <blockquote className="mb-6 text-sm leading-relaxed text-gray-700 italic md:text-base">
+                                    **Eucheuma spinosum** atau nama lainnya *Eucheuma denticulatum* adalah penghasil utama **iota karagenan**. Iota
+                                    karagenan menghasilkan gel yang lebih elastis, lembut, dan stabil terhadap pembekuan dan pencairan, sehingga cocok
+                                    untuk produk-produk seperti es krim, saus salad, dan daging olahan. Morfologi *E. spinosum* umumnya lebih halus
+                                    dan memiliki cabang yang lebih ramping.
+                                </blockquote>
+                            </div>
+                        </Card>
+
+                        <Card className="col-span-3 border-teal-100 p-8 shadow-lg transition-shadow hover:shadow-xl">
+                            <CardTitle>Perbedaan Rumput Laut Basah dan Kering</CardTitle>
+                            <div className="mb-6">
+                                <motion.div
+                                    animate={{ rotate: [0, 10, -10, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity }}
+                                    className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-teal-100"
+                                >
+                                    <Waves className="h-8 w-8 text-teal-600" />
+                                </motion.div>
+                                <blockquote className="mb-6 text-sm leading-relaxed text-gray-700 italic md:text-base">
+                                    Perbedaan utama antara rumput laut basah dan kering terletak pada **kadar air dan tujuan penggunaannya**.
+                                </blockquote>
+                                <h3 className="mb-3 text-lg font-semibold text-gray-800">Rumput Laut Basah</h3>
+                                <blockquote className="mb-6 text-sm leading-relaxed text-gray-700 italic md:text-base">
+                                    **Rumput laut basah** adalah rumput laut yang baru dipanen dan masih mengandung kadar air yang tinggi, biasanya
+                                    mencapai 80-90%. Kondisi ini membuatnya sangat rentan terhadap pembusukan jika tidak segera diolah. Rumput laut
+                                    basah biasanya digunakan untuk konsumsi langsung sebagai sayuran, salad, atau hidangan segar lainnya. Beberapa
+                                    pembudidaya juga menjualnya dalam keadaan basah untuk pengolahan awal di tempat lain.
+                                </blockquote>
+                                <h3 className="mb-3 text-lg font-semibold text-gray-800">Rumput Laut Kering</h3>
+                                <blockquote className="mb-6 text-sm leading-relaxed text-gray-700 italic md:text-base">
+                                    **Rumput laut kering** adalah hasil dari proses pengeringan rumput laut basah, baik dengan sinar matahari langsung
+                                    maupun pengeringan buatan. Tujuan utama pengeringan adalah mengurangi kadar air hingga sekitar 10-15%, yang secara
+                                    signifikan memperpanjang masa simpannya dan mengurangi bobotnya untuk memudahkan transportasi. Rumput laut kering
+                                    inilah yang menjadi bahan baku utama bagi industri pengolahan karagenan, agar-agar, atau alginat. Setelah
+                                    dikeringkan, rumput laut ini bisa diolah lebih lanjut menjadi tepung atau ekstrak. Proses pengeringan juga
+                                    membantu mengkonsentrasikan kandungan karagenan di dalamnya, membuatnya lebih efisien untuk ekstraksi.
+                                </blockquote>
                             </div>
                         </Card>
                     </motion.div>
                 </div>
             </motion.section>
-
         </MainLayout>
     );
 };

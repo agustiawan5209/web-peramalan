@@ -8,7 +8,9 @@ export default function UserAuthLayout({children}: PropsWithChildren<{}>) {
     return (
         <MainLayout >
             {/* Hero Section */}
-           {children}
+           <section className='flex flex-col items-center justify-center'>
+            {children}
+           </section>
         </MainLayout>
     );
 }
