@@ -89,7 +89,7 @@ class HasilPanenController extends Controller
             'breadcrumb' => array_merge(self::BASE_BREADCRUMB, [
                 [
                     'title' => 'detail',
-                    'href' => `/admin/hasil-panen/$hasilPanen->id/show`,
+                    'href' => `/admin/hasil-panen/detail/show`,
                 ]
             ]),
             'titlePage' => 'Detail',

@@ -1,11 +1,10 @@
 import ModelCard from '@/components/dashboard/ModelCard';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import UserAuthLayout from '@/layouts/guest/user-auth-layout';
 import { loadPredictionFromDB } from '@/utils/predictionstorage';
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Database, Eye, Leaf, TrendingUp, Waves } from 'lucide-react';
+import { Database, Eye, Leaf, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 interface GuestDashboardProps {
     baseJenisRumputLaut: string[];
@@ -79,7 +78,7 @@ export default function GuestDashboard({ baseJenisRumputLaut, totalDataPanen, in
     return (
         <UserAuthLayout>
             <Head title="Dashboard" />
-            <div className="mx-auto max-w-7xl h-max py-10">
+            <div className="mx-auto h-max max-w-7xl py-10">
                 <header className="mb-8">
                     <h1 className="text-3xl font-semibold text-foreground">Hydroponic Dashboard</h1>
                     <p className="mt-1 text-muted-foreground">Monitor and maintain optimal growing conditions</p>
@@ -87,7 +86,7 @@ export default function GuestDashboard({ baseJenisRumputLaut, totalDataPanen, in
                 {/* Statistik */}
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                     <motion.div variants={staggerContainer} initial="initial" animate="animate" className="col-span-1">
-                        <div className="grid grid-cols-1 gap-4  md:grid-cols-3 mb-4">
+                        <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
                             {stats.map((stat, index) => (
                                 <motion.div
                                     key={stat.title}
@@ -126,8 +125,7 @@ export default function GuestDashboard({ baseJenisRumputLaut, totalDataPanen, in
                         )}
                     </motion.div>
                     {/* Hero Section */}
-                    <motion.div className="mx-auto max-w-7xl px-4 h-auto" variants={staggerContainer} initial="initial" animate="animate">
-
+                    <motion.div className="mx-auto h-auto max-w-7xl px-4" variants={staggerContainer} initial="initial" animate="animate">
                         <motion.h1 variants={fadeInUp} className="mb-6 text-2xl leading-tight font-bold text-gray-900 md:text-2xl">
                             Sistem Prediksi
                             <span className="text-teal-600"> Panen Rumput Laut</span>
@@ -147,12 +145,12 @@ export default function GuestDashboard({ baseJenisRumputLaut, totalDataPanen, in
                                     <TrendingUp className="ml-2 h-5 w-5" />
                                 </Button>
                             </Link>
-                           <Link href={route('user.riwayatPengguna.index')}>
-                            <Button variant="outline" size="lg" className="border-teal-200 px-8 py-3 text-teal-700 hover:bg-teal-50">
-                                Riwayat Prediksi
-                                <Eye className="ml-2 h-5 w-5" />
-                            </Button>
-                           </Link>
+                            <Link href={route('user.riwayatPengguna.index')}>
+                                <Button variant="outline" size="lg" className="border-teal-200 px-8 py-3 text-teal-700 hover:bg-teal-50">
+                                    Riwayat Prediksi
+                                    <Eye className="ml-2 h-5 w-5" />
+                                </Button>
+                            </Link>
                         </motion.div>
                     </motion.div>
                 </div>
