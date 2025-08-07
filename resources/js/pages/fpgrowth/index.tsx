@@ -4,14 +4,6 @@ import { Head } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import FPGrowthComponent from './fpgrwoth';
 
-interface Transaction {
-    items: string[];
-}
-
-interface FrequentItemset {
-    items: string[];
-    support: number;
-}
 
 interface FpGrowthViewProps {
     breadcrumb: BreadcrumbItem[];

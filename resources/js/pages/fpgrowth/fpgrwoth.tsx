@@ -70,7 +70,6 @@ const FPGrowthComponent: React.FC<FPGrowthProps> = ({
             // 3. Generate association rules
             const generatedRules: AssociationRule[] = [];
             const processedCombinations = new Set<string>();
-
             frequentItemsets.forEach((itemset) => {
                 // Skip itemsets with less than 2 items (can't form rules)
                 if (itemset.items.length < 2) return;
@@ -117,6 +116,7 @@ const FPGrowthComponent: React.FC<FPGrowthProps> = ({
                     }
                 }
             });
+            console.log(generatedRules)
 
             // 4. Filter for our target consequents and sort
             const targetConsequents = ['hasil_panen_sedang', 'hasil_panen_rendah', 'hasil_panen_sedang'];

@@ -51,9 +51,9 @@ class FPGrowthController extends Controller
     }
 
     public function bin_panen($value){
-        if($value < 2000){
+        if($value < 600000){
             return 'hasil_panen_rendah';
-        } elseif ($value <= 3500) {
+        } elseif ($value <= 1000000) {
             return 'hasil_panen_sedang';
         } else{
             return 'hasil_panen_tinggi';
