@@ -24,7 +24,38 @@ class FPGrowthController extends Controller
         $panen = HasilPanen::all();
         $kriteria = Indikator::orderBy('id', 'asc')->get();
 
-        $transaction = $panen->map(function ($item) use ($kriteria) {
+        $transactionNumerical = $panen->map(function ($item) use ($kriteria) {
+            $parameter = $item->parameter;
+            $jenis = $item->jenisRumputLaut;
+            // dd($parameter);
+            $data = [];
+            foreach ($kriteria as $key => $value) {
+                $id = $value->id;
+                $nilai = array_values(array_filter($parameter, function ($pm) use ($id) {
+                    return $pm['indikator_id'] == $id;
+                }))[0]['nilai'];
+
+                $rules = round($nilai);
+
+                $data[$id] = $rules;
+            }
+            $data[] = round($item->total_panen);
+            return array_values($data);
+        });
+        return Inertia::render('fpgrowth/index', [
+            'breadcrumb' => self::BASE_BREADCRUMS,
+            'titlePage' => 'Fp-growth Panen',
+            'transaksiPanen' => $this->setTransaction(),
+            'transactionNumerical' => $transactionNumerical,
+            'kriteria'=> Indikator::select(['id', 'nama'])->get(),
+        ]);
+    }
+    public function setTransaction()
+    {
+        $panen = HasilPanen::all();
+        $kriteria = Indikator::orderBy('id', 'asc')->get();
+
+        return $panen->map(function ($item) use ($kriteria) {
             $parameter = $item->parameter;
             $jenis = $item->jenisRumputLaut;
             // dd($parameter);
@@ -42,39 +73,36 @@ class FPGrowthController extends Controller
             $data[] = $this->bin_panen(intval($item->total_panen));
             return array_values($data);
         });
-        // dd($transaction);
-        return Inertia::render('fpgrowth/index', [
-            'breadcrumb' => self::BASE_BREADCRUMS,
-            'titlePage' => 'Fp-growth Panen',
-            'transaksiPanen' => $transaction,
-        ]);
     }
 
-    public function bin_panen($value){
-        if($value < 600000){
+
+    public function bin_panen($value)
+    {
+        if ($value < 600000) {
             return 'hasil_panen_rendah';
         } elseif ($value <= 1000000) {
             return 'hasil_panen_sedang';
-        } else{
+        } else {
             return 'hasil_panen_tinggi';
         }
     }
 
-  public function getRules($rules, $value){
-    foreach ($rules as $item) {
-        $nilai = $item['nilai'];
-        $batas = $item['batas'];
-        $operator = $item['operator'];
+    public function getRules($rules, $value)
+    {
+        foreach ($rules as $item) {
+            $nilai = $item['nilai'];
+            $batas = $item['batas'];
+            $operator = $item['operator'];
 
-        if ($operator == '<' && intval($value) < intval($batas)) {
-            return $nilai;
-        } elseif ($operator == '<=' && intval($value) <= intval($batas)) {
-            return $nilai;
-        } elseif ($operator == '>' && intval($value) > intval($batas)) {
-            return $nilai;
+            if ($operator == '<' && intval($value) < intval($batas)) {
+                return $nilai;
+            } elseif ($operator == '<=' && intval($value) <= intval($batas)) {
+                return $nilai;
+            } elseif ($operator == '>' && intval($value) > intval($batas)) {
+                return $nilai;
+            }
         }
+        return 0; // Tidak ada kondisi yang sesuai
     }
-    return 0; // Tidak ada kondisi yang sesuai
-}
 
 }
