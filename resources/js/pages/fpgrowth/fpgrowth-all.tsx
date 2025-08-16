@@ -119,11 +119,11 @@ const FPGrowthComponent: React.FC<FPGrowthProps> = ({
                     }
                 }
             });
-             const targetConsequents = ['hasil_panen_tinggi', 'hasil_panen_rendah', 'hasil_panen_sedang'];
+            const targetConsequents = ['hasil_panen_tinggi', 'hasil_panen_rendah', 'hasil_panen_sedang'];
             // 4. sort
             const filteredRules = generatedRules
-            // .filter((rule) => targetConsequents.includes(rule.consequent))
-            .sort((a, b) => b.confidence - a.confidence || b.support - a.support);
+                // .filter((rule) => targetConsequents.includes(rule.consequent))
+                .sort((a, b) => b.confidence - a.confidence || b.support - a.support);
 
             // 5. Hitung indikator paling berpengaruh
             const indicatorStats = analyzeIndicators(filteredRules);
@@ -146,58 +146,90 @@ const FPGrowthComponent: React.FC<FPGrowthProps> = ({
     useEffect(() => {
         runFPGrowth();
     }, [transactions]);
-    // Fungsi untuk menganalisis indikator
     const analyzeIndicators = (rules: AssociationRule[]) => {
-        const antecedentCounts: Record<string, number> = {};
-        const consequentCounts: Record<string, number> = {};
-        const overallCounts: Record<string, number> = {};
+        // 1. Inisialisasi struktur data
+        const antecedentStats: Record<string, { count: number; confidenceSum: number; supportSum: number }> = {};
+        const consequentStats: Record<string, { count: number; confidenceSum: number; supportSum: number }> = {};
+        const overallStats: Record<string, { count: number; confidenceSum: number; supportSum: number }> = {};
 
+        // 2. Proses semua rules dan kumpulkan statistik
         rules.forEach((rule) => {
-            // Hitung antecedent (bisa multiple items)
-            rule.antecedent.forEach((item) => {
-                antecedentCounts[item] = (antecedentCounts[item] || 0) + 1;
-                overallCounts[item] = (overallCounts[item] || 0) + 1;
+            const { antecedent, consequent, confidence, support } = rule;
+
+            // Proses antecedent (bisa multiple items)
+            antecedent.forEach((item) => {
+                if (!antecedentStats[item]) {
+                    antecedentStats[item] = { count: 0, confidenceSum: 0, supportSum: 0 };
+                }
+                antecedentStats[item].count += 1;
+                antecedentStats[item].confidenceSum += confidence;
+                antecedentStats[item].supportSum += support;
+
+                // Proses overall
+                if (!overallStats[item]) {
+                    overallStats[item] = { count: 0, confidenceSum: 0, supportSum: 0 };
+                }
+                overallStats[item].count += 1;
+                overallStats[item].confidenceSum += confidence;
+                overallStats[item].supportSum += support;
             });
 
-            // Hitung consequent (single item)
-            const consequent = rule.consequent;
-            consequentCounts[consequent] = (consequentCounts[consequent] || 0) + 1;
-            overallCounts[consequent] = (overallCounts[consequent] || 0) + 1;
-        });
-        const itemConfidence: Record<string, number[]> = {};
-        const itemSupport: Record<string, number[]> = {};
+            // Proses consequent (single item)
+            if (!consequentStats[consequent]) {
+                consequentStats[consequent] = { count: 0, confidenceSum: 0, supportSum: 0 };
+            }
+            consequentStats[consequent].count += 1;
+            consequentStats[consequent].confidenceSum += confidence;
+            consequentStats[consequent].supportSum += support;
 
-        rules.forEach((rule) => {
-            rule.antecedent.forEach((item) => {
-                itemConfidence[item] = [...(itemConfidence[item] || []), rule.confidence];
-                itemSupport[item] = [...(itemSupport[item] || []), rule.support];
-            });
+            // Proses overall untuk consequent
+            if (!overallStats[consequent]) {
+                overallStats[consequent] = { count: 0, confidenceSum: 0, supportSum: 0 };
+            }
+            overallStats[consequent].count += 1;
+            overallStats[consequent].confidenceSum += confidence;
+            overallStats[consequent].supportSum += support;
         });
 
-        // Hitung rata-rata
-        const avgConfidence = Object.entries(itemConfidence).map(([name, values]) => ({
-            name,
-            avg: values.reduce((a, b) => a + b, 0) / values.length,
-        }));
-        // Urutkan dari yang paling banyak
-        const sortByCount = (a: { name: string; count: number }, b: { name: string; count: number }) => b.count - a.count;
+        // 3. Fungsi sorting yang mempertimbangkan count, confidence, dan support
+        const sortByImpact = (
+            a: { name: string; count: number; avgConfidence: number; avgSupport: number },
+            b: { name: string; count: number; avgConfidence: number; avgSupport: number },
+        ) => {
+            // Prioritas 1: Confidence rata-rata
+            if (b.avgConfidence !== a.avgConfidence) return b.avgConfidence - a.avgConfidence;
+            // Prioritas 2: Support rata-rata
+            if (b.avgSupport !== a.avgSupport) return b.avgSupport - a.avgSupport;
+            // Prioritas 3: Frekuensi kemunculan
+            return b.count - a.count;
+        };
+
+        // 4. Konversi ke array dan hitung rata-rata
+        const processStats = (stats: Record<string, { count: number; confidenceSum: number; supportSum: number }>) => {
+            return Object.entries(stats)
+                .filter(([name]) => !name.includes('hasil')) // Filter out hasil_panen
+                .map(([name, { count, confidenceSum, supportSum }]) => ({
+                    name,
+                    count,
+                    avgConfidence: confidenceSum / count,
+                    avgSupport: supportSum / count,
+                    weightedScore: (confidenceSum * 0.6 + supportSum * 0.4) / count, // Bobot: confidence 60%, support 40%
+                }))
+                .sort(sortByImpact);
+        };
+
+        // 5. Proses masing-masing kategori
+        const antecedents = processStats(antecedentStats).slice(0, 5);
+        const consequents = processStats(consequentStats).slice(0, 8);
+        const overall = processStats(overallStats).slice(0, 5);
 
         return {
-            antecedents: Object.entries(antecedentCounts)
-                .map(([name, count]) => ({ name, count }))
-                .sort(sortByCount)
-                .filter((item) => !item.name.includes('hasil'))
-                .slice(0, 5), // Ambil top 5
-
-            consequents: Object.entries(consequentCounts)
-                .map(([name, count]) => ({ name, count }))
-                .sort(sortByCount)
-                .slice(0,8),
-
-            overall: Object.entries(overallCounts)
-                .map(([name, count]) => ({ name, count }))
-                .sort(sortByCount)
-                .slice(0, 5),
+            antecedents,
+            consequents,
+            overall,
+            // Tambahan: rule dengan confidence dan support tertinggi
+            highestConfidenceRule: rules.length > 0 ? [...rules].sort((a, b) => b.confidence - a.confidence || b.support - a.support)[0] : null,
+            highestSupportRule: rules.length > 0 ? [...rules].sort((a, b) => b.support - a.support || b.confidence - a.confidence)[0] : null,
         };
     };
     return (

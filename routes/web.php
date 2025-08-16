@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\PredictionModelController;
 use App\Http\Controllers\Guest\DashboardController as GuestDashboardController;
 use App\Http\Controllers\Guest\RiwayatPrediksiController;
+use App\Http\Controllers\KriteriaTerpilihController;
 use App\Http\Controllers\RiwayatPenggunaController;
 
 Route::get('/', function () {
@@ -68,18 +69,8 @@ Route::middleware(['auth', 'verified', 'role:admin|super_admin'])->group(functio
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
-// routes/api.php
-Route::prefix('models')->group(function () {
-    Route::post('api/models/', [ModelStorageController::class, 'store'])->name('model.store');
-    Route::get('api/models/{modelName}', [ModelStorageController::class, 'show'])->name('model.show');
-});
-Route::prefix('api/prediction')->group(function () {
-    Route::post('/', [PredictionModelController::class, 'store'])->name('prediction.store');
-    Route::get('/{modelName}', [PredictionModelController::class, 'show'])->name('prediction.show');
-});
-Route::post('/riwayat/store', [RiwayatPenggunaController::class, 'store'])->name('riwayatPengguna.store')->middleware(['auth']);
 
-//
+// Router Pengguna
 Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::group(['as' => 'user.'], function () {
 
@@ -97,3 +88,29 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
         });
     });
 });
+
+
+
+// routes/api.php
+Route::prefix('models')->group(function () {
+    Route::post('api/models/', [ModelStorageController::class, 'store'])->name('model.store');
+    Route::get('api/models/{modelName}', [ModelStorageController::class, 'show'])->name('model.show');
+});
+Route::prefix('api/prediction')->group(function () {
+    Route::post('/', [PredictionModelController::class, 'store'])->name('prediction.store');
+    Route::get('/{modelName}', [PredictionModelController::class, 'show'])->name('prediction.show');
+});
+Route::post('/riwayat/store', [RiwayatPenggunaController::class, 'store'])->name('riwayatPengguna.store')->middleware(['auth']);
+
+
+//
+/**
+ * routes untuk menyimpan kriteria yang terpilih dari hasil
+ * algoritma FP-growth
+ * dan
+ * menampilkan kriteria yang terpilih
+ */
+
+
+Route::post('/store/kriteria/model', [KriteriaTerpilihController::class,'store'])->name('store.kriteria.model');
+Route::get('/show/kriteria/model', [KriteriaTerpilihController::class,'show'])->name('show.kriteria.model');

@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import KMeansClustering from '@/utils/kmeans';
 import { Head } from '@inertiajs/react';
+import axios from 'axios';
 import { useEffect, useMemo, useState } from 'react';
 import FPGrowthComponent from './fpgrowth-all';
 
@@ -114,7 +115,6 @@ export default function FpGrowthView({ breadcrumb, titlePage, transaksiPanen, tr
                 { rendah: [], sedang: [], tinggi: [] },
             ); // Inisialisasi objek akumulator
 
-            console.log(objindikator);
             setKMeans({
                 clusters: objindikator,
                 centroids: result.centroids,
@@ -134,22 +134,49 @@ export default function FpGrowthView({ breadcrumb, titlePage, transaksiPanen, tr
     const [associationTinggi, setAssociationTinggi] = useState<{ name: string; count: number }[]>([]);
     const [selectedIndikator, setSelectedIndikator] = useState<{ name: string; count: number }[]>([]);
 
+    const [isSaved, setIsSaved] = useState<boolean>(false)
     useEffect(() => {
-        const indikator = associationTinggi.map(({ name, count }) => {
+        const indikator = associationTinggi.reduce((acc, { name, count }) => {
             let nama = name.includes('_') ? name.split('_')[0] : name;
             const nameFind = kriteria.find((value) => value.nama.toLowerCase().includes(nama));
+
             if (nameFind) {
                 nama = nameFind.nama;
             }
 
-            return {
-                name: nama,
-                count: count,
-            };
-        });
+            // Cek apakah nama sudah ada di akumulator
+            if (acc[nama]) {
+                // Jika ada, tambahkan count
+                acc[nama].count += count;
+            } else {
+                // Jika tidak ada, buat entri baru
+                acc[nama] = { name: nama, count: count };
+            }
 
-        setSelectedIndikator(indikator);
+            return acc;
+        }, {});
+
+        // Mengonversi objek akumulator kembali menjadi array
+        const indikatorArray = Object.values(indikator);
+
+        setSelectedIndikator(indikatorArray);
     }, [associationTinggi]);
+
+    const submitIndikator = async () => {
+        if (selectedIndikator) {
+            try {
+                const response = await axios.post(route('store.kriteria.model'), {
+                    hasil: selectedIndikator.map((item) => item.name),
+                });
+                if (response.status == 200) {
+                    console.log(response.data);
+                    setIsSaved(true)
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    };
     return (
         <>
             <AppLayout breadcrumbs={breadcrumbs}>
@@ -249,18 +276,41 @@ export default function FpGrowthView({ breadcrumb, titlePage, transaksiPanen, tr
                     </section>
 
                     <div className="grid grid-cols-3 gap-4">
-                        {associationTinggi && (
-                            <Card className="col-span-full">
-                                <CardContent>
-                                    <div className="stat-card">
-                                        <h3>Hasil Indikator Terpilih dari hasil pola asosiasi FP-Growth</h3>
-                                        <ul className="space-y-2">
-                                            {selectedIndikator.map((item, i) => (
-                                                <li key={i}>
-                                                    {item.name}: {item.count} rules
-                                                </li>
-                                            ))}
-                                        </ul>
+                        {selectedIndikator.length > 0 && (
+                            <Card className="col-span-full overflow-hidden rounded-xl border-0 shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="space-y-5">
+                                        <div className="flex items-start justify-between">
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-gray-800">Hasil Indikator Terpilih</h3>
+                                                <p className="mt-1 text-sm text-gray-500">Dari hasil pola asosiasi FP-Growth</p>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                onClick={submitIndikator}
+                                                variant="outline"
+                                                disabled={isSaved}
+                                                className="border-primary text-primary hover:bg-primary/10"
+                                            >
+                                                {isSaved ? 'Indikator Berhasil Tersimpan' : 'Simpan Indikator'}
+                                            </Button>
+                                        </div>
+
+                                        <div className="rounded-lg bg-gray-50 p-4">
+                                            <ul className="space-y-3">
+                                                {selectedIndikator.map((item, i) => (
+                                                    <li
+                                                        key={i}
+                                                        className="flex items-center justify-between rounded-md bg-white p-3 shadow-xs transition-all hover:shadow-sm"
+                                                    >
+                                                        <span className="font-medium text-gray-700">{item.name}</span>
+                                                        <span className="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                                                            {item.count} rules
+                                                        </span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
