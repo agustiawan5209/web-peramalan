@@ -144,8 +144,6 @@ export default function PredictModels({ models, normalizationParams, transaction
                     mse: tf.losses.meanSquaredError(ys, preds).dataSync()[0],
                     r2: tf.metrics.r2Score(ys, preds).dataSync()[0],
                 };
-                console.log(prediction);
-
                 savePredictionToDB(prediction, key, newMetrics[key as keyof typeof newMetrics].mse, newMetrics[key as keyof typeof newMetrics].r2);
                 // Cleanup
                 xs.dispose();
