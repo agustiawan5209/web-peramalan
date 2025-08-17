@@ -4,6 +4,7 @@ import { IndikatorTypes } from '@/types';
 import { saveModelToDB } from '@/utils/modelstorage';
 import * as tf from '@tensorflow/tfjs';
 import { useState } from 'react';
+import { Toast } from './ui/toast';
 
 interface TrainModelsProps {
     indikator: IndikatorTypes[];
@@ -26,6 +27,9 @@ interface TrainModelsProps {
 }
 
 export default function TrainModels({ indikator, transactionX, transactionY, onModelsTrained }: TrainModelsProps) {
+    const [errorModel, setErrorModel] = useState<{ text: string; status: boolean }>({ text: '', status: false });
+    const [isErrorModel, setIsErrorModel] = useState<boolean>(false);
+
     const [training, setTraining] = useState(false);
     const [progress, setProgress] = useState({
         conttoniBasah: 0,
@@ -47,7 +51,6 @@ export default function TrainModels({ indikator, transactionX, transactionY, onM
 
     const trainAllModels = async () => {
         setTraining(true);
-
         try {
             // Hitung normalisasi untuk fitur input (sama untuk semua model)
             const featureRanges = indikator.map((_, i) => {
@@ -113,33 +116,58 @@ export default function TrainModels({ indikator, transactionX, transactionY, onM
             try {
                 // Simpan semua model ke database
                 await Promise.all([
-                    saveModelToDB(models.conttoniBasah, 'conttoni_basah', {
-                        featureRanges,
-                        outputMin: conttoniBasahParams.outputMin,
-                        outputMax: conttoniBasahParams.outputMax,
-                    }),
-                    saveModelToDB(models.conttoniKering, 'conttoni_kering', {
-                        featureRanges,
-                        outputMin: conttoniKeringParams.outputMin,
-                        outputMax: conttoniKeringParams.outputMax,
-                    }),
-                    saveModelToDB(models.spinosumKering, 'spinosum_basah', {
-                        featureRanges,
-                        outputMin: spinosumBasahParams.outputMin,
-                        outputMax: spinosumBasahParams.outputMax,
-                    }),
-                    saveModelToDB(models.spinosumBasah, 'spinosum_kering', {
-                        featureRanges,
-                        outputMin: spinosumBasahParams.outputMin,
-                        outputMax: spinosumBasahParams.outputMax,
-                    }),
-                    // Simpan 3 model lainnya...
+                    saveModelToDB(
+                        models.conttoniBasah,
+                        'conttoni_basah',
+                        {
+                            featureRanges,
+                            outputMin: conttoniBasahParams.outputMin,
+                            outputMax: conttoniBasahParams.outputMax,
+                        },
+                        indikator,
+                    ),
+                    saveModelToDB(
+                        models.conttoniKering,
+                        'conttoni_kering',
+                        {
+                            featureRanges,
+                            outputMin: conttoniKeringParams.outputMin,
+                            outputMax: conttoniKeringParams.outputMax,
+                        },
+                        indikator,
+                    ),
+                    saveModelToDB(
+                        models.spinosumKering,
+                        'spinosum_basah',
+                        {
+                            featureRanges,
+                            outputMin: spinosumBasahParams.outputMin,
+                            outputMax: spinosumBasahParams.outputMax,
+                        },
+                        indikator,
+                    ),
+                    saveModelToDB(
+                        models.spinosumBasah,
+                        'spinosum_kering',
+                        {
+                            featureRanges,
+                            outputMin: spinosumBasahParams.outputMin,
+                            outputMax: spinosumBasahParams.outputMax,
+                        },
+                        indikator,
+                    ),
                 ]);
 
                 console.log('All models saved to database');
             } catch (error) {
                 console.error('Error saving models:', error);
             }
+        } catch (error) {
+            setErrorModel({
+                text: 'Gagal Melakukan prediksi, ini mungkin kesalahan akibat train model yang salah. mohon ulangi sekali lagi',
+                status: true,
+            });
+            setIsErrorModel(true);
         } finally {
             setTraining(false);
         }
@@ -147,11 +175,12 @@ export default function TrainModels({ indikator, transactionX, transactionY, onM
 
     return (
         <div className="rounded-lg border bg-gray-50 p-6">
+            <Toast open={isErrorModel} onOpenChange={setIsErrorModel} title="Terjadi Kesalahan Prediksi" description={errorModel.text} />
             <h3 className="mb-4 text-lg font-semibold">Pelatihan 4 Model</h3>
 
             <div className="mb-4 space-y-2">
                 <div className="flex items-center justify-between">
-                    <span>Eucheuma Cottoni Basah</span>
+                    <span>Mulai Lakukan Pelatihan Untuk Semua Model</span>
                     <span>{progress.conttoniBasah.toFixed(0)}%</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-gray-200">

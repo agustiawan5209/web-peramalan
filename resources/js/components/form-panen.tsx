@@ -48,6 +48,7 @@ interface PropsPanenRumputLaut {
 }
 
 export default function FormPanen({ parameter, indikator, handleChange }: PropsPanenRumputLaut) {
+
     return (
         <>
             <div className="block">
@@ -62,7 +63,7 @@ export default function FormPanen({ parameter, indikator, handleChange }: PropsP
                                         type="number"
                                         step={0.1}
                                         name={`parameter.${index}`}
-                                        value={parameter[index].nilai || ''}
+                                        value={parameter[index]?.nilai || ''}
                                         onChange={handleChange}
                                         className="placeholder:text-gray-400"
                                         placeholder={`masukkan ${item.nama}`}

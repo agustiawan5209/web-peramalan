@@ -99,6 +99,7 @@ Route::prefix('models')->group(function () {
 Route::prefix('api/prediction')->group(function () {
     Route::post('/', [PredictionModelController::class, 'store'])->name('prediction.store');
     Route::get('/{modelName}', [PredictionModelController::class, 'show'])->name('prediction.show');
+    Route::get('/transaction/data', [PredictionModelController::class, 'setTransactionAPI'])->name('prediction.setTransactionAPI');
 });
 Route::post('/riwayat/store', [RiwayatPenggunaController::class, 'store'])->name('riwayatPengguna.store')->middleware(['auth']);
 

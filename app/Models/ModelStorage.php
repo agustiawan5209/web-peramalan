@@ -11,10 +11,15 @@ class ModelStorage extends Model
     use HasFactory;
 
     protected $fillable = [
+        'indikator',
         'model_name',
         'model_json',
         'weight_specs',
         'weight_data',
         'normalization_params',
     ];
+    protected $casts = [
+        'indikator'=> 'array'
+    ];
+
 }

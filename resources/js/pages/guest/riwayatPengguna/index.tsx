@@ -15,6 +15,7 @@ interface RiwayatViewProps {
             id: number;
             user: { name: string; email: string };
             model: any;
+            created_at: string;
         }[];
         first_page_url: string;
         from: number;
@@ -43,7 +44,15 @@ export default function RiwayatView({ riwayatPengguna, breadcrumb, titlePage }: 
     );
 
     const [isDeleteDialog, setisDeleteDialog] = useState(false);
-    console.log(riwayatPengguna.data[0]);
+    const formatDate = (value: string) => {
+        return new Date(value).toLocaleString('id-ID', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
     return (
         <MainLayout>
             <Head title={titlePage ?? 'Riwayat Pengguna'} />
@@ -62,6 +71,7 @@ export default function RiwayatView({ riwayatPengguna, breadcrumb, titlePage }: 
                                         <TableHead className="cursor-pointer">no</TableHead>
                                         <TableHead className="cursor-pointer">user</TableHead>
                                         <TableHead className="cursor-pointer">email</TableHead>
+                                        <TableHead className="cursor-pointer">tanggal</TableHead>
                                         <TableHead className="cursor-pointer">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -72,6 +82,7 @@ export default function RiwayatView({ riwayatPengguna, breadcrumb, titlePage }: 
                                                 <TableCell>{index + 1}</TableCell>
                                                 <TableCell>{item.user.name}</TableCell>
                                                 <TableCell>{item.user.email}</TableCell>
+                                                <TableCell>{formatDate(item.created_at)}</TableCell>
                                                 <TableCell>
                                                     <div className="flex flex-row items-center gap-2">
                                                         <DeleteConfirmationForm

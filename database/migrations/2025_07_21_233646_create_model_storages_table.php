@@ -14,6 +14,7 @@ return new class extends Migration
         // database/migrations/xxxx_create_model_storage_table.php
         Schema::create('model_storages', function (Blueprint $table) {
             $table->id();
+            $table->json('indikator');
             $table->string('model_name'); // conttoni_basah, conttoni_kering, dll
             $table->text('model_json'); // Model topology (JSON)
             $table->text('weight_data')->nullable(); // Binary weights (base64 encoded)

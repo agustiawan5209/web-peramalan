@@ -6,12 +6,14 @@ use App\Models\ModelStorage;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreModelStorageRequest;
 use App\Http\Requests\UpdateModelStorageRequest;
+use App\Models\Indikator;
 
 class ModelStorageController extends Controller
 {
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'indikator'=> 'required',
             'model_name' => 'required|string',
             'model_json' => 'required|json',
             // 'weight_specs' => 'required|json',
@@ -33,8 +35,8 @@ class ModelStorageController extends Controller
         $model = ModelStorage::where('model_name', $modelName)
             ->latest()
             ->firstOrFail();
-
         return response()->json([
+            'indikator'=> $model->indikator,
             'model_json' => $model->model_json,
             // 'weight_data' => $model->weight_data,
             // 'weight_specs' => $model->weight_specs,

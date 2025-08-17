@@ -1,6 +1,7 @@
 // utils/modelStorage.ts
 import axios from 'axios';
 import * as tf from '@tensorflow/tfjs';
+import { IndikatorTypes } from '@/types';
 
 
 // Daftarkan kelas Sequential untuk deserialisasi
@@ -9,7 +10,8 @@ tf.serialization.registerClass(tf.Sequential);
 export async function saveModelToDB(
     model: tf.Sequential,
     modelName: string,
-    normalizationParams: any
+    normalizationParams: any,
+    indikator?: any
 ): Promise<{ success: boolean; message?: string }> {
     try {
         // 1. Simpan model sementara ke IndexedDB
@@ -20,6 +22,7 @@ export async function saveModelToDB(
 
         // 3. Siapkan payload untuk API
         const payload = {
+            indikator: indikator,
             model_name: modelName,
             model_json: model.toJSON(),
             normalization_params: JSON.stringify(normalizationParams),
@@ -45,11 +48,11 @@ export async function saveModelToDB(
 // Fungsi untuk memuat model dari database
 export async function loadModelFromDB(
     modelName: string
-): Promise<{ model: tf.Sequential; normalizationParams: any }> {
+): Promise<{ indikator: IndikatorTypes[]; model: tf.Sequential; normalizationParams: any }> {
     try {
         // 1. Fetch model data from Laravel backend
         const response = await axios.get(route('model.show', { modelName: modelName }));
-        const { model_json, normalization_params } = response.data;
+        const {indikator, model_json, normalization_params } = response.data;
 
         // 2. Parse the JSON strings
         const modelConfig = JSON.parse(model_json);
@@ -61,7 +64,7 @@ export async function loadModelFromDB(
         // 4. Reconstruct the model from JSON
         const model = await tf.models.modelFromJSON(modelConfig) as tf.Sequential;
         // 5. Return both the model and normalization parameters
-        return { model, normalizationParams: normParams };
+        return { indikator,model, normalizationParams: normParams };
     } catch (error) {
         console.error('Error loading model:', error);
         throw new Error(error instanceof Error ? error.message : 'Failed to load model');

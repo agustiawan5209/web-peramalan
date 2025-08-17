@@ -9,6 +9,7 @@ import * as tf from '@tensorflow/tfjs';
 import axios from 'axios';
 import { useState } from 'react';
 import PredictionCharts from './prediction-chart';
+import { Toast } from './ui/toast';
 interface PredictModelsProps {
     models: {
         conttoniBasah: tf.Sequential | null;
@@ -29,6 +30,8 @@ interface PredictModelsProps {
 }
 export default function PredictModels({ models, normalizationParams, transactionX, indikator, actualData, className }: PredictModelsProps) {
     const { auth } = usePage<SharedData>().props;
+    const [errorModel, setErrorModel] = useState<{ text: string; status: boolean }>({ text: '', status: false });
+    const [isErrorModel, setIsErrorModel] = useState<boolean>(false);
 
     const [parameter, setParameter] = useState<ParameterTransaction[]>(
         indikator.map((_, index) => ({
@@ -105,66 +108,75 @@ export default function PredictModels({ models, normalizationParams, transaction
             return normalize(Number(param?.nilai), normalizationParams.featureRanges[i].min, normalizationParams.featureRanges[i].max);
         });
 
-        // Prediksi untuk setiap jenis
-        Object.keys(models).forEach((key: any) => {
-            const model = models[key as keyof typeof models];
-            if (!model) return;
+        try {
+            // Prediksi untuk setiap jenis
+            Object.keys(models).forEach((key: any) => {
+                const model = models[key as keyof typeof models];
+                if (!model) return;
 
-            // Initialize the inputArr object outside forEach
+                // Initialize the inputArr object outside forEach
 
-            const prediction = makePrediction(
-                model,
-                inputArr,
-                normalizationParams.outputParams[key].outputMin,
-                normalizationParams.outputParams[key].outputMax,
-            );
-            newPredictions[key as keyof typeof newPredictions] = prediction;
+                const prediction = makePrediction(
+                    model,
+                    inputArr,
+                    normalizationParams.outputParams[key].outputMin,
+                    normalizationParams.outputParams[key].outputMax,
+                );
+                newPredictions[key as keyof typeof newPredictions] = prediction;
 
-            // Hitung metrik
-            const xs = tf.tensor2d(
-                actualData[key as keyof typeof actualData].map((_, i) => {
-                    return indikator.map((_, j) =>
-                        normalize(transactionX[i][j], normalizationParams.featureRanges[j].min, normalizationParams.featureRanges[j].max),
-                    );
-                }),
-            );
+                // Hitung metrik
+                const xs = tf.tensor2d(
+                    actualData[key as keyof typeof actualData].map((_, i) => {
+                        return indikator.map((_, j) =>
+                            normalize(transactionX[i][j], normalizationParams.featureRanges[j].min, normalizationParams.featureRanges[j].max),
+                        );
+                    }),
+                );
 
-            const ys = tf.tensor2d(
-                actualData[key as keyof typeof actualData].map((val) => [
-                    normalize(val, normalizationParams.outputParams[key].outputMin, normalizationParams.outputParams[key].outputMax),
-                ]),
-            );
+                const ys = tf.tensor2d(
+                    actualData[key as keyof typeof actualData].map((val) => [
+                        normalize(val, normalizationParams.outputParams[key].outputMin, normalizationParams.outputParams[key].outputMax),
+                    ]),
+                );
 
-            const preds = model.predict(xs) as tf.Tensor;
-            newMetrics[key as keyof typeof newMetrics] = {
-                mse: tf.losses.meanSquaredError(ys, preds).dataSync()[0],
-                r2: tf.metrics.r2Score(ys, preds).dataSync()[0],
-            };
+                const preds = model.predict(xs) as tf.Tensor;
+                newMetrics[key as keyof typeof newMetrics] = {
+                    mse: tf.losses.meanSquaredError(ys, preds).dataSync()[0],
+                    r2: tf.metrics.r2Score(ys, preds).dataSync()[0],
+                };
+                console.log(prediction);
 
-            savePredictionToDB(prediction, key, newMetrics[key as keyof typeof newMetrics].mse, newMetrics[key as keyof typeof newMetrics].r2);
-            // Cleanup
-            xs.dispose();
-            ys.dispose();
-            preds.dispose();
-        });
+                savePredictionToDB(prediction, key, newMetrics[key as keyof typeof newMetrics].mse, newMetrics[key as keyof typeof newMetrics].r2);
+                // Cleanup
+                xs.dispose();
+                ys.dispose();
+                preds.dispose();
+            });
 
-        if (auth.user && auth.role === 'user') {
-            saveRiwayatUser(
-                indikator.map((_, i) => {
-                    const param = parameter.find((p) => p.indikator_id === indikator[i].id);
-                    return {
-                        indikator: _.nama,
-                        nilai: param?.nilai,
-                    };
-                }),
-                newPredictions
-            );
+            if (auth.user && auth.role === 'user') {
+                saveRiwayatUser(
+                    indikator.map((_, i) => {
+                        const param = parameter.find((p) => p.indikator_id === indikator[i].id);
+                        return {
+                            indikator: _.nama,
+                            nilai: param?.nilai,
+                        };
+                    }),
+                    newPredictions,
+                );
+            }
+            setPredictions(newPredictions);
+            setMetrics(newMetrics);
+        } catch (error) {
+            setErrorModel({
+                text: 'Gagal Melakukan prediksi, ini mungkin kesalahan akibat train model yang salah. mohon ulangi sekali lagi',
+                status: true,
+            });
+            setIsErrorModel(true)
         }
-        setPredictions(newPredictions);
-        setMetrics(newMetrics);
     };
 
-    const saveRiwayatUser = async (parameter: any, prediction:any) => {
+    const saveRiwayatUser = async (parameter: any, prediction: any) => {
         try {
             const response = await axios.post(route('riwayatPengguna.store'), {
                 user_id: auth.user.id,
@@ -178,6 +190,12 @@ export default function PredictModels({ models, normalizationParams, transaction
     };
     return (
         <div className={'rounded-lg border bg-white p-6 shadow'}>
+            <Toast
+            open={isErrorModel}
+            onOpenChange={setIsErrorModel}
+            title='Terjadi Kesalahan Prediksi'
+            description={errorModel.text}
+            />
             <h3 className="mb-4 text-lg font-semibold">Prediksi 4 Jenis Rumput Laut</h3>
             <div className={cn('grid grid-cols-1 gap-4', className)}>
                 <form onSubmit={predictAll} className="col-span-1">

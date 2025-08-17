@@ -11,6 +11,7 @@ interface HarvestDetailProps {
         user: { name: string; email: string; alamat: string };
         model: any;
         parameter: any;
+        created_at: string;
     };
     breadcrumb: BreadcrumbItem[];
     indikator: IndikatorTypes[];

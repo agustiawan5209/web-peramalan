@@ -79,3 +79,13 @@ export interface SeaweedType {
     jumlah: number;
 };
 
+interface MultipleLinearRegressionModelTypes {
+    transactionX: Transaction[];
+    transactionY: {
+        eucheuma_conttoni_basah: number;
+        eucheuma_conttoni_kering: number;
+        eucheuma_spinosum_basah: number;
+        eucheuma_spinosum_kering: number;
+    }[];
+    indikator: IndikatorTypes[];
+}

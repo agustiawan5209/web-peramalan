@@ -19,5 +19,6 @@ class RiwayatPengguna extends Model
         'model'=> 'json',
         'user'=> 'json',
         'parameter'=> 'json',
+        'created_at'=> 'datetime'
     ];
 }
