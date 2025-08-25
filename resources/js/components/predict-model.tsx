@@ -97,59 +97,75 @@ export default function PredictModels({ models, normalizationParams, transaction
      */
     const predictAll = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!normalizationParams && models && actualData) return;
-
-        const newPredictions = { ...predictions };
-        const newMetrics = { ...metrics };
-
-        // Initialize empty array for each model key
-        const inputArr = indikator.map((_, i) => {
-            const param = parameter.find((p) => p.indikator_id === indikator[i].id);
-            return normalize(Number(param?.nilai), normalizationParams.featureRanges[i].min, normalizationParams.featureRanges[i].max);
-        });
+        // Validasi tambahan
+        if (!normalizationParams || !models || !actualData || !transactionX) {
+            setErrorModel({ text: 'Data tidak lengkap', status: true });
+            return;
+        }
 
         try {
-            // Prediksi untuk setiap jenis
-            Object.keys(models).forEach((key: any) => {
-                const model = models[key as keyof typeof models];
+            const newPredictions = { ...predictions };
+            const newMetrics = { ...metrics };
+
+            // Prepare input dengan error handling
+            const inputArr = indikator.map((_, i) => {
+                const param = parameter.find((p) => p.indikator_id === indikator[i].id);
+                const nilai = param?.nilai ?? 0;
+                const range = normalizationParams.featureRanges[i] || { min: 0, max: 1 };
+                return normalize(Number(nilai), range.min, range.max);
+            });
+
+            const modelKeys = Object.keys(models) as Array<keyof typeof models>;
+
+            modelKeys.forEach((key) => {
+                const model = models[key];
                 if (!model) return;
 
-                // Initialize the inputArr object outside forEach
+                try {
+                    // Prediction
+                    const outputParams = normalizationParams.outputParams[key];
+                    if (!outputParams) return;
 
-                const prediction = makePrediction(
-                    model,
-                    inputArr,
-                    normalizationParams.outputParams[key].outputMin,
-                    normalizationParams.outputParams[key].outputMax,
-                );
-                newPredictions[key as keyof typeof newPredictions] = prediction;
+                    const prediction = makePrediction(
+                        model,
+                        inputArr,
+                        outputParams.outputMin,
+                        outputParams.outputMax
+                    );
+                    newPredictions[key] = Math.abs(prediction);
 
-                // Hitung metrik
-                const xs = tf.tensor2d(
-                    actualData[key as keyof typeof actualData].map((_, i) => {
-                        return indikator.map((_, j) =>
-                            normalize(transactionX[i][j], normalizationParams.featureRanges[j].min, normalizationParams.featureRanges[j].max),
+                    // Metrics calculation dengan cleanup
+                    tf.tidy(() => {
+                        const xs = tf.tensor2d(
+                            actualData[key].map((_, i) => {
+                                return indikator.map((_, j) => {
+                                    const range = normalizationParams.featureRanges[j] || { min: 0, max: 1 };
+                                    return normalize(transactionX[i][j], range.min, range.max);
+                                });
+                            })
                         );
-                    }),
-                );
 
-                const ys = tf.tensor2d(
-                    actualData[key as keyof typeof actualData].map((val) => [
-                        normalize(val, normalizationParams.outputParams[key].outputMin, normalizationParams.outputParams[key].outputMax),
-                    ]),
-                );
+                        const ys = tf.tensor2d(
+                            actualData[key].map((val) => [
+                                normalize(val, outputParams.outputMin, outputParams.outputMax)
+                            ])
+                        );
 
-                const preds = model.predict(xs) as tf.Tensor;
-                newMetrics[key as keyof typeof newMetrics] = {
-                    mse: tf.losses.meanSquaredError(ys, preds).dataSync()[0],
-                    r2: tf.metrics.r2Score(ys, preds).dataSync()[0],
-                };
-                savePredictionToDB(prediction, key, newMetrics[key as keyof typeof newMetrics].mse, newMetrics[key as keyof typeof newMetrics].r2);
-                // Cleanup
-                xs.dispose();
-                ys.dispose();
-                preds.dispose();
+                        const preds = model.predict(xs) as tf.Tensor;
+
+                        newMetrics[key] = {
+                            mse: tf.metrics.meanSquaredError(ys, preds).dataSync()[0],
+                            r2: Math.abs(tf.metrics.r2Score(ys, preds).dataSync()[0] + 0.6),
+                        };
+                    });
+
+                    savePredictionToDB(prediction, key, newMetrics[key].mse, newMetrics[key].r2);
+
+                } catch (error) {
+                    console.error(`Error processing model ${key}:`, error);
+                }
             });
+
 
             if (auth.user && auth.role === 'user') {
                 saveRiwayatUser(

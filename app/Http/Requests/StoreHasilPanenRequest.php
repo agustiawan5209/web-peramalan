@@ -29,7 +29,7 @@ class StoreHasilPanenRequest extends FormRequest
             'total_panen' => ['required', 'numeric', 'min:30'],
             'jenisRumputLaut' => ['required', 'array'],
             'jenisRumputLaut.*.nama' => ['required', 'string',],
-            'jenisRumputLaut.*.jumlah' => ['required', 'numeric', 'min:30'],
+            'jenisRumputLaut.*.jumlah' => ['required', 'numeric', 'min:0'],
             'parameter' => ['required'],
             'keterangan' => ['nullable', 'string'],
             'parameter.*.indikator_id'=> ['required', 'exists:indikators,id']
