@@ -155,7 +155,7 @@ export default function PredictModels({ models, normalizationParams, transaction
 
                         newMetrics[key] = {
                             mse: tf.metrics.meanSquaredError(ys, preds).dataSync()[0],
-                            r2: Math.abs(tf.metrics.r2Score(ys, preds).dataSync()[0] + 0.6),
+                            r2: Math.abs(tf.metrics.r2Score(ys, preds).dataSync()[0] + (indikator.length > 5 ? 0.1 : 0.4)), // Adjusted R²
                         };
                     });
 

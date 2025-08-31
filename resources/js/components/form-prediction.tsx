@@ -41,6 +41,7 @@ export default function FormPrediction({ transactionX, transactionY, indikator, 
         setModels(trainedModels);
         setNormalizationParams(params);
     };
+    console.log(indikator.length)
 
     // Memuat model saat komponen mount
     useEffect(() => {

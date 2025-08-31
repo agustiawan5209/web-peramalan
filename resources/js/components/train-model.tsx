@@ -40,7 +40,24 @@ export default function TrainModels({ indikator, transactionX, transactionY, onM
 
     const initModel = () => {
         const model = tf.sequential();
-        model.add(tf.layers.dense({ units: 1, inputShape: [indikator.length] }));
+        model.add(
+            tf.layers.dense({
+                units: 64, // Tambahkan lebih banyak unit
+                inputShape: [indikator.length],
+                activation: 'relu', // Tambahkan activation function
+            }),
+        );
+        model.add(
+            tf.layers.dense({
+                units: 32,
+                activation: 'relu',
+            }),
+        );
+        model.add(
+            tf.layers.dense({
+                units: 1, // Output layer
+            }),
+        );
         return model;
     };
 
@@ -151,8 +168,8 @@ export default function TrainModels({ indikator, transactionX, transactionY, onM
                         'spinosum_kering',
                         {
                             featureRanges,
-                            outputMin: spinosumBasahParams.outputMin,
-                            outputMax: spinosumBasahParams.outputMax,
+                            outputMin: spinosumKeringParams.outputMin,
+                            outputMax: spinosumKeringParams.outputMax,
                         },
                         indikator,
                     ),
