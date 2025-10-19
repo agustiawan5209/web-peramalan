@@ -26,7 +26,7 @@ class RiwayatPenggunaController extends Controller
     public function index()
     {
         return Inertia::render("admin/riwayatPengguna/index", [
-            "riwayatPengguna" => RiwayatPengguna::paginate(10),
+            "riwayatPengguna" => RiwayatPengguna::where('user_id', '!=', Auth::user()->id)->paginate(10),
             'breadcrumb' => self::BASE_BREADCRUMB,
         ]);
     }
@@ -51,10 +51,11 @@ class RiwayatPenggunaController extends Controller
         return response()->json("Berhasil", 200);
     }
 
-    public function show(RiwayatPengguna $riwayatPengguna){
+    public function show(RiwayatPengguna $riwayatPengguna)
+    {
         return Inertia::render("admin/riwayatPengguna/show", [
-            "riwayatPengguna"=> $riwayatPengguna,
-             'breadcrumb' => self::BASE_BREADCRUMB,
+            "riwayatPengguna" => $riwayatPengguna,
+            'breadcrumb' => self::BASE_BREADCRUMB,
         ]);
     }
 
@@ -69,5 +70,13 @@ class RiwayatPenggunaController extends Controller
             successMessage: 'Riwayat Berhasil Di Hapus!',
             redirectRoute: 'admin.riwayatPengguna.index'
         );
+    }
+
+    public function getRiwayatPengguna(Request $request)
+    {
+        $riwayatPengguna = RiwayatPengguna::where('user_id', $request->userId)
+            ->latest()->first();
+
+        return response()->json($riwayatPengguna->model, 200);
     }
 }

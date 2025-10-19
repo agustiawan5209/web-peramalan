@@ -29,14 +29,11 @@ const PredictionChart = ({
             const ctx = chartRef.current.getContext('2d');
 
             if (ctx) {
-
                 // Prediction chart with all four datasets
                 const predictionChart = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: dataRumputlautX1
-                            ? [...dataRumputlautX1.map((_, index) => ` ${index + 1}`), 'Prediksi']
-                            : ['Prediksi'],
+                        labels: dataRumputlautX1 ? [...dataRumputlautX1.map((_, index) => ` ${index + 1}`), 'Prediksi'] : ['Prediksi'],
                         datasets: [
                             // Actual Cottoni Basah data
                             {
@@ -73,7 +70,7 @@ const PredictionChart = ({
                                 label: 'Actual Spinosum Kering',
                                 data: [...(dataRumputlautX4 || []), null],
                                 fill: false,
-                                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
                                 borderColor: 'rgba(255, 99, 132, 1)',
                                 borderWidth: 2,
                                 tension: 0.3,
@@ -94,7 +91,7 @@ const PredictionChart = ({
                             // Predicted Cottoni Kering
                             {
                                 label: 'Prediksi Cottoni Kering',
-                                data: [...(dataRumputlautX2 || []).map((item)=> item), predictionX2],
+                                data: [...(dataRumputlautX2 || []).map((item) => item), predictionX2],
                                 fill: false,
                                 backgroundColor: 'rgba(255, 159, 64, 0.5)',
                                 borderColor: 'rgba(255, 159, 64, 1)',
@@ -106,7 +103,7 @@ const PredictionChart = ({
                             // Predicted Spinosum Basah
                             {
                                 label: 'Prediksi Spinosum Basah',
-                                data: [...(dataRumputlautX3 || []).map((item)=> item), predictionX3],
+                                data: [...(dataRumputlautX3 || []).map((item) => item), predictionX3],
                                 fill: false,
                                 backgroundColor: 'rgba(153, 102, 255, 0.5)',
                                 borderColor: 'rgba(153, 102, 255, 1)',
@@ -118,7 +115,7 @@ const PredictionChart = ({
                             // Predicted Spinosum Kering
                             {
                                 label: 'Prediksi Spinosum Kering',
-                                data: [...(dataRumputlautX4 || []).map((item)=> item), predictionX4],
+                                data: [...(dataRumputlautX4 || []).map((item) => item), predictionX4],
                                 fill: false,
                                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
                                 borderColor: 'rgba(255, 99, 132, 1)',
@@ -163,10 +160,10 @@ const PredictionChart = ({
     }, [predictionX1, predictionX2, predictionX3, predictionX4]);
 
     return (
-            <div className='w-full flex flex-col items-center h-max'>
-                <h3>Hasil Prediksi Produktivitas Rumput Laut</h3>
-                <canvas ref={chartRef} className='w-full h-max'></canvas>
-            </div>
+        <div className="flex h-max w-full flex-col items-center">
+            <h3>Hasil Prediksi Produktivitas Rumput Laut</h3>
+            <canvas ref={chartRef} className="h-max w-full"></canvas>
+        </div>
     );
 };
 

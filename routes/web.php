@@ -113,5 +113,7 @@ Route::post('/riwayat/store', [RiwayatPenggunaController::class, 'store'])->name
  */
 
 
-Route::post('/store/kriteria/model', [KriteriaTerpilihController::class,'store'])->name('store.kriteria.model');
-Route::get('/show/kriteria/model', [KriteriaTerpilihController::class,'show'])->name('show.kriteria.model');
+Route::post('/store/kriteria/model', [KriteriaTerpilihController::class, 'store'])->name('store.kriteria.model');
+Route::get('/show/kriteria/model', [KriteriaTerpilihController::class, 'show'])->name('show.kriteria.model');
+
+Route::get('/get/riwayat/pengguna', [RiwayatPenggunaController::class, 'getRiwayatPengguna'])->name('api.get.riwayat.pengguna')->middleware(['auth']);
